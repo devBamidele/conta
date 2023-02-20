@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "62299096065",
+    "project_id": "conta---instant-messaging-app",
+    "storage_bucket": "conta---instant-messaging-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:62299096065:android:a968b1f571c8f04260ac00",
+        "android_client_info": {
+          "package_name": "com.bamidele.ajewole.conta"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "62299096065-itl3irt569qtro7cc595ejfafroph8dv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKHl5QaeKTgu0tg1vM0gKarqr-a-LDP9I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "62299096065-bim8gupgnquad2dd8d20i5tgtf1s9ise.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
