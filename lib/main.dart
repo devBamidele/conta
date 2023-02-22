@@ -1,6 +1,8 @@
 import 'package:conta/res/app_theme.dart';
 import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:conta/view_model/conta_view_model.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,12 +16,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      themeMode: ThemeMode.light,
-      theme: AppTheme().appTheme(),
-      debugShowCheckedModeBanner: false,
-      routerDelegate: _appRouter.delegate(),
-      routeInformationParser: _appRouter.defaultRouteParser(),
+    return ChangeNotifierProvider<ContaViewModel>(
+      create: (_) => ContaViewModel(),
+      child: MaterialApp.router(
+        themeMode: ThemeMode.light,
+        theme: AppTheme().appTheme(),
+        debugShowCheckedModeBanner: false,
+        routerDelegate: _appRouter.delegate(),
+        routeInformationParser: _appRouter.defaultRouteParser(),
+      ),
     );
   }
 }

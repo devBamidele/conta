@@ -1,6 +1,6 @@
 import 'package:conta/res/color.dart';
 import 'package:conta/view/home/tab_views/call_screen.dart';
-import 'package:conta/view/home/tab_views/message_screen.dart';
+import 'package:conta/view/home/tab_views/message_view/message_screen.dart';
 import 'package:conta/view/home/tab_views/profile_screen.dart';
 import 'package:conta/view/home/tab_views/video_screen.dart';
 import 'package:flutter/material.dart';
