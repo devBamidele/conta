@@ -10,16 +10,18 @@ class MessageListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ContaViewModel>(
-      builder: (_, data, Widget? child) {
-        return ListView.builder(
-          itemCount: data.getMessages().length,
-          itemBuilder: (context, index) {
-            Message message = data.getMessages()[index];
-            return MessageItem(message: message);
-          },
-        );
-      },
+    return Expanded(
+      child: Consumer<ContaViewModel>(
+        builder: (_, data, Widget? child) {
+          return ListView.builder(
+            itemCount: data.getMessages().length,
+            itemBuilder: (context, index) {
+              Message message = data.getMessages()[index];
+              return MessageItem(message: message);
+            },
+          );
+        },
+      ),
     );
   }
 }

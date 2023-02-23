@@ -1,6 +1,6 @@
 import 'package:conta/res/color.dart';
 import 'package:conta/view/home/tab_views/call_screen.dart';
-import 'package:conta/view/home/tab_views/message_view/message_screen.dart';
+import 'package:conta/view/home/tab_views/message_view/message_tab_view.dart';
 import 'package:conta/view/home/tab_views/profile_screen.dart';
 import 'package:conta/view/home/tab_views/video_screen.dart';
 import 'package:flutter/material.dart';
@@ -61,7 +61,7 @@ class _PersistentTabState extends State<PersistentTab> {
       ];
 
   List<Widget> _buildScreens() => [
-        const MessageScreen(),
+        const MessageTabView(),
         const VideoScreen(),
         const CallScreen(),
         const ProfileScreen(),
