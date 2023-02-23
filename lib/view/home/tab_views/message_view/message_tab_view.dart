@@ -57,13 +57,13 @@ class _MessageTabViewState extends State<MessageTabView>
                     child: const Icon(
                       Icons.search_rounded,
                       size: 26,
-                      color: AppColors.inactiveColor,
+                      color: AppColors.iconColor,
                     ),
                   ),
                   addWidth(20),
                   Expanded(
                     child: Container(
-                      height: 44,
+                      height: 45,
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
@@ -87,9 +87,9 @@ class _MessageTabViewState extends State<MessageTabView>
                   CustomIconButton(
                     onTap: () {},
                     child: const Icon(
-                      Icons.search_rounded,
-                      size: 26,
-                      color: AppColors.inactiveColor,
+                      Icons.edit,
+                      size: 24,
+                      color: AppColors.iconColor,
                     ),
                   ),
                 ],

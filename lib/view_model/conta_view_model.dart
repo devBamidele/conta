@@ -7,4 +7,7 @@ class ContaViewModel extends ChangeNotifier {
   List<Message> getMessages() {
     return Sample.sampleMessages.map((e) => Message.fromJson(e)).toList();
   }
+
+  // Holds the profile information of the current selected chat
+  Message? currentChat;
 }
