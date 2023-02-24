@@ -3,7 +3,7 @@ import 'package:conta/view_model/conta_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-// import '../../../../models/message.dart';
+// import '../../../../models/chat.dart';
 
 class ChatScreen extends StatelessWidget {
   const ChatScreen({Key? key}) : super(key: key);

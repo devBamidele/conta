@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:conta/models/message.dart';
+import 'package:conta/models/chat.dart';
 import 'package:conta/data/sample_messages.dart';
 
 class ContaViewModel extends ChangeNotifier {
   /// Get the messages as a json response and return a list of Json objects
-  List<Message> getMessages() {
-    return Sample.sampleMessages.map((e) => Message.fromJson(e)).toList();
+  List<Chat> getMessages() {
+    return Sample.sampleMessages.map((e) => Chat.fromJson(e)).toList();
   }
 
   // Holds the profile information of the current selected chat
-  Message? currentChat;
+  Chat? currentChat;
 }

@@ -1,5 +1,5 @@
 /// A Message Object
-class Message {
+class Chat {
   int? id;
 
   String sender;
@@ -12,7 +12,7 @@ class Message {
 
   bool read;
 
-  Message({
+  Chat({
     this.id,
     required this.sender,
     required this.timeStamp,
@@ -22,8 +22,8 @@ class Message {
   });
 
   // A factory constructor that creates a Message object from a JSON string
-  factory Message.fromJson(Map<String, dynamic> json) {
-    return Message(
+  factory Chat.fromJson(Map<String, dynamic> json) {
+    return Chat(
       id: json['id'],
       sender: json['sender'],
       timeStamp: json['timeStamp'],
