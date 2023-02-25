@@ -10,7 +10,7 @@ class AppTheme {
       //focusColor: AppColors.primaryColor.withOpacity(0.5),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.inputBackGround,
+        //fillColor: AppColors.inputBackGround,
         hintStyle: const TextStyle(
           color: AppColors.hintTextColor,
           fontWeight: FontWeight.w400,
@@ -41,7 +41,7 @@ class AppTheme {
         ),
         focusedBorder: inputBorder.copyWith(
           borderSide: const BorderSide(
-            color: AppColors.primaryColor,
+            color: AppColors.selectedFieldColor,
             width: 1,
           ),
         ),

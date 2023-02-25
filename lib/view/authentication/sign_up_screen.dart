@@ -16,20 +16,81 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   final myEmailController = TextEditingController();
   final myPasswordController = TextEditingController();
+
+  final passwordFocusNode = FocusNode();
+  final emailFocusNode = FocusNode();
+
   final formKey = GlobalKey<FormState>();
 
+  Color passwordColor = AppColors.hintTextColor;
+  Color fillPasswordColor = AppColors.inputBackGround;
+
+  Color emailColor = AppColors.hintTextColor;
+  Color fillEmailColor = AppColors.inputBackGround;
+
   late bool _passwordVisible;
+
+  bool _isPasswordEmpty = true;
+  bool _isEmailEmpty = true;
 
   @override
   void initState() {
     super.initState();
     _passwordVisible = true;
+
+    myPasswordController.addListener(_updatePasswordEmpty);
+
+    passwordFocusNode.addListener(_updatePasswordColor);
+
+    myEmailController.addListener(_updateEmailEmpty);
+
+    emailFocusNode.addListener(_updateEmailColor);
+  }
+
+  void _updatePasswordEmpty() {
+    setState(() {
+      _isPasswordEmpty = myPasswordController.text.isEmpty;
+    });
+  }
+
+  void _updateEmailEmpty() {
+    setState(() {
+      _isEmailEmpty = myEmailController.text.isEmpty;
+    });
+  }
+
+  void _updatePasswordColor() {
+    setState(() {
+      passwordColor = passwordFocusNode.hasFocus
+          ? AppColors.selectedFieldColor
+          : _isPasswordEmpty
+              ? AppColors.hintTextColor
+              : Colors.black87;
+      fillPasswordColor = passwordFocusNode.hasFocus
+          ? AppColors.selectedBackgroundColor
+          : AppColors.inputBackGround;
+    });
+  }
+
+  void _updateEmailColor() {
+    setState(() {
+      emailColor = emailFocusNode.hasFocus
+          ? AppColors.selectedFieldColor
+          : _isEmailEmpty
+              ? AppColors.hintTextColor
+              : Colors.black87;
+      fillEmailColor = emailFocusNode.hasFocus
+          ? AppColors.selectedBackgroundColor
+          : AppColors.inputBackGround;
+    });
   }
 
   @override
   void dispose() {
     myEmailController.dispose();
     myPasswordController.dispose();
+    passwordFocusNode.dispose();
+    emailFocusNode.dispose();
 
     super.dispose();
   }
@@ -72,6 +133,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child: Column(
                     children: [
                       TextFormField(
+                        cursorColor: Colors.black,
+                        focusNode: emailFocusNode,
                         controller: myEmailController,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         textInputAction: TextInputAction.next,
@@ -80,15 +143,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 ? 'Enter a valid email'
                                 : null,
                         decoration: InputDecoration(
+                          fillColor: fillEmailColor.withOpacity(0.5),
                           hintText: 'Email',
                           contentPadding: const EdgeInsets.all(18),
                           prefixIcon: Padding(
                             padding: const EdgeInsets.only(left: 22, right: 14),
                             child: Icon(
                               IconlyBold.message,
-                              color: myEmailController.text.isEmpty
-                                  ? AppColors.hintTextColor
-                                  : Colors.black,
+                              color: emailColor,
                             ),
                           ),
                         ),
@@ -99,6 +161,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           bottom: 19,
                         ),
                         child: TextFormField(
+                          cursorColor: Colors.black,
+                          focusNode: passwordFocusNode,
                           controller: myPasswordController,
                           textInputAction: TextInputAction.done,
                           obscureText:
@@ -109,13 +173,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   ? 'Enter a minimum of 6 characters'
                                   : null,
                           decoration: InputDecoration(
+                            fillColor: fillPasswordColor.withOpacity(0.5),
                             hintText: 'Password',
                             contentPadding: const EdgeInsets.all(18),
-                            prefixIcon: const Padding(
-                              padding: EdgeInsets.only(left: 22, right: 14),
+                            prefixIcon: Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 22, right: 14),
                               child: Icon(
                                 IconlyBold.lock,
-                                color: AppColors.hintTextColor,
+                                color: passwordColor,
                               ),
                             ),
                             suffixIcon: IconButton(
@@ -124,7 +190,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 _passwordVisible
                                     ? Icons.visibility_off
                                     : Icons.visibility,
-                                color: AppColors.hintTextColor,
+                                color: passwordColor,
                               ),
                               onPressed: () {
                                 // Update the state i.e. toggle the state of passwordVisible variable
