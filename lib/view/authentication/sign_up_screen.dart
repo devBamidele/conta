@@ -1,8 +1,12 @@
 import 'package:conta/res/color.dart';
+import 'package:conta/res/style/component_style.dart';
 import 'package:conta/utils/widget_functions.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
+
+import '../../res/components/custom_text_field.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -29,6 +33,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Color fillEmailColor = AppColors.inputBackGround;
 
   late bool _passwordVisible;
+  bool _isChecked = false;
 
   bool _isPasswordEmpty = true;
   bool _isEmailEmpty = true;
@@ -101,10 +106,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
         backgroundColor: Colors.white,
+        resizeToAvoidBottomInset: false,
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 addHeight(80),
                 const Text(
@@ -132,79 +139,153 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   key: formKey,
                   child: Column(
                     children: [
-                      TextFormField(
-                        cursorColor: Colors.black,
+                      CustomTextField(
                         focusNode: emailFocusNode,
-                        controller: myEmailController,
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        textInputAction: TextInputAction.next,
-                        validator: (email) =>
-                            email != null && !EmailValidator.validate(email)
-                                ? 'Enter a valid email'
-                                : null,
-                        decoration: InputDecoration(
-                          fillColor: fillEmailColor.withOpacity(0.5),
-                          hintText: 'Email',
-                          contentPadding: const EdgeInsets.all(18),
-                          prefixIcon: Padding(
-                            padding: const EdgeInsets.only(left: 22, right: 14),
-                            child: Icon(
-                              IconlyBold.message,
-                              color: emailColor,
-                            ),
-                          ),
+                        textController: myEmailController,
+                        customFillColor: fillEmailColor,
+                        hintText: 'Email',
+                        prefixIcon: Icon(
+                          IconlyBold.message,
+                          color: emailColor,
                         ),
+                        validation: (email) =>
+                            email != null && !EmailValidator.validate(email)
+                                ? 'Enter a valid email '
+                                : null,
                       ),
                       Padding(
                         padding: const EdgeInsets.only(
-                          top: 12,
-                          bottom: 19,
+                          top: 20,
+                          bottom: 20,
                         ),
-                        child: TextFormField(
-                          cursorColor: Colors.black,
+                        child: CustomTextField(
                           focusNode: passwordFocusNode,
-                          controller: myPasswordController,
-                          textInputAction: TextInputAction.done,
+                          textController: myPasswordController,
+                          customFillColor: fillPasswordColor,
+                          action: TextInputAction.done,
+                          hintText: 'Password',
                           obscureText:
                               _passwordVisible, //This will obscure text dynamically
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          validator: (value) =>
+                          validation: (value) =>
                               value != null && value.length < 6
                                   ? 'Enter a minimum of 6 characters'
                                   : null,
-                          decoration: InputDecoration(
-                            fillColor: fillPasswordColor.withOpacity(0.5),
-                            hintText: 'Password',
-                            contentPadding: const EdgeInsets.all(18),
-                            prefixIcon: Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 22, right: 14),
-                              child: Icon(
-                                IconlyBold.lock,
-                                color: passwordColor,
-                              ),
+                          prefixIcon: Icon(
+                            IconlyBold.lock,
+                            color: passwordColor,
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              // Based on passwordVisible state choose the icon
+                              _passwordVisible
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              color: passwordColor,
                             ),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                // Based on passwordVisible state choose the icon
-                                _passwordVisible
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                                color: passwordColor,
-                              ),
-                              onPressed: () {
-                                // Update the state i.e. toggle the state of passwordVisible variable
-                                setState(() {
-                                  _passwordVisible = !_passwordVisible;
-                                });
-                              },
-                            ),
+                            onPressed: () {
+                              // Update the state i.e. toggle the state of passwordVisible variable
+                              setState(() {
+                                _passwordVisible = !_passwordVisible;
+                              });
+                            },
                           ),
                         ),
                       )
                     ],
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 18),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Transform.scale(
+                        scale: 1.2,
+                        child: Checkbox(
+                          value: _isChecked,
+                          activeColor: AppColors.primaryColor,
+                          side: const BorderSide(
+                            width: 2,
+                            color: AppColors.primaryColor,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(7),
+                          ),
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              _isChecked = value!;
+                            });
+                          },
+                        ),
+                      ),
+                      const Text(
+                        'Remember me',
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    boxShadow: [shadow],
+                  ),
+                  child: ElevatedButton(
+                    style: elevatedButton,
+                    onPressed: () {},
+                    child: const Text(
+                      'Continue',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                addHeight(51),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  child: RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: AppColors.opaqueTextColor,
+                      ),
+                      children: [
+                        const TextSpan(
+                          text: 'By tapping Continue, you agree to our ',
+                        ),
+                        TextSpan(
+                          text: 'Terms',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              // handle click event for the Terms link
+                            },
+                        ),
+                        const TextSpan(
+                          text: ' & ',
+                        ),
+                        TextSpan(
+                          text: 'Privacy policy',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              // handle click event for the Privacy policy link
+                            },
+                        ),
+                      ],
+                    ),
+                  ),
+                )
               ],
             ),
           ),

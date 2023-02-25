@@ -8,6 +8,8 @@ class AppColors {
   static const Color hintTextColor = Color(0xFF9E9E9E);
   static const Color darkIconColor = Color(0xFF858585);
 
+  static const Color opaqueTextColor = Color(0xFF969696);
+
   // For the text fields
   static const Color selectedFieldColor = Color(0xFFFD9787);
   static const Color selectedBackgroundColor = Color(0xFFFFEEEB);

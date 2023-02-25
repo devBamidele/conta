@@ -7,7 +7,6 @@ class AppTheme {
     return ThemeData(
       scaffoldBackgroundColor: AppColors.backGroundColor,
       useMaterial3: true,
-      //focusColor: AppColors.primaryColor.withOpacity(0.5),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         //fillColor: AppColors.inputBackGround,
