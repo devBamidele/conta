@@ -20,7 +20,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=2.18.5 <3.0.0'
+  sdk: '>=2.19.2 <3.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -49,6 +49,7 @@ dependencies:
   persistent_bottom_nav_bar: ^5.0.2
   iconly: ^1.0.1
   email_validator: ^2.1.17
+  flutter_svg: ^1.1.1
 
 dev_dependencies:
   flutter_test:

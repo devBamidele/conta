@@ -20,9 +20,24 @@ final elevatedButton = ElevatedButton.styleFrom(
   ),
 );
 
+/// The decoration for the outlined button
+final outlinedButton = OutlinedButton.styleFrom(
+  side: BorderSide(
+    color: AppColors.hintTextColor.withOpacity(0.5),
+  ),
+  minimumSize: const Size(90, 60),
+  shape: const RoundedRectangleBorder(
+    borderRadius: BorderRadius.all(
+      Radius.circular(16),
+    ),
+  ),
+);
+
 final shadow = BoxShadow(
   color: AppColors.primaryColor.withOpacity(0.7),
   offset: const Offset(1, 4),
   blurRadius: 18,
   spreadRadius: 1,
 );
+
+const pagePadding = EdgeInsets.symmetric(horizontal: 20);

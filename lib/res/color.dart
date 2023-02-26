@@ -8,7 +8,10 @@ class AppColors {
   static const Color hintTextColor = Color(0xFF9E9E9E);
   static const Color darkIconColor = Color(0xFF858585);
 
+  // For text
   static const Color opaqueTextColor = Color(0xFF969696);
+  static const Color dividerColor = Color(0xFFEEEEEE);
+  static const Color continueWithColor = Color(0xFF616161);
 
   // For the text fields
   static const Color selectedFieldColor = Color(0xFFFD9787);

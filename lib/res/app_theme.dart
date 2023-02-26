@@ -9,7 +9,6 @@ class AppTheme {
       useMaterial3: true,
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        //fillColor: AppColors.inputBackGround,
         hintStyle: const TextStyle(
           color: AppColors.hintTextColor,
           fontWeight: FontWeight.w400,

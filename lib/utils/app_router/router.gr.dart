@@ -12,7 +12,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:auto_route/auto_route.dart' as _i4;
-import 'package:conta/view/authentication/sign_up_screen.dart' as _i1;
+import 'package:conta/view/authentication/login_screen.dart' as _i1;
 import 'package:conta/view/home/persistent_tab.dart' as _i2;
 import 'package:conta/view/home/tab_views/message_view/chat_screen.dart' as _i3;
 import 'package:flutter/material.dart' as _i5;
@@ -23,10 +23,10 @@ class AppRouter extends _i4.RootStackRouter {
 
   @override
   final Map<String, _i4.PageFactory> pagesMap = {
-    SignUpScreenRoute.name: (routeData) {
+    LoginScreenRoute.name: (routeData) {
       return _i4.AdaptivePage<dynamic>(
         routeData: routeData,
-        child: const _i1.SignUpScreen(),
+        child: const _i1.LoginScreen(),
       );
     },
     PersistentTabRoute.name: (routeData) {
@@ -50,7 +50,7 @@ class AppRouter extends _i4.RootStackRouter {
   @override
   List<_i4.RouteConfig> get routes => [
         _i4.RouteConfig(
-          SignUpScreenRoute.name,
+          LoginScreenRoute.name,
           path: '/',
         ),
         _i4.RouteConfig(
@@ -65,15 +65,15 @@ class AppRouter extends _i4.RootStackRouter {
 }
 
 /// generated route for
-/// [_i1.SignUpScreen]
-class SignUpScreenRoute extends _i4.PageRouteInfo<void> {
-  const SignUpScreenRoute()
+/// [_i1.LoginScreen]
+class LoginScreenRoute extends _i4.PageRouteInfo<void> {
+  const LoginScreenRoute()
       : super(
-          SignUpScreenRoute.name,
+          LoginScreenRoute.name,
           path: '/',
         );
 
-  static const String name = 'SignUpScreenRoute';
+  static const String name = 'LoginScreenRoute';
 }
 
 /// generated route for

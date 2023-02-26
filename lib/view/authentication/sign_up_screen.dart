@@ -6,6 +6,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 
+import '../../res/components/custom_check_box.dart';
 import '../../res/components/custom_text_field.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -109,7 +110,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         resizeToAvoidBottomInset: false,
         body: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: pagePadding,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -131,6 +132,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     style: TextStyle(
                       fontSize: 16,
                       height: 1.25,
+                      color: AppColors.opaqueTextColor,
                     ),
                   ),
                 ),
@@ -199,26 +201,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Transform.scale(
-                        scale: 1.2,
-                        child: Checkbox(
-                          value: _isChecked,
-                          activeColor: AppColors.primaryColor,
-                          side: const BorderSide(
-                            width: 2,
-                            color: AppColors.primaryColor,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(7),
-                          ),
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              _isChecked = value!;
-                            });
-                          },
-                        ),
+                      CustomCheckbox(
+                        value: _isChecked,
+                        onChanged: (value) {
+                          setState(() {
+                            _isChecked = value ?? false;
+                          });
+                        },
                       ),
                       const Text(
                         'Remember me',
