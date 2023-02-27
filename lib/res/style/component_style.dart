@@ -23,9 +23,9 @@ final elevatedButton = ElevatedButton.styleFrom(
 /// The decoration for the outlined button
 final outlinedButton = OutlinedButton.styleFrom(
   side: BorderSide(
-    color: AppColors.hintTextColor.withOpacity(0.5),
+    color: AppColors.dividerColor,
   ),
-  minimumSize: const Size(90, 60),
+  minimumSize: const Size(88, 60),
   shape: const RoundedRectangleBorder(
     borderRadius: BorderRadius.all(
       Radius.circular(16),

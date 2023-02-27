@@ -1,12 +1,17 @@
+import 'package:auto_route/auto_route.dart';
+import 'package:conta/res/components/custom_back_button.dart';
 import 'package:conta/res/components/custom_check_box.dart';
+import 'package:conta/res/components/login_options.dart';
 import 'package:conta/res/style/component_style.dart';
+import 'package:conta/view/authentication/forgot_password_screen.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:iconly/iconly.dart';
 
 import '../../res/color.dart';
 import '../../res/components/custom_text_field.dart';
+import '../../res/components/shake_error.dart';
 import '../../utils/widget_functions.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -25,7 +30,11 @@ class _LoginScreenState extends State<LoginScreen> {
   final passwordFocusNode = FocusNode();
   final emailFocusNode = FocusNode();
 
-  final formKey = GlobalKey<FormState>();
+  final formKey1 = GlobalKey<FormState>();
+  final formKey2 = GlobalKey<FormState>();
+
+  final shakeState1 = GlobalKey<ShakeWidgetState>();
+  final shakeState2 = GlobalKey<ShakeWidgetState>();
 
   Color passwordColor = AppColors.hintTextColor;
   Color fillPasswordColor = AppColors.inputBackGround;
@@ -98,7 +107,31 @@ class _LoginScreenState extends State<LoginScreen> {
     passwordFocusNode.dispose();
     emailFocusNode.dispose();
 
+    formKey1.currentState?.dispose();
+    formKey2.currentState?.dispose();
+
+    shakeState1.currentState?.dispose();
+    shakeState2.currentState?.dispose();
+
     super.dispose();
+  }
+
+  void onContinuePressed() {
+    final email = formKey1.currentState?.validate();
+    final password = formKey2.currentState?.validate();
+
+    if (!email! && !password!) {
+      shakeState1.currentState?.shake();
+      shakeState2.currentState?.shake();
+    } else if (!email) {
+      shakeState1.currentState?.shake();
+    } else if (!password!) {
+      shakeState2.currentState?.shake();
+    } else {
+      //context.router.pushNamed('path');
+      return;
+    }
+    Vibrate.feedback(FeedbackType.warning);
   }
 
   @override
@@ -114,7 +147,10 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                addHeight(80),
+                const CustomBackButton(
+                  padding: EdgeInsets.only(left: 0, top: 25),
+                ),
+                addHeight(20),
                 const Text(
                   'Login to your Account',
                   style: TextStyle(
@@ -123,7 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                addHeight(14),
+                addHeight(10),
                 Container(
                   alignment: Alignment.topLeft,
                   child: const Text(
@@ -136,64 +172,72 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-                addHeight(62),
+                addHeight(55),
                 Form(
-                  key: formKey,
-                  child: Column(
-                    children: [
-                      CustomTextField(
-                        focusNode: emailFocusNode,
-                        textController: myEmailController,
-                        customFillColor: fillEmailColor,
-                        hintText: 'Email',
-                        prefixIcon: Icon(
-                          IconlyBold.message,
-                          color: emailColor,
-                        ),
-                        validation: (email) =>
-                            email != null && !EmailValidator.validate(email)
-                                ? 'Enter a valid email '
-                                : null,
+                  key: formKey1,
+                  child: ShakeWidget(
+                    key: shakeState1,
+                    shakeCount: 3,
+                    shakeOffset: 6,
+                    child: CustomTextField(
+                      focusNode: emailFocusNode,
+                      textController: myEmailController,
+                      customFillColor: fillEmailColor,
+                      hintText: 'Email',
+                      prefixIcon: Icon(
+                        IconlyBold.message,
+                        color: emailColor,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          top: 20,
-                          bottom: 20,
+                      validation: (email) =>
+                          email != null && !EmailValidator.validate(email)
+                              ? 'Enter a valid email '
+                              : null,
+                    ),
+                  ),
+                ),
+                Form(
+                  key: formKey2,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      top: 20,
+                      bottom: 20,
+                    ),
+                    child: ShakeWidget(
+                      key: shakeState2,
+                      shakeCount: 3,
+                      shakeOffset: 6,
+                      child: CustomTextField(
+                        focusNode: passwordFocusNode,
+                        textController: myPasswordController,
+                        customFillColor: fillPasswordColor,
+                        action: TextInputAction.done,
+                        hintText: 'Password',
+                        obscureText:
+                            _passwordVisible, //This will obscure text dynamically
+                        validation: (value) => value != null && value.length < 6
+                            ? 'Enter a minimum of 6 characters'
+                            : null,
+                        prefixIcon: Icon(
+                          IconlyBold.lock,
+                          color: passwordColor,
                         ),
-                        child: CustomTextField(
-                          focusNode: passwordFocusNode,
-                          textController: myPasswordController,
-                          customFillColor: fillPasswordColor,
-                          action: TextInputAction.done,
-                          hintText: 'Password',
-                          obscureText:
-                              _passwordVisible, //This will obscure text dynamically
-                          validation: (value) =>
-                              value != null && value.length < 6
-                                  ? 'Enter a minimum of 6 characters'
-                                  : null,
-                          prefixIcon: Icon(
-                            IconlyBold.lock,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            // Based on passwordVisible state choose the icon
+                            _passwordVisible
+                                ? Icons.visibility_off
+                                : Icons.visibility,
                             color: passwordColor,
                           ),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              // Based on passwordVisible state choose the icon
-                              _passwordVisible
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
-                              color: passwordColor,
-                            ),
-                            onPressed: () {
-                              // Update the state i.e. toggle the state of passwordVisible variable
-                              setState(() {
-                                _passwordVisible = !_passwordVisible;
-                              });
-                            },
-                          ),
+                          onPressed: () {
+                            // Update the state i.e. toggle the state of passwordVisible variable
+                            setState(() {
+                              _passwordVisible = !_passwordVisible;
+                            });
+                          },
                         ),
-                      )
-                    ],
+                      ),
+                    ),
                   ),
                 ),
                 Padding(
@@ -221,7 +265,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   child: ElevatedButton(
                     style: elevatedButton,
-                    onPressed: () {},
+                    onPressed: onContinuePressed,
                     child: const Text(
                       'Continue',
                       style: TextStyle(
@@ -233,24 +277,25 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 addHeight(28),
-                const Text(
-                  'Forgot the password?',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    height: 1.4,
-                    letterSpacing: 0.2,
-                    color: AppColors.primaryColor,
+                GestureDetector(
+                  onTap: () =>
+                      context.router.pushNamed(ForgotPasswordScreen.tag),
+                  child: const Text(
+                    'Forgot the password?',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      height: 1.4,
+                      letterSpacing: 0.2,
+                      color: AppColors.primaryColor,
+                    ),
                   ),
                 ),
                 addHeight(40),
                 Stack(
                   alignment: Alignment.center,
                   children: [
-                    Divider(
-                      // color: AppColors.hintTextColor.withOpacity(0.5),
-                      thickness: 1,
-                    ),
+                    const Divider(),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 15),
                       color: Colors.white,
@@ -268,24 +313,23 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 addHeight(20),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(
-                          color: AppColors.hintTextColor.withOpacity(0.5),
-                        ),
-                        minimumSize: const Size(90, 60),
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(16),
-                          ),
-                        ),
-                      ),
-                      onPressed: () {},
-                      child: SvgPicture.asset(
-                        'assets/images/g.svg',
-                      ),
-                    )
+                    LoginOptions(
+                      scale: 0.9,
+                      onTap: () {},
+                      path: 'assets/images/google.svg',
+                    ),
+                    LoginOptions(
+                      scale: 0.6,
+                      onTap: () {},
+                      path: 'assets/images/facebook.svg',
+                    ),
+                    LoginOptions(
+                      scale: 0.9,
+                      onTap: () {},
+                      path: 'assets/images/github.svg',
+                    ),
                   ],
                 )
               ],
