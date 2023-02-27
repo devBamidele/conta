@@ -1,4 +1,6 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:conta/res/style/component_style.dart';
+import 'package:conta/view/account_setup/set_photo_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:iconly/iconly.dart';
@@ -88,7 +90,7 @@ class _SetNameScreenState extends State<SetNameScreen> {
     if (!email!) {
       shakeState1.currentState?.shake();
     } else {
-      //context.router.pushNamed('path');
+      context.router.pushNamed(SetPhotoScreen.tag);
       return;
     }
     Vibrate.feedback(FeedbackType.warning);
