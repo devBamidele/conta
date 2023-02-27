@@ -22,6 +22,10 @@ class CustomBackButton extends StatelessWidget {
       icon: const Icon(
         IconlyLight.arrow_left,
       ),
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      focusColor: Colors.transparent,
+      hoverColor: Colors.transparent,
     );
   }
 }

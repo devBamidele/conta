@@ -3,12 +3,14 @@ import 'package:conta/res/color.dart';
 import 'package:conta/res/components/shake_error.dart';
 import 'package:conta/res/style/component_style.dart';
 import 'package:conta/utils/widget_functions.dart';
+import 'package:conta/view/account_setup/set_name_screen.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:iconly/iconly.dart';
 
+import '../../res/components/custom_back_button.dart';
 import '../../res/components/custom_check_box.dart';
 import '../../res/components/custom_text_field.dart';
 
@@ -28,8 +30,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final passwordFocusNode = FocusNode();
   final emailFocusNode = FocusNode();
 
-  final formKey = GlobalKey<FormState>();
-  final shakeState = GlobalKey<ShakeWidgetState>();
+  final formKey1 = GlobalKey<FormState>();
+  final formKey2 = GlobalKey<FormState>();
+
+  final shakeState1 = GlobalKey<ShakeWidgetState>();
+  final shakeState2 = GlobalKey<ShakeWidgetState>();
 
   Color passwordColor = AppColors.hintTextColor;
   Color fillPasswordColor = AppColors.inputBackGround;
@@ -99,23 +104,35 @@ class _SignUpScreenState extends State<SignUpScreen> {
   void dispose() {
     myEmailController.dispose();
     myPasswordController.dispose();
+
     passwordFocusNode.dispose();
     emailFocusNode.dispose();
 
-    formKey.currentState?.dispose();
-    shakeState.currentState?.dispose();
+    formKey1.currentState?.dispose();
+    formKey2.currentState?.dispose();
+
+    shakeState1.currentState?.dispose();
+    shakeState2.currentState?.dispose();
 
     super.dispose();
   }
 
   void onContinuePressed() {
-    final proceed = formKey.currentState?.validate();
-    if (!proceed!) {
-      shakeState.currentState?.shake();
-      Vibrate.feedback(FeedbackType.impact);
+    final email = formKey1.currentState?.validate();
+    final password = formKey2.currentState?.validate();
+
+    if (!email! && !password!) {
+      shakeState1.currentState?.shake();
+      shakeState2.currentState?.shake();
+    } else if (!email) {
+      shakeState1.currentState?.shake();
+    } else if (!password!) {
+      shakeState2.currentState?.shake();
     } else {
-      // context.router.pushNamed('path');
+      context.router.pushNamed(SetNameScreen.tag);
+      return;
     }
+    Vibrate.feedback(FeedbackType.warning);
   }
 
   @override
@@ -131,7 +148,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                addHeight(80),
+                const CustomBackButton(
+                  padding: EdgeInsets.only(left: 0, top: 25),
+                ),
+                addHeight(20),
                 const Text(
                   'Create your Account',
                   style: TextStyle(
@@ -140,7 +160,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                addHeight(14),
+                addHeight(10),
                 Container(
                   alignment: Alignment.topLeft,
                   child: const Text(
@@ -153,74 +173,72 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
                 ),
-                addHeight(62),
+                addHeight(55),
                 Form(
-                  key: formKey,
-                  child: Column(
-                    children: [
-                      ShakeWidget(
-                        key: shakeState,
-                        shakeCount: 3,
-                        shakeOffset: 6,
-                        child: CustomTextField(
-                          focusNode: emailFocusNode,
-                          textController: myEmailController,
-                          customFillColor: fillEmailColor,
-                          hintText: 'Email',
-                          prefixIcon: Icon(
-                            IconlyBold.message,
-                            color: emailColor,
+                  key: formKey1,
+                  child: ShakeWidget(
+                    key: shakeState1,
+                    shakeCount: 3,
+                    shakeOffset: 6,
+                    child: CustomTextField(
+                      focusNode: emailFocusNode,
+                      textController: myEmailController,
+                      customFillColor: fillEmailColor,
+                      hintText: 'Email',
+                      prefixIcon: Icon(
+                        IconlyBold.message,
+                        color: emailColor,
+                      ),
+                      validation: (email) =>
+                          email != null && !EmailValidator.validate(email)
+                              ? 'Enter a valid email '
+                              : null,
+                    ),
+                  ),
+                ),
+                Form(
+                  key: formKey2,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      top: 20,
+                      bottom: 20,
+                    ),
+                    child: ShakeWidget(
+                      key: shakeState2,
+                      shakeCount: 3,
+                      shakeOffset: 6,
+                      child: CustomTextField(
+                        focusNode: passwordFocusNode,
+                        textController: myPasswordController,
+                        customFillColor: fillPasswordColor,
+                        action: TextInputAction.done,
+                        hintText: 'Password',
+                        obscureText:
+                            _passwordVisible, //This will obscure text dynamically
+                        validation: (value) => value != null && value.length < 6
+                            ? 'Enter a minimum of 6 characters'
+                            : null,
+                        prefixIcon: Icon(
+                          IconlyBold.lock,
+                          color: passwordColor,
+                        ),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            // Based on passwordVisible state choose the icon
+                            _passwordVisible
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: passwordColor,
                           ),
-                          validation: (email) =>
-                              email != null && !EmailValidator.validate(email)
-                                  ? 'Enter a valid email '
-                                  : null,
+                          onPressed: () {
+                            // Update the state i.e. toggle the state of passwordVisible variable
+                            setState(() {
+                              _passwordVisible = !_passwordVisible;
+                            });
+                          },
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          top: 20,
-                          bottom: 20,
-                        ),
-                        child: ShakeWidget(
-                          key: shakeState,
-                          shakeCount: 3,
-                          shakeOffset: 6,
-                          child: CustomTextField(
-                            focusNode: passwordFocusNode,
-                            textController: myPasswordController,
-                            customFillColor: fillPasswordColor,
-                            action: TextInputAction.done,
-                            hintText: 'Password',
-                            obscureText:
-                                _passwordVisible, //This will obscure text dynamically
-                            validation: (value) =>
-                                value != null && value.length < 6
-                                    ? 'Enter a minimum of 6 characters'
-                                    : null,
-                            prefixIcon: Icon(
-                              IconlyBold.lock,
-                              color: passwordColor,
-                            ),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                // Based on passwordVisible state choose the icon
-                                _passwordVisible
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                                color: passwordColor,
-                              ),
-                              onPressed: () {
-                                // Update the state i.e. toggle the state of passwordVisible variable
-                                setState(() {
-                                  _passwordVisible = !_passwordVisible;
-                                });
-                              },
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
+                    ),
                   ),
                 ),
                 Padding(

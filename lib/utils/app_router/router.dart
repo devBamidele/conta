@@ -5,10 +5,13 @@ import 'package:conta/view/authentication/sign_up_screen.dart';
 import 'package:conta/view/home/persistent_tab.dart';
 import 'package:conta/view/home/tab_views/message_view/chat_screen.dart';
 
+import '../../view/account_setup/set_name_screen.dart';
+
 @AdaptiveAutoRouter(
   routes: [
-    AutoRoute(page: LoginScreen, initial: true),
-    AutoRoute(page: SignUpScreen, path: SignUpScreen.tag),
+    AutoRoute(page: SignUpScreen, initial: true),
+    AutoRoute(page: SetNameScreen, path: SetNameScreen.tag),
+    //AutoRoute(page: SignUpScreen, path: SignUpScreen.tag),
     AutoRoute(page: ForgotPasswordScreen, path: ForgotPasswordScreen.tag),
     AutoRoute(page: PersistentTab, path: PersistentTab.tag),
     CustomRoute(

@@ -12,9 +12,9 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:auto_route/auto_route.dart' as _i6;
+import 'package:conta/view/account_setup/set_name_screen.dart' as _i2;
 import 'package:conta/view/authentication/forgot_password_screen.dart' as _i3;
-import 'package:conta/view/authentication/login_screen.dart' as _i1;
-import 'package:conta/view/authentication/sign_up_screen.dart' as _i2;
+import 'package:conta/view/authentication/sign_up_screen.dart' as _i1;
 import 'package:conta/view/home/persistent_tab.dart' as _i4;
 import 'package:conta/view/home/tab_views/message_view/chat_screen.dart' as _i5;
 import 'package:flutter/material.dart' as _i7;
@@ -25,16 +25,16 @@ class AppRouter extends _i6.RootStackRouter {
 
   @override
   final Map<String, _i6.PageFactory> pagesMap = {
-    LoginScreenRoute.name: (routeData) {
-      return _i6.AdaptivePage<dynamic>(
-        routeData: routeData,
-        child: const _i1.LoginScreen(),
-      );
-    },
     SignUpScreenRoute.name: (routeData) {
       return _i6.AdaptivePage<dynamic>(
         routeData: routeData,
-        child: const _i2.SignUpScreen(),
+        child: const _i1.SignUpScreen(),
+      );
+    },
+    SetNameScreenRoute.name: (routeData) {
+      return _i6.AdaptivePage<dynamic>(
+        routeData: routeData,
+        child: const _i2.SetNameScreen(),
       );
     },
     ForgotPasswordScreenRoute.name: (routeData) {
@@ -64,12 +64,12 @@ class AppRouter extends _i6.RootStackRouter {
   @override
   List<_i6.RouteConfig> get routes => [
         _i6.RouteConfig(
-          LoginScreenRoute.name,
+          SignUpScreenRoute.name,
           path: '/',
         ),
         _i6.RouteConfig(
-          SignUpScreenRoute.name,
-          path: '/sign_up_screen',
+          SetNameScreenRoute.name,
+          path: '/set_name_screen',
         ),
         _i6.RouteConfig(
           ForgotPasswordScreenRoute.name,
@@ -87,27 +87,27 @@ class AppRouter extends _i6.RootStackRouter {
 }
 
 /// generated route for
-/// [_i1.LoginScreen]
-class LoginScreenRoute extends _i6.PageRouteInfo<void> {
-  const LoginScreenRoute()
-      : super(
-          LoginScreenRoute.name,
-          path: '/',
-        );
-
-  static const String name = 'LoginScreenRoute';
-}
-
-/// generated route for
-/// [_i2.SignUpScreen]
+/// [_i1.SignUpScreen]
 class SignUpScreenRoute extends _i6.PageRouteInfo<void> {
   const SignUpScreenRoute()
       : super(
           SignUpScreenRoute.name,
-          path: '/sign_up_screen',
+          path: '/',
         );
 
   static const String name = 'SignUpScreenRoute';
+}
+
+/// generated route for
+/// [_i2.SetNameScreen]
+class SetNameScreenRoute extends _i6.PageRouteInfo<void> {
+  const SetNameScreenRoute()
+      : super(
+          SetNameScreenRoute.name,
+          path: '/set_name_screen',
+        );
+
+  static const String name = 'SetNameScreenRoute';
 }
 
 /// generated route for

@@ -17,24 +17,23 @@ class AppTheme {
           letterSpacing: 0.2,
         ),
         errorStyle: TextStyle(
-          color: AppColors.unreadColor.withOpacity(0.7),
+          color: AppColors.errorBorderColor.withOpacity(0.7),
         ),
         errorBorder: inputBorder.copyWith(
-          borderSide: BorderSide(
-            color: AppColors.unreadColor.withOpacity(0.7),
-            width: 1.5,
+          borderSide: const BorderSide(
+            color: AppColors.errorBorderColor,
+            width: 1,
           ),
         ),
         focusedErrorBorder: inputBorder.copyWith(
           borderSide: BorderSide(
-            color: AppColors.unreadColor.withOpacity(0.7),
-            width: 2,
+            color: AppColors.errorBorderColor.withOpacity(0.7),
+            width: 1.5,
           ),
         ),
         enabledBorder: inputBorder.copyWith(
           borderSide: const BorderSide(
             color: Colors.transparent,
-            width: 1.5,
           ),
         ),
         focusedBorder: inputBorder.copyWith(
