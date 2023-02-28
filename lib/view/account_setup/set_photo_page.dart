@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
 import '../../res/color.dart';
@@ -10,6 +12,7 @@ import '../../res/components/custom_back_button.dart';
 import '../../res/style/component_style.dart';
 import '../../utils/widget_functions.dart';
 import '../../view_model/authentication_provider.dart';
+import '../home/persistent_tab.dart';
 
 class SetPhotoScreen extends StatefulWidget {
   const SetPhotoScreen({Key? key}) : super(key: key);
@@ -24,9 +27,61 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
   final _picker = ImagePicker();
   File? _imageFile;
 
-  void onSkipPressed() {}
+  void displayDialog() async {
+    onSkipPressed();
+    await Future.delayed(const Duration(seconds: 4));
+    navigateToHome();
+  }
 
-  // Select image from gallery
+  navigateToHome() {
+    context.router.pushNamed(PersistentTab.tag);
+  }
+
+  /// Display the loading dialog
+  void onSkipPressed() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: const Text(
+          'Getting things ready',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 24,
+            height: 1.2,
+            fontWeight: FontWeight.w600,
+            color: AppColors.primaryShadeColor,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Your account is being set up. '
+              'You will be redirected to the Home page in a few seconds..',
+              style: TextStyle(
+                fontSize: 16,
+                height: 1.4,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            addHeight(32),
+            LoadingAnimationWidget.staggeredDotsWave(
+              color: AppColors.primaryShadeColor,
+              size: 60,
+            ),
+          ],
+        ),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(20),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Select image from gallery
   Future<void> _pickImage(ImageSource source) async {
     final pickedImage = await _picker.pickImage(source: source);
     setState(() {
@@ -62,7 +117,7 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
                             Padding(
                               padding: const EdgeInsets.only(top: 24),
                               child: GestureDetector(
-                                onTap: onSkipPressed,
+                                onTap: displayDialog,
                                 child: const Text(
                                   'Skip',
                                   style: TextStyle(
