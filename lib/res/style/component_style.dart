@@ -40,4 +40,9 @@ final shadow = BoxShadow(
   spreadRadius: 1,
 );
 
+const photoContainerDecoration = BoxDecoration(
+  color: Color(0xFFF2F2F2),
+  shape: BoxShape.circle,
+);
+
 const pagePadding = EdgeInsets.symmetric(horizontal: 20);

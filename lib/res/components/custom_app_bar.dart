@@ -1,6 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:conta/utils/widget_functions.dart';
-import 'package:conta/view_model/conta_view_model.dart';
+import 'package:conta/view_model/chat_messages_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -17,7 +17,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ContaViewModel>(
+    return Consumer<ChatMessagesProvider>(
       builder: (_, data, Widget? child) {
         Chat currentChat = data.currentChat!;
         return AppBar(

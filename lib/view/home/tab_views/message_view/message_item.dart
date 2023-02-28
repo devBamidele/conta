@@ -1,7 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:conta/utils/widget_functions.dart';
 import 'package:conta/view/home/tab_views/message_view/chat_screen.dart';
-import 'package:conta/view_model/conta_view_model.dart';
+import 'package:conta/view_model/chat_messages_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -18,7 +18,7 @@ class MessageItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ContaViewModel>(builder: (_, data, Widget? child) {
+    return Consumer<ChatMessagesProvider>(builder: (_, data, Widget? child) {
       return ListTile(
         onTap: () {
           data.currentChat = message;

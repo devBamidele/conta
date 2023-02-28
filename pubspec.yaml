@@ -51,6 +51,7 @@ dependencies:
   email_validator: ^2.1.17
   flutter_svg: ^1.1.1
   flutter_vibrate: ^1.3.0
+  image_picker: ^0.8.6+3
 
 dev_dependencies:
   flutter_test:

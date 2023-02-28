@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../models/chat.dart';
-import '../../../../view_model/conta_view_model.dart';
+import '../../../../view_model/chat_messages_provider.dart';
 import 'message_item.dart';
 
 class MessageListView extends StatelessWidget {
@@ -10,7 +10,7 @@ class MessageListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ContaViewModel>(
+    return Consumer<ChatMessagesProvider>(
       builder: (_, data, Widget? child) {
         return ListView.builder(
           itemCount: data.getMessages().length,

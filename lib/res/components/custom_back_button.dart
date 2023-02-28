@@ -17,7 +17,7 @@ class CustomBackButton extends StatelessWidget {
     return IconButton(
       padding: padding,
       alignment: Alignment.centerLeft,
-      iconSize: 28,
+      iconSize: 26,
       onPressed: () => context.router.pop(),
       icon: const Icon(
         IconlyLight.arrow_left,

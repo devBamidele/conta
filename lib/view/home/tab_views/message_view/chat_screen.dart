@@ -1,5 +1,5 @@
 import 'package:conta/res/components/custom_app_bar.dart';
-import 'package:conta/view_model/conta_view_model.dart';
+import 'package:conta/view_model/chat_messages_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -12,7 +12,7 @@ class ChatScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ContaViewModel>(
+    return Consumer<ChatMessagesProvider>(
       builder: (_, data, Widget? child) {
         // Message currentChat = data.currentChat!;
         return const Scaffold(

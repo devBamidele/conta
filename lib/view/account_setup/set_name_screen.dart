@@ -10,6 +10,7 @@ import '../../res/components/custom_back_button.dart';
 import '../../res/components/custom_text_field.dart';
 import '../../res/components/shake_error.dart';
 import '../../utils/widget_functions.dart';
+import '../../view_model/authentication_provider.dart';
 
 class SetNameScreen extends StatefulWidget {
   const SetNameScreen({Key? key}) : super(key: key);
@@ -85,15 +86,15 @@ class _SetNameScreenState extends State<SetNameScreen> {
   }
 
   void onContinuePressed() {
-    final email = formKey1.currentState?.validate();
-
-    if (!email!) {
-      shakeState1.currentState?.shake();
-    } else {
+    if (formKey1.currentState!.validate()) {
+      final authProvider = AuthenticationProvider();
+      authProvider.setUsername(myNameController.text.trim());
+      print(authProvider.username);
       context.router.pushNamed(SetPhotoScreen.tag);
-      return;
+    } else {
+      shakeState1.currentState?.shake();
+      Vibrate.feedback(FeedbackType.warning);
     }
-    Vibrate.feedback(FeedbackType.warning);
   }
 
   @override
