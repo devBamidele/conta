@@ -12,6 +12,11 @@ class AppColors {
   static const Color opaqueTextColor = Color(0xFF969696);
   static Color dividerColor = Colors.grey.shade300;
   static const Color continueWithColor = Color(0xFF616161);
+  static const Color extraTextColor = Color(0xFF999999);
+
+  // 9e9e9e
+
+  //background: #616161;
 
   // For the text fields
   static const Color selectedFieldColor = Color(0xFFFD9787);

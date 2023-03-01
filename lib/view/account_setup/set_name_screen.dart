@@ -89,7 +89,7 @@ class _SetNameScreenState extends State<SetNameScreen> {
     if (formKey1.currentState!.validate()) {
       final authProvider = AuthenticationProvider();
       authProvider.setUsername(myNameController.text.trim());
-      print(authProvider.username);
+      //print(authProvider.username);
       context.router.pushNamed(SetPhotoScreen.tag);
     } else {
       shakeState1.currentState?.shake();

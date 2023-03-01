@@ -1,16 +1,18 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:conta/res/components/custom_back_button.dart';
 import 'package:conta/utils/widget_functions.dart';
 import 'package:conta/view_model/chat_messages_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../models/chat.dart';
 import '../../../../res/color.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final _iconColor = AppColors.darkIconColor;
-
   const CustomAppBar({Key? key}) : super(key: key);
+
+  final double customSize = 27;
 
   @override
   Size get preferredSize => const Size.fromHeight(65);
@@ -21,33 +23,29 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       builder: (_, data, Widget? child) {
         Chat currentChat = data.currentChat!;
         return AppBar(
-          titleSpacing: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              // Navigate back to the previous screen
-              context.router.pop();
-            },
+          titleSpacing: 10,
+          leading: const CustomBackButton(
+            padding: EdgeInsets.only(left: 15),
           ),
           actions: [
             Padding(
-              padding: const EdgeInsets.only(right: 20),
+              padding: const EdgeInsets.only(right: 15),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Image.asset(
-                    'assets/images/video_camera.png',
-                    color: _iconColor,
-                    scale: 2.5,
-                  ),
-                  addWidth(15),
-                  Transform.rotate(
-                    angle: -90 * 0.0174533, // Convert degrees to radians
-                    child: Image.asset(
-                      'assets/images/phone.png',
-                      color: _iconColor,
-                      scale: 2.2,
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: Icon(
+                      IconlyLight.video,
+                      color: AppColors.extraTextColor.withOpacity(0.8),
+                      size: customSize,
                     ),
+                  ),
+                  addWidth(20),
+                  Icon(
+                    IconlyLight.call,
+                    color: AppColors.extraTextColor.withOpacity(0.8),
+                    size: customSize,
                   ),
                 ],
               ),
@@ -56,25 +54,32 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           title: Row(
             children: [
               CircleAvatar(
-                radius: 23,
+                radius: 26,
                 backgroundImage: AssetImage(currentChat.profilePic),
               ),
-              addWidth(20),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    currentChat.sender,
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                  const Text(
-                    'Online',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
+              addWidth(15),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      currentChat.sender,
+                      overflow: TextOverflow.fade,
+                      style: const TextStyle(
+                        fontSize: 17,
+                        height: 1.2,
+                      ),
                     ),
-                  ),
-                ],
+                    addHeight(2),
+                    const Text(
+                      'Online',
+                      style: TextStyle(
+                        fontSize: 14.5,
+                        color: AppColors.extraTextColor,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

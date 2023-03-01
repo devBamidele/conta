@@ -1,3 +1,4 @@
+import 'package:conta/res/color.dart';
 import 'package:flutter/material.dart';
 
 class UnReadIdentifier extends StatelessWidget {
@@ -16,7 +17,7 @@ class UnReadIdentifier extends StatelessWidget {
       alignment: Alignment.center,
       decoration: const BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.red,
+        color: AppColors.unreadColor,
       ),
       child: Text(
         unread.toString(),

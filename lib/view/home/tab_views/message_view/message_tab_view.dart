@@ -1,6 +1,7 @@
 import 'package:conta/view/home/tab_views/message_view/message_list_view.dart';
 import 'package:conta/view/home/tab_views/message_view/story_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:iconly/iconly.dart';
 
 import '../../../../res/color.dart';
 import '../../../../res/components/custom_icon_button.dart';
@@ -55,15 +56,15 @@ class _MessageTabViewState extends State<MessageTabView>
                   CustomIconButton(
                     onTap: () {},
                     child: const Icon(
-                      Icons.search_rounded,
-                      size: 26,
-                      color: AppColors.iconColor,
+                      IconlyLight.search,
+                      size: 24,
+                      color: AppColors.opaqueTextColor,
                     ),
                   ),
                   addWidth(20),
                   Expanded(
                     child: Container(
-                      height: 45,
+                      height: 46,
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
@@ -76,8 +77,14 @@ class _MessageTabViewState extends State<MessageTabView>
                             borderRadius: BorderRadius.circular(17),
                             color: _selectedColor,
                           ),
+                          indicatorSize: TabBarIndicatorSize.tab,
+                          dividerColor: Colors.transparent,
                           labelColor: Colors.white,
-                          unselectedLabelColor: Colors.black,
+                          unselectedLabelColor: AppColors.extraTextColor,
+                          labelStyle: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14.3,
+                          ),
                           tabs: _tabs,
                         ),
                       ),
@@ -87,9 +94,9 @@ class _MessageTabViewState extends State<MessageTabView>
                   CustomIconButton(
                     onTap: () {},
                     child: const Icon(
-                      Icons.edit,
+                      IconlyLight.edit,
                       size: 24,
-                      color: AppColors.iconColor,
+                      color: AppColors.opaqueTextColor,
                     ),
                   ),
                 ],

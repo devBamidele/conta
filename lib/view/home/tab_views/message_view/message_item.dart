@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../models/chat.dart';
+import '../../../../res/color.dart';
 import '../../../../res/components/unread_identifier.dart';
 
 class MessageItem extends StatelessWidget {
@@ -25,15 +26,18 @@ class MessageItem extends StatelessWidget {
           context.router.pushNamed(ChatScreen.tag);
         },
         leading: CircleAvatar(
-          radius: 23,
+          radius: 30,
           backgroundImage: AssetImage(message.profilePic),
         ),
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text(message.timeStamp),
-            addHeight(4),
+            Text(
+              message.timeStamp,
+              style: const TextStyle(color: AppColors.extraTextColor),
+            ),
+            addHeight(6),
             message.read
                 ? const Icon(
                     Icons.done_all_rounded,
@@ -47,8 +51,19 @@ class MessageItem extends StatelessWidget {
         ),
         title: Text(
           message.sender,
+          style: const TextStyle(
+            fontSize: 18,
+            height: 1.2,
+          ),
         ),
-        subtitle: Text(message.message),
+        contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 18),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 2),
+          child: Text(
+            message.message,
+            style: const TextStyle(color: AppColors.extraTextColor),
+          ),
+        ),
       );
     });
   }

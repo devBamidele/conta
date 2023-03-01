@@ -4,6 +4,7 @@ import 'package:conta/view/home/tab_views/message_view/message_tab_view.dart';
 import 'package:conta/view/home/tab_views/profile_screen.dart';
 import 'package:conta/view/home/tab_views/video_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:iconly/iconly.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 class PersistentTab extends StatefulWidget {
@@ -37,28 +38,28 @@ class _PersistentTabState extends State<PersistentTab> {
           inactiveColorPrimary: inactiveColor,
           iconSize: customSize,
           title: ('Message'),
-          icon: const Icon(Icons.message_rounded),
+          icon: const Icon(IconlyLight.chat),
         ),
         PersistentBottomNavBarItem(
           activeColorPrimary: activeColor,
           inactiveColorPrimary: inactiveColor,
           iconSize: customSize,
           title: ('Video'),
-          icon: const Icon(Icons.camera_alt_rounded),
+          icon: const Icon(IconlyLight.video),
         ),
         PersistentBottomNavBarItem(
           activeColorPrimary: activeColor,
           inactiveColorPrimary: inactiveColor,
           iconSize: customSize,
           title: ('Call'),
-          icon: const Icon(Icons.call),
+          icon: const Icon(IconlyLight.call),
         ),
         PersistentBottomNavBarItem(
           activeColorPrimary: activeColor,
           inactiveColorPrimary: inactiveColor,
           iconSize: customSize,
           title: ('Profile'),
-          icon: const Icon(Icons.account_circle_outlined),
+          icon: const Icon(IconlyLight.profile),
         ),
       ];
 

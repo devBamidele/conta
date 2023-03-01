@@ -5,11 +5,11 @@ import 'package:iconly/iconly.dart';
 class CustomBackButton extends StatelessWidget {
   const CustomBackButton({
     Key? key,
-    required this.padding,
+    this.padding,
     this.size = 28,
   }) : super(key: key);
 
-  final EdgeInsetsGeometry padding;
+  final EdgeInsetsGeometry? padding;
   final double size;
 
   @override
