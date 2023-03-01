@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:conta/res/style/component_style.dart';
 import 'package:conta/view/account_setup/set_photo_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:iconly/iconly.dart';
@@ -13,8 +14,12 @@ import '../../utils/widget_functions.dart';
 import '../../view_model/authentication_provider.dart';
 
 class SetNameScreen extends StatefulWidget {
-  const SetNameScreen({Key? key}) : super(key: key);
+  const SetNameScreen({
+    Key? key,
+    required this.credential,
+  }) : super(key: key);
 
+  final UserCredential credential;
   static const tag = '/set_name_screen';
 
   @override
@@ -88,13 +93,21 @@ class _SetNameScreenState extends State<SetNameScreen> {
   void onContinuePressed() {
     if (formKey1.currentState!.validate()) {
       final authProvider = AuthenticationProvider();
-      authProvider.setUsername(myNameController.text.trim());
+      final name = myNameController.text.trim();
+
+      authProvider.setUsername(name);
+      updateName(name);
+
       //print(authProvider.username);
       context.router.pushNamed(SetPhotoScreen.tag);
     } else {
       shakeState1.currentState?.shake();
-      Vibrate.feedback(FeedbackType.warning);
+      Vibrate.feedback(FeedbackType.heavy);
     }
+  }
+
+  updateName(String? name) async {
+    await widget.credential.user!.updateDisplayName(name);
   }
 
   @override

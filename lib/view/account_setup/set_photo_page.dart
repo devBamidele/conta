@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:auto_route/auto_route.dart';
+import 'package:conta/utils/app_router/router.gr.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 import 'package:image_picker/image_picker.dart';
@@ -12,7 +14,6 @@ import '../../res/components/custom_back_button.dart';
 import '../../res/style/component_style.dart';
 import '../../utils/widget_functions.dart';
 import '../../view_model/authentication_provider.dart';
-import '../home/persistent_tab.dart';
 
 class SetPhotoScreen extends StatefulWidget {
   const SetPhotoScreen({Key? key}) : super(key: key);
@@ -24,8 +25,11 @@ class SetPhotoScreen extends StatefulWidget {
 }
 
 class _SetPhotoScreenState extends State<SetPhotoScreen> {
+  User? user = FirebaseAuth.instance.currentUser;
+
   final _picker = ImagePicker();
   File? _imageFile;
+  String? displayName;
 
   void displayDialog() async {
     onSkipPressed();
@@ -33,8 +37,20 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
     navigateToHome();
   }
 
-  navigateToHome() {
-    context.router.pushNamed(PersistentTab.tag);
+  navigateToHome() => context.router.replaceAll(
+        [
+          const PersistentTabRoute(),
+        ],
+      );
+
+  updateUsername() {
+    displayName = user?.displayName ?? "No display name";
+  }
+
+  @override
+  void initState() {
+    updateUsername();
+    super.initState();
   }
 
   /// Display the loading dialog
@@ -81,6 +97,14 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
     );
   }
 
+  void buttonPressed() {
+    if (_imageFile == null) {
+      _pickImage(ImageSource.gallery);
+    } else {
+      displayDialog();
+    }
+  }
+
   /// Select image from gallery
   Future<void> _pickImage(ImageSource source) async {
     final pickedImage = await _picker.pickImage(source: source);
@@ -94,7 +118,7 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
     //final authProvider = context.watch<AuthenticationProvider>();
     // print(authProvider.username.toString());
     return Consumer<AuthenticationProvider>(
-      builder: (context, authProvider, _) {
+      builder: (_, authProvider, Widget? child) {
         return GestureDetector(
           onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
           child: Scaffold(
@@ -169,10 +193,10 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
                           ),
                         ),
                         addHeight(36),
-                        const Text(
-                          'Bamidele Ajewole',
+                        Text(
+                          displayName!,
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 26,
                             fontWeight: FontWeight.w600,
                           ),
@@ -189,7 +213,7 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
                         ),
                         child: ElevatedButton(
                           style: elevatedButton,
-                          onPressed: () => _pickImage(ImageSource.gallery),
+                          onPressed: () => buttonPressed(),
                           child: Text(
                             _imageFile == null ? 'Add a photo' : 'Continue',
                             style: const TextStyle(

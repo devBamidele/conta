@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class AppColors {
   static const Color backGroundColor = Color(0xFFF5F5F5);
   static const Color inactiveColor = Color(0xFFD6D6D6);
-  static const Color iconColor = Color(0xFFACACAC); // background: #FAFAFA;
+  static const Color iconColor = Color(0xFFACACAC);
   static const Color inputBackGround = Color(0xFFFAFAFA);
   static const Color hintTextColor = Color(0xFF9E9E9E);
   static const Color darkIconColor = Color(0xFF858585);
@@ -13,10 +13,6 @@ class AppColors {
   static Color dividerColor = Colors.grey.shade300;
   static const Color continueWithColor = Color(0xFF616161);
   static const Color extraTextColor = Color(0xFF999999);
-
-  // 9e9e9e
-
-  //background: #616161;
 
   // For the text fields
   static const Color selectedFieldColor = Color(0xFFFD9787);

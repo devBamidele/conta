@@ -19,52 +19,55 @@ class MessageItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ChatMessagesProvider>(builder: (_, data, Widget? child) {
-      return ListTile(
-        onTap: () {
-          data.currentChat = message;
-          context.router.pushNamed(ChatScreen.tag);
-        },
-        leading: CircleAvatar(
-          radius: 30,
-          backgroundImage: AssetImage(message.profilePic),
-        ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              message.timeStamp,
+    return Consumer<ChatMessagesProvider>(
+      builder: (_, data, Widget? child) {
+        return ListTile(
+          onTap: () {
+            data.currentChat = message;
+            context.router.pushNamed(ChatScreen.tag);
+          },
+          leading: CircleAvatar(
+            radius: 30,
+            backgroundImage: AssetImage(message.profilePic),
+          ),
+          trailing: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                message.timeStamp,
+                style: const TextStyle(color: AppColors.extraTextColor),
+              ),
+              addHeight(6),
+              message.read
+                  ? const Icon(
+                      Icons.done_all_rounded,
+                      color: Colors.greenAccent,
+                      size: 20,
+                    )
+                  : UnReadIdentifier(
+                      unread: message.id!,
+                    ),
+            ],
+          ),
+          title: Text(
+            message.sender,
+            style: const TextStyle(
+              fontSize: 18,
+              height: 1.2,
+            ),
+          ),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 5, horizontal: 18),
+          subtitle: Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: Text(
+              message.message,
               style: const TextStyle(color: AppColors.extraTextColor),
             ),
-            addHeight(6),
-            message.read
-                ? const Icon(
-                    Icons.done_all_rounded,
-                    color: Colors.greenAccent,
-                    size: 20,
-                  )
-                : UnReadIdentifier(
-                    unread: message.id!,
-                  ),
-          ],
-        ),
-        title: Text(
-          message.sender,
-          style: const TextStyle(
-            fontSize: 18,
-            height: 1.2,
           ),
-        ),
-        contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 18),
-        subtitle: Padding(
-          padding: const EdgeInsets.only(top: 2),
-          child: Text(
-            message.message,
-            style: const TextStyle(color: AppColors.extraTextColor),
-          ),
-        ),
-      );
-    });
+        );
+      },
+    );
   }
 }

@@ -1,4 +1,3 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:conta/res/components/custom_back_button.dart';
 import 'package:conta/utils/widget_functions.dart';
 import 'package:conta/view_model/chat_messages_provider.dart';
