@@ -1,25 +1,23 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:conta/res/style/component_style.dart';
 import 'package:conta/view/account_setup/set_photo_page.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:iconly/iconly.dart';
+import 'package:provider/provider.dart';
 
 import '../../res/color.dart';
 import '../../res/components/custom_back_button.dart';
 import '../../res/components/custom_text_field.dart';
 import '../../res/components/shake_error.dart';
+import '../../utils/app_utils.dart';
 import '../../utils/widget_functions.dart';
 import '../../view_model/authentication_provider.dart';
 
 class SetNameScreen extends StatefulWidget {
   const SetNameScreen({
     Key? key,
-    required this.credential,
   }) : super(key: key);
 
-  final UserCredential credential;
   static const tag = '/set_name_screen';
 
   @override
@@ -82,9 +80,9 @@ class _SetNameScreenState extends State<SetNameScreen> {
   String? validateUsername(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter your username';
-    } else if (!RegExp(r'^[a-zA-Z0-9]+$').hasMatch(value)) {
-      return 'Username can only contain letters and numbers';
-    } else if (value.length < 4 || value.length > 20) {
+    } else if (!RegExp(r'^[a-zA-Z0-9\s]+$').hasMatch(value)) {
+      return 'Username can only contain letters, numbers, and spaces';
+    } else if (value.trim().length < 4 || value.trim().length > 20) {
       return 'Username must be between 4 and 20 characters long';
     }
     return null;
@@ -92,22 +90,19 @@ class _SetNameScreenState extends State<SetNameScreen> {
 
   void onContinuePressed() {
     if (formKey1.currentState!.validate()) {
-      final authProvider = AuthenticationProvider();
-      final name = myNameController.text.trim();
-
-      authProvider.setUsername(name);
-      updateName(name);
-
-      //print(authProvider.username);
-      context.router.pushNamed(SetPhotoScreen.tag);
+      setValues();
     } else {
       shakeState1.currentState?.shake();
-      Vibrate.feedback(FeedbackType.heavy);
+      AppUtils.vibrate;
     }
   }
 
-  updateName(String? name) async {
-    await widget.credential.user!.updateDisplayName(name);
+  void setValues() {
+    final name = myNameController.text.trim();
+    Provider.of<AuthenticationProvider>(context, listen: false)
+        .setUsername(name);
+
+    context.router.pushNamed(SetPhotoScreen.tag);
   }
 
   @override

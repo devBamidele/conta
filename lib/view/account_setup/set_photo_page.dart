@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:auto_route/auto_route.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:conta/models/new_user_data.dart';
 import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +14,7 @@ import 'package:provider/provider.dart';
 import '../../res/color.dart';
 import '../../res/components/custom_back_button.dart';
 import '../../res/style/component_style.dart';
+import '../../utils/app_utils.dart';
 import '../../utils/widget_functions.dart';
 import '../../view_model/authentication_provider.dart';
 
@@ -25,42 +28,71 @@ class SetPhotoScreen extends StatefulWidget {
 }
 
 class _SetPhotoScreenState extends State<SetPhotoScreen> {
-  User? user = FirebaseAuth.instance.currentUser;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   final _picker = ImagePicker();
   File? _imageFile;
-  String? displayName;
 
-  void displayDialog() async {
-    onSkipPressed();
-    await Future.delayed(const Duration(seconds: 4));
-    navigateToHome();
+  void proceed() async {
+    final data = Provider.of<AuthenticationProvider>(context, listen: false)
+        .getUserData();
+    createUser(data);
   }
 
   navigateToHome() => context.router.replaceAll(
-        [
-          const PersistentTabRoute(),
-        ],
+        [const PersistentTabRoute()],
       );
 
-  updateUsername() {
-    displayName = user?.displayName ?? "No display name";
+  Future<void> createUser(UserData data) async {
+    final name = data.username;
+    final email = data.email;
+    final password = data.password;
+
+    loading(email);
+
+    try {
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      // Store additional user data to Firestore
+      await _firestore.collection('users').doc(userCredential.user!.uid).set({
+        'name': name,
+        'email': email,
+      });
+
+      // Send email verification to new user
+      await userCredential.user!.sendEmailVerification();
+
+      //navigateToHome();
+    } catch (e) {
+      // Handle exceptions
+      AppUtils.showSnackbar(
+          'An error occurred while creating the account. Please try again later.');
+    }
   }
 
-  @override
-  void initState() {
-    updateUsername();
-    super.initState();
+  String shortenEmail(String email) {
+    String start = email.substring(0, 3);
+    String end = email.substring(email.indexOf('@') - 1);
+    String middle = '';
+    for (int i = 0; i < email.indexOf('@') - 4; i++) {
+      middle += '*';
+    }
+    return '$start$middle$end';
   }
 
   /// Display the loading dialog
-  void onSkipPressed() async {
+  loading(String email) async {
     showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(
         backgroundColor: Colors.white,
         title: const Text(
-          'Getting things ready',
+          'Verify your Email',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 24,
@@ -72,10 +104,11 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              'Your account is being set up. '
-              'You will be redirected to the Home page in a few seconds..',
-              style: TextStyle(
+            Text(
+              ''
+              'A link has been sent to ${shortenEmail(email)}'
+              'You will be redirected to the Login page in a few seconds..',
+              style: const TextStyle(
                 fontSize: 16,
                 height: 1.4,
               ),
@@ -101,7 +134,7 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
     if (_imageFile == null) {
       _pickImage(ImageSource.gallery);
     } else {
-      displayDialog();
+      proceed();
     }
   }
 
@@ -115,8 +148,6 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    //final authProvider = context.watch<AuthenticationProvider>();
-    // print(authProvider.username.toString());
     return Consumer<AuthenticationProvider>(
       builder: (_, authProvider, Widget? child) {
         return GestureDetector(
@@ -141,7 +172,7 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
                             Padding(
                               padding: const EdgeInsets.only(top: 24),
                               child: GestureDetector(
-                                onTap: displayDialog,
+                                onTap: proceed,
                                 child: const Text(
                                   'Skip',
                                   style: TextStyle(
@@ -176,9 +207,9 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
                         ),
                         addHeight(55),
                         GestureDetector(
-                          onTap: () => _pickImage(ImageSource.gallery),
+                          onTap: () => _pickImage(ImageSource.camera),
                           child: CircleAvatar(
-                            radius: 80,
+                            radius: 90,
                             backgroundColor: photoContainerDecoration.color,
                             backgroundImage: _imageFile != null
                                 ? FileImage(_imageFile!)
@@ -194,7 +225,7 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
                         ),
                         addHeight(36),
                         Text(
-                          displayName!,
+                          authProvider.username ?? 'No name set',
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                             fontSize: 26,
@@ -204,7 +235,7 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
                       ],
                     ),
                     Positioned(
-                      bottom: 50,
+                      bottom: 40,
                       left: 0,
                       right: 0,
                       child: Container(

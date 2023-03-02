@@ -1,8 +1,10 @@
 import 'package:conta/res/color.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_vibrate/flutter_vibrate.dart';
 
 class AppUtils {
   static final messengerKey = GlobalKey<ScaffoldMessengerState>();
+  static final vibrate =  Vibrate.feedback(FeedbackType.warning);
   static showSnackbar(
     String? text, {
     Duration delay = const Duration(milliseconds: 2000),

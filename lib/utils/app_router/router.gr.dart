@@ -19,7 +19,6 @@ import 'package:conta/view/authentication/login_screen.dart' as _i5;
 import 'package:conta/view/authentication/sign_up_screen.dart' as _i1;
 import 'package:conta/view/home/persistent_tab.dart' as _i6;
 import 'package:conta/view/home/tab_views/message_view/chat_screen.dart' as _i7;
-import 'package:firebase_auth/firebase_auth.dart' as _i10;
 import 'package:flutter/material.dart' as _i9;
 
 class AppRouter extends _i8.RootStackRouter {
@@ -35,13 +34,9 @@ class AppRouter extends _i8.RootStackRouter {
       );
     },
     SetNameScreenRoute.name: (routeData) {
-      final args = routeData.argsAs<SetNameScreenRouteArgs>();
       return _i8.AdaptivePage<dynamic>(
         routeData: routeData,
-        child: _i2.SetNameScreen(
-          key: args.key,
-          credential: args.credential,
-        ),
+        child: const _i2.SetNameScreen(),
       );
     },
     SetPhotoScreenRoute.name: (routeData) {
@@ -127,36 +122,14 @@ class SignUpScreenRoute extends _i8.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i2.SetNameScreen]
-class SetNameScreenRoute extends _i8.PageRouteInfo<SetNameScreenRouteArgs> {
-  SetNameScreenRoute({
-    _i9.Key? key,
-    required _i10.UserCredential credential,
-  }) : super(
+class SetNameScreenRoute extends _i8.PageRouteInfo<void> {
+  const SetNameScreenRoute()
+      : super(
           SetNameScreenRoute.name,
           path: '/set_name_screen',
-          args: SetNameScreenRouteArgs(
-            key: key,
-            credential: credential,
-          ),
         );
 
   static const String name = 'SetNameScreenRoute';
-}
-
-class SetNameScreenRouteArgs {
-  const SetNameScreenRouteArgs({
-    this.key,
-    required this.credential,
-  });
-
-  final _i9.Key? key;
-
-  final _i10.UserCredential credential;
-
-  @override
-  String toString() {
-    return 'SetNameScreenRouteArgs{key: $key, credential: $credential}';
-  }
 }
 
 /// generated route for

@@ -2,15 +2,16 @@ import 'package:auto_route/auto_route.dart';
 import 'package:conta/res/color.dart';
 import 'package:conta/res/components/shake_error.dart';
 import 'package:conta/res/style/component_style.dart';
-import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:conta/utils/widget_functions.dart';
+import 'package:conta/view/account_setup/set_name_screen.dart';
+import 'package:conta/view_model/authentication_provider.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:iconly/iconly.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:provider/provider.dart';
 
 import '../../res/components/custom_back_button.dart';
 import '../../res/components/custom_check_box.dart';
@@ -134,13 +135,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
     } else if (!password!) {
       shakeState2.currentState?.shake();
     } else {
-      createAccount(context);
+      checkEmailAndPassword();
       return;
     }
-    Vibrate.feedback(FeedbackType.warning);
+    AppUtils.vibrate;
   }
 
-  Future createAccount(BuildContext context) async {
+  Future<void> checkEmailAndPassword() async {
+    final String email = myEmailController.text.trim();
+    final String password = myPasswordController.text;
+
     showDialog(
       context: context,
       builder: (context) => Center(
@@ -152,37 +156,31 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
 
     try {
-      final UserCredential userCredential =
-          await auth.createUserWithEmailAndPassword(
-        email: myEmailController.text.trim(),
-        password: myPasswordController.text,
-      );
+      // Check if the email is already registered with Firebase
+      final signInMethods =
+          await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
 
-      this.context.router.push(SetNameScreenRoute(
-            credential: userCredential,
-          ));
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        // Handle weak password error
-        AppUtils.showSnackbar('The password provided is too weak.');
-      } else if (e.code == 'email-already-in-use') {
-        // Handle email already exists error
+      if (signInMethods.isNotEmpty) {
+        // Email is already registered with Firebase
         AppUtils.showSnackbar('An account already exists for that email.');
-      } else if (e.code == 'invalid-email') {
-        // Handle invalid email error
-        AppUtils.showSnackbar('The email address is invalid.');
       } else {
-        // Handle other FirebaseAuthException errors
-        AppUtils.showSnackbar(
-            'An error occurred while creating account. Please try again later.');
+        setValues(email, password);
       }
-    } on Exception {
-      // Handle other exceptions
+    } catch (e) {
+      // Handle exceptions
       AppUtils.showSnackbar(
-          'An error occurred while creating account. Please try again later.');
+          'An error occurred while checking email and password. Please try again later.');
     } finally {
       context.router.pop();
     }
+  }
+
+  // Save the values to the Authentication Provider amd proceed
+  void setValues(String email, String password) {
+    Provider.of<AuthenticationProvider>(context, listen: false)
+        .setEmailAndPassword(email, password);
+
+    context.router.pushNamed(SetNameScreen.tag);
   }
 
   @override
