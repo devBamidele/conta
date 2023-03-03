@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:conta/view/account_setup/verify_account_screen.dart';
 import 'package:conta/view/authentication/forgot_password_screen.dart';
 import 'package:conta/view/authentication/login_screen.dart';
 import 'package:conta/view/authentication/sign_up_screen.dart';
@@ -13,6 +14,7 @@ import '../../view/account_setup/set_photo_page.dart';
     AutoRoute(page: SignUpScreen, initial: true),
     AutoRoute(page: SetNameScreen, path: SetNameScreen.tag),
     AutoRoute(page: SetPhotoScreen, path: SetPhotoScreen.tag),
+    AutoRoute(page: VerifyAccountScreen, path: VerifyAccountScreen.tag),
 
     // Authentication screens
     //AutoRoute(page: SignUpScreen, path: SignUpScreen.tag),

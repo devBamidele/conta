@@ -11,7 +11,6 @@ class AuthenticationProvider extends ChangeNotifier {
 
   /// Holds the username
   String? username;
-
   String? email;
   String? password;
 
@@ -25,6 +24,8 @@ class AuthenticationProvider extends ChangeNotifier {
     this.password = password;
     notifyListeners();
   }
+
+  getUserCredentials() {}
 
   UserData getUserData() {
     return UserData(

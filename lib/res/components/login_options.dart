@@ -18,7 +18,7 @@ class LoginOptions extends StatelessWidget {
   Widget build(BuildContext context) {
     return OutlinedButton(
       onPressed: onTap,
-      style: outlinedButton,
+      style: loginOptionsStyle,
       child: Transform.scale(
         scale: scale,
         child: SvgPicture.asset(path),

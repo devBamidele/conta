@@ -3,15 +3,18 @@ import 'package:conta/res/components/custom_back_button.dart';
 import 'package:conta/res/components/custom_check_box.dart';
 import 'package:conta/res/components/login_options.dart';
 import 'package:conta/res/style/component_style.dart';
+import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:conta/view/authentication/forgot_password_screen.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:iconly/iconly.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import '../../res/color.dart';
 import '../../res/components/custom_text_field.dart';
 import '../../res/components/shake_error.dart';
+import '../../utils/app_utils.dart';
 import '../../utils/widget_functions.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -24,6 +27,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   final myEmailController = TextEditingController();
   final myPasswordController = TextEditingController();
 
@@ -129,11 +134,47 @@ class _LoginScreenState extends State<LoginScreen> {
     } else if (!password!) {
       shakeState2.currentState?.shake();
     } else {
-      //context.router.pushNamed('path');
+      login();
       return;
     }
-    Vibrate.feedback(FeedbackType.warning);
+    AppUtils.vibrate;
   }
+
+  Future<void> login() async {
+    final String email = myEmailController.text.trim();
+    final String password = myPasswordController.text;
+
+    showDialog(
+      context: context,
+      builder: (context) => Center(
+        child: LoadingAnimationWidget.staggeredDotsWave(
+          color: AppColors.primaryShadeColor,
+          size: 60,
+        ),
+      ),
+    );
+
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      // User successfully signed in
+      User? user = userCredential.user;
+      // Do something with the logged in user
+      navigateToHome();
+    } on FirebaseAuthException {
+      AppUtils.showSnackbar('Invalid email or password');
+    } catch (e) {
+      // Handle exceptions
+      AppUtils.showSnackbar(
+          'An error occurred while checking email and password. Please try again later.');
+    } finally {
+      context.router.pop();
+    }
+  }
+
+  navigateToHome() => context.router.pushAll([const PersistentTabRoute()]);
 
   @override
   Widget build(BuildContext context) {

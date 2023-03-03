@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:auto_route/auto_route.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conta/models/new_user_data.dart';
 import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -29,7 +28,6 @@ class SetPhotoScreen extends StatefulWidget {
 
 class _SetPhotoScreenState extends State<SetPhotoScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   final _picker = ImagePicker();
   File? _imageFile;
@@ -40,16 +38,20 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
     createUser(data);
   }
 
-  navigateToHome() => context.router.replaceAll(
-        [const PersistentTabRoute()],
-      );
-
   Future<void> createUser(UserData data) async {
     final name = data.username;
     final email = data.email;
     final password = data.password;
 
-    loading(email);
+    showDialog(
+      context: context,
+      builder: (context) => Center(
+        child: LoadingAnimationWidget.staggeredDotsWave(
+          color: AppColors.primaryShadeColor,
+          size: 60,
+        ),
+      ),
+    );
 
     try {
       UserCredential userCredential =
@@ -57,78 +59,25 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
         email: email,
         password: password,
       );
-
-      // Store additional user data to Firestore
-      await _firestore.collection('users').doc(userCredential.user!.uid).set({
-        'name': name,
-        'email': email,
-      });
+      // Update the display name
+      await userCredential.user!.updateDisplayName(name);
 
       // Send email verification to new user
       await userCredential.user!.sendEmailVerification();
 
-      //navigateToHome();
+      verifyAccount(userCredential);
     } catch (e) {
       // Handle exceptions
       AppUtils.showSnackbar(
           'An error occurred while creating the account. Please try again later.');
+    } finally {
+      context.router.pop();
     }
   }
 
-  String shortenEmail(String email) {
-    String start = email.substring(0, 3);
-    String end = email.substring(email.indexOf('@') - 1);
-    String middle = '';
-    for (int i = 0; i < email.indexOf('@') - 4; i++) {
-      middle += '*';
-    }
-    return '$start$middle$end';
-  }
-
-  /// Display the loading dialog
-  loading(String email) async {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        backgroundColor: Colors.white,
-        title: const Text(
-          'Verify your Email',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 24,
-            height: 1.2,
-            fontWeight: FontWeight.w600,
-            color: AppColors.primaryShadeColor,
-          ),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              ''
-              'A link has been sent to ${shortenEmail(email)}'
-              'You will be redirected to the Login page in a few seconds..',
-              style: const TextStyle(
-                fontSize: 16,
-                height: 1.4,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            addHeight(32),
-            LoadingAnimationWidget.staggeredDotsWave(
-              color: AppColors.primaryShadeColor,
-              size: 60,
-            ),
-          ],
-        ),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(20),
-          ),
-        ),
-      ),
-    );
-  }
+  verifyAccount(UserCredential credential) => context.router.replaceAll(
+        [VerifyAccountScreenRoute(userCredential: credential)],
+      );
 
   void buttonPressed() {
     if (_imageFile == null) {

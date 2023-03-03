@@ -52,8 +52,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool _isPasswordEmpty = true;
   bool _isEmailEmpty = true;
 
-  final auth = FirebaseAuth.instance;
-
   @override
   void initState() {
     super.initState();

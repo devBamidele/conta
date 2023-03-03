@@ -21,7 +21,7 @@ final elevatedButton = ElevatedButton.styleFrom(
 );
 
 /// The decoration for the outlined button
-final outlinedButton = OutlinedButton.styleFrom(
+final loginOptionsStyle = OutlinedButton.styleFrom(
   side: BorderSide(
     color: AppColors.dividerColor,
   ),
@@ -32,6 +32,44 @@ final outlinedButton = OutlinedButton.styleFrom(
     ),
   ),
 );
+
+/// The decoration for the Resend Button
+ButtonStyle resendButtonStyle({
+  Color? foregroundColor,
+  Color? sideColor,
+  Color? backgroundColor,
+  double? elevation,
+  Size? minimumSize,
+  BorderRadiusGeometry? borderRadius,
+}) {
+  return OutlinedButton.styleFrom(
+    foregroundColor: foregroundColor ?? AppColors.dividerColor,
+    side: BorderSide(
+      color: sideColor ?? AppColors.primaryColor,
+    ),
+    backgroundColor: backgroundColor ?? Colors.white,
+    elevation: elevation ?? 0,
+    minimumSize: minimumSize ?? const Size(double.infinity, 58),
+    shape: RoundedRectangleBorder(
+      borderRadius: borderRadius ?? BorderRadius.circular(28),
+    ),
+  );
+}
+
+ButtonStyle getOutlinedButtonStyle(Color backgroundColor) {
+  return OutlinedButton.styleFrom(
+    backgroundColor: backgroundColor,
+    side: const BorderSide(
+      color: Colors.blue,
+    ),
+    minimumSize: const Size(double.infinity, 58),
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(
+        Radius.circular(28),
+      ),
+    ),
+  );
+}
 
 final shadow = BoxShadow(
   color: AppColors.primaryColor.withOpacity(0.7),
