@@ -23,7 +23,6 @@ class VerifyAccountScreen extends StatefulWidget {
 
 class _VerifyAccountScreenState extends State<VerifyAccountScreen> {
   final _countdownTimerKey = GlobalKey<CountdownTimerState>();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   late String email;
 
@@ -68,19 +67,9 @@ class _VerifyAccountScreenState extends State<VerifyAccountScreen> {
     await widget.userCredential.user!.sendEmailVerification();
   }
 
-  void listenToAuthStateChanges() {
-    _auth.authStateChanges().listen((User? user) {
-      if (user != null && user.emailVerified) {
-        // email verification is completed, execute your function here
-        navigateToHome();
-      }
-    });
-  }
-
   @override
   void initState() {
     super.initState();
-    listenToAuthStateChanges();
     setMail();
   }
 

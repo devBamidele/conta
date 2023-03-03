@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:auto_route/auto_route.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conta/models/new_user_data.dart';
 import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -28,6 +29,7 @@ class SetPhotoScreen extends StatefulWidget {
 
 class _SetPhotoScreenState extends State<SetPhotoScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   final _picker = ImagePicker();
   File? _imageFile;
@@ -62,14 +64,19 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
       // Update the display name
       await userCredential.user!.updateDisplayName(name);
 
+      await _firestore.collection('users').doc(userCredential.user!.uid).set({
+        'name': name,
+        'email': email,
+      });
+
       // Send email verification to new user
       await userCredential.user!.sendEmailVerification();
 
       verifyAccount(userCredential);
     } catch (e) {
       // Handle exceptions
-      AppUtils.showSnackbar(
-          'An error occurred while creating the account. Please try again later.');
+      AppUtils.showSnackbar('An error occurred while creating the account. '
+          'Please try again later.');
     } finally {
       context.router.pop();
     }

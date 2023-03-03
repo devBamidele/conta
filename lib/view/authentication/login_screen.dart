@@ -155,18 +155,26 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     try {
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      // User successfully signed in
+
       User? user = userCredential.user;
-      // Do something with the logged in user
-      navigateToHome();
+
+      if (user != null && user.emailVerified) {
+        // User is authenticated and email is verified
+        navigateToHome();
+      } else {
+        // Email is not verified
+        AppUtils.showSnackbar('Please verify your email before logging in');
+      }
     } on FirebaseAuthException {
+      // Handle login errors
       AppUtils.showSnackbar('Invalid email or password');
     } catch (e) {
-      // Handle exceptions
+      // Handle other errors
       AppUtils.showSnackbar(
           'An error occurred while checking email and password. Please try again later.');
     } finally {

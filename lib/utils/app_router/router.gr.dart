@@ -16,8 +16,8 @@ import 'package:conta/view/account_setup/set_name_screen.dart' as _i2;
 import 'package:conta/view/account_setup/set_photo_page.dart' as _i3;
 import 'package:conta/view/account_setup/verify_account_screen.dart' as _i4;
 import 'package:conta/view/authentication/forgot_password_screen.dart' as _i5;
-import 'package:conta/view/authentication/login_screen.dart' as _i6;
-import 'package:conta/view/authentication/sign_up_screen.dart' as _i1;
+import 'package:conta/view/authentication/login_screen.dart' as _i1;
+import 'package:conta/view/authentication/sign_up_screen.dart' as _i6;
 import 'package:conta/view/home/persistent_tab.dart' as _i7;
 import 'package:conta/view/home/tab_views/message_view/chat_screen.dart' as _i8;
 import 'package:firebase_auth/firebase_auth.dart' as _i11;
@@ -29,10 +29,10 @@ class AppRouter extends _i9.RootStackRouter {
 
   @override
   final Map<String, _i9.PageFactory> pagesMap = {
-    SignUpScreenRoute.name: (routeData) {
+    LoginScreenRoute.name: (routeData) {
       return _i9.AdaptivePage<dynamic>(
         routeData: routeData,
-        child: const _i1.SignUpScreen(),
+        child: const _i1.LoginScreen(),
       );
     },
     SetNameScreenRoute.name: (routeData) {
@@ -63,10 +63,10 @@ class AppRouter extends _i9.RootStackRouter {
         child: const _i5.ForgotPasswordScreen(),
       );
     },
-    LoginScreenRoute.name: (routeData) {
+    SignUpScreenRoute.name: (routeData) {
       return _i9.AdaptivePage<dynamic>(
         routeData: routeData,
-        child: const _i6.LoginScreen(),
+        child: const _i6.SignUpScreen(),
       );
     },
     PersistentTabRoute.name: (routeData) {
@@ -90,7 +90,7 @@ class AppRouter extends _i9.RootStackRouter {
   @override
   List<_i9.RouteConfig> get routes => [
         _i9.RouteConfig(
-          SignUpScreenRoute.name,
+          LoginScreenRoute.name,
           path: '/',
         ),
         _i9.RouteConfig(
@@ -110,7 +110,7 @@ class AppRouter extends _i9.RootStackRouter {
           path: '/forgot_password_screen',
         ),
         _i9.RouteConfig(
-          LoginScreenRoute.name,
+          SignUpScreenRoute.name,
           path: '/login_screen',
         ),
         _i9.RouteConfig(
@@ -125,15 +125,15 @@ class AppRouter extends _i9.RootStackRouter {
 }
 
 /// generated route for
-/// [_i1.SignUpScreen]
-class SignUpScreenRoute extends _i9.PageRouteInfo<void> {
-  const SignUpScreenRoute()
+/// [_i1.LoginScreen]
+class LoginScreenRoute extends _i9.PageRouteInfo<void> {
+  const LoginScreenRoute()
       : super(
-          SignUpScreenRoute.name,
+          LoginScreenRoute.name,
           path: '/',
         );
 
-  static const String name = 'SignUpScreenRoute';
+  static const String name = 'LoginScreenRoute';
 }
 
 /// generated route for
@@ -208,15 +208,15 @@ class ForgotPasswordScreenRoute extends _i9.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i6.LoginScreen]
-class LoginScreenRoute extends _i9.PageRouteInfo<void> {
-  const LoginScreenRoute()
+/// [_i6.SignUpScreen]
+class SignUpScreenRoute extends _i9.PageRouteInfo<void> {
+  const SignUpScreenRoute()
       : super(
-          LoginScreenRoute.name,
+          SignUpScreenRoute.name,
           path: '/login_screen',
         );
 
-  static const String name = 'LoginScreenRoute';
+  static const String name = 'SignUpScreenRoute';
 }
 
 /// generated route for
