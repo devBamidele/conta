@@ -121,9 +121,19 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void onContinuePressed() {
-    myEmailController.text = 'bamideledavid.femi@gmail.com';
+  useFirstLogin() {
+    myEmailController.text = 'bamideledavid.ajewole@gmail.com';
     myPasswordController.text = 'Bamidele1234';
+  }
+
+  useSecondLogin() {
+    myEmailController.text = 'abbie.ajewole@gmail.com';
+    myPasswordController.text = 'damilola';
+  }
+
+  void onContinuePressed() {
+    useSecondLogin();
+
     final email = formKey1.currentState?.validate();
     final password = formKey2.currentState?.validate();
 

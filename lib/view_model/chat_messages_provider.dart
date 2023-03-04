@@ -53,27 +53,6 @@ class ChatMessagesProvider extends ChangeNotifier {
             snapshot.docs.map((doc) => doc['name'] as String).toList());
   }
 
-  /// Get the list of matching users
-  Future<List<String>> getUsersMatchingFilter(String filter) async {
-    List<String> matchingUserNames = [];
-
-    // Query the users collection and filter by name
-    QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
-        .instance
-        .collection('users')
-        .where('name', isGreaterThanOrEqualTo: filter)
-        .where('name', isLessThan: '${filter}z')
-        .get();
-
-    // Loop through each document and add the display name to the list
-    for (var doc in snapshot.docs) {
-      String displayName = doc['name'];
-      matchingUserNames.add(displayName);
-    }
-
-    return matchingUserNames;
-  }
-
   /// Get a list of suggestions as the user types
   Stream<List<String>> getSuggestionsStream(String filter) {
     return FirebaseFirestore.instance
@@ -99,23 +78,28 @@ class ChatMessagesProvider extends ChangeNotifier {
         );
   }
 
-  Future<List<SearchUser>> getRecentSearches() async {
-    List<SearchUser> recentSearches = [];
+  void deleteFromRecentSearch({required String name}) async {
+    final uid = currentUser!.uid;
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('recent_searches')
+        .where('name', isEqualTo: name)
+        .where('uid', isEqualTo: uid)
+        .get();
+    for (var doc in querySnapshot.docs) {
+      doc.reference.delete();
+    }
+  }
 
-    QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore
-        .instance
+  Stream<List<SearchUser>> getRecentSearches() {
+    return FirebaseFirestore.instance
         .collection('recent_searches')
         .where('uid', isEqualTo: currentUser!.uid)
         .orderBy('timestamp', descending: true)
         .limit(10)
-        .get();
-
-    for (var doc in querySnapshot.docs) {
-      final searchUser = SearchUser.fromMap(doc.data());
-      recentSearches.add(searchUser);
-    }
-
-    return recentSearches;
+        .snapshots()
+        .map((querySnapshot) => querySnapshot.docs
+            .map((doc) => SearchUser.fromMap(doc.data()))
+            .toList());
   }
 
   /// Holds the profile information of the current selected chat
