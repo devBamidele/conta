@@ -8,6 +8,7 @@ import 'package:conta/view/authentication/forgot_password_screen.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:iconly/iconly.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
@@ -27,8 +28,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
   final myEmailController = TextEditingController();
   final myPasswordController = TextEditingController();
 
@@ -123,6 +122,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void onContinuePressed() {
+    myEmailController.text = 'bamideledavid.femi@gmail.com';
+    myPasswordController.text = 'Bamidele1234';
     final email = formKey1.currentState?.validate();
     final password = formKey2.currentState?.validate();
 
@@ -137,7 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
       login();
       return;
     }
-    AppUtils.vibrate;
+    Vibrate.feedback(FeedbackType.heavy);
   }
 
   Future<void> login() async {
@@ -170,9 +171,14 @@ class _LoginScreenState extends State<LoginScreen> {
         // Email is not verified
         AppUtils.showSnackbar('Please verify your email before logging in');
       }
-    } on FirebaseAuthException {
-      // Handle login errors
-      AppUtils.showSnackbar('Invalid email or password');
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'network-request-failed') {
+        // User's device is not connected to the internet,
+        AppUtils.showSnackbar('No internet connection');
+      } else {
+        // Handle login errors
+        AppUtils.showSnackbar('Invalid email or password');
+      }
     } catch (e) {
       // Handle other errors
       AppUtils.showSnackbar(
@@ -187,7 +193,13 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+        final screenWidth = MediaQuery.of(context).size.width;
+        final screenHeight = MediaQuery.of(context).size.height;
+        AppUtils.showSnackbar(
+            'Screen Width: $screenWidth\nScreen Height: $screenHeight');
+      },
       child: Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: false,

@@ -9,6 +9,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:iconly/iconly.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
@@ -136,7 +137,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       checkEmailAndPassword();
       return;
     }
-    AppUtils.vibrate;
+    Vibrate.feedback(FeedbackType.heavy);
   }
 
   Future<void> checkEmailAndPassword() async {

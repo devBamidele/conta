@@ -73,10 +73,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   void onContinuePressed() {
     if (formKey.currentState!.validate()) {
-      context.router.pushNamed('path');
+      //context.router.pushNamed('path');
     } else {
       shakeState.currentState?.shake();
-      Vibrate.feedback(FeedbackType.warning);
+      Vibrate.feedback(FeedbackType.heavy);
       return;
     }
   }

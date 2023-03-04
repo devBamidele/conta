@@ -5,8 +5,11 @@ import 'package:conta/models/chat.dart';
 import 'package:conta/data/sample_messages.dart';
 
 import '../models/message.dart';
+import '../models/search_user.dart';
 
 class ChatMessagesProvider extends ChangeNotifier {
+  final currentUser = FirebaseAuth.instance.currentUser;
+
   /// Get the messages as a json response and return a list of Json objects
   List<Chat> getMessages() {
     return Sample.sampleMessages.map((e) => Chat.fromJson(e)).toList();
@@ -69,6 +72,50 @@ class ChatMessagesProvider extends ChangeNotifier {
     }
 
     return matchingUserNames;
+  }
+
+  /// Get a list of suggestions as the user types
+  Stream<List<String>> getSuggestionsStream(String filter) {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .snapshots()
+        .map((querySnapshot) {
+      return querySnapshot.docs
+          .map((doc) => doc['name'] as String)
+          .where((name) => name.toLowerCase().contains(filter.toLowerCase()))
+          .toList();
+    });
+  }
+
+  addToRecentSearch({required String name}) {
+    final user = SearchUser(
+      timestamp: Timestamp.now(),
+      name: name,
+      uid: currentUser!.uid,
+    );
+
+    FirebaseFirestore.instance.collection('recent_searches').add(
+          user.toMap(),
+        );
+  }
+
+  Future<List<SearchUser>> getRecentSearches() async {
+    List<SearchUser> recentSearches = [];
+
+    QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore
+        .instance
+        .collection('recent_searches')
+        .where('uid', isEqualTo: currentUser!.uid)
+        .orderBy('timestamp', descending: true)
+        .limit(10)
+        .get();
+
+    for (var doc in querySnapshot.docs) {
+      final searchUser = SearchUser.fromMap(doc.data());
+      recentSearches.add(searchUser);
+    }
+
+    return recentSearches;
   }
 
   /// Holds the profile information of the current selected chat
