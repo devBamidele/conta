@@ -8,6 +8,8 @@ import '../../../../models/search_user.dart';
 import '../../../../res/color.dart';
 
 class UsersSearch extends SearchDelegate {
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
+
   @override
   List<Widget>? buildActions(BuildContext context) {
     return [
@@ -106,29 +108,42 @@ class UsersSearch extends SearchDelegate {
                         child: Text('Empty'),
                       );
                     }
-                    return ListView.builder(
-                      itemCount: searchUsers.length,
-                      itemBuilder: (context, index) {
+                    return AnimatedList(
+                      key: _listKey,
+                      initialItemCount: searchUsers.length,
+                      itemBuilder: (context, index, animation) {
                         final searchUser = searchUsers[index];
-                        return ListTile(
-                          title: Text(searchUser.name),
-                          trailing: IconButton(
-                            onPressed: () {
-                              data.deleteFromRecentSearch(
-                                  name: searchUser.name);
-                              // Delete the item from recent search
-                            },
-                            icon: const Icon(
-                              Icons.clear_rounded,
-                              size: 24,
-                              color: AppColors.opaqueTextColor,
+                        return SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(1, 0),
+                            end: Offset.zero,
+                          ).animate(animation),
+                          child: ListTile(
+                            title: Text(searchUser.name),
+                            trailing: IconButton(
+                              onPressed: () {
+                                data.deleteFromRecentSearch(
+                                    name: searchUser.name);
+                                _listKey.currentState!.removeItem(
+                                  index,
+                                  (context, animation) => const SizedBox(
+                                    width: 0,
+                                    height: 0,
+                                  ),
+                                  duration: const Duration(milliseconds: 500),
+                                );
+                              },
+                              icon: const Icon(
+                                Icons.clear_rounded,
+                                size: 24,
+                                color: AppColors.opaqueTextColor,
+                              ),
                             ),
+                            onTap: () {
+                              query = searchUser.name;
+                              showResults(context);
+                            },
                           ),
-                          onTap: () {
-                            // Navigate to a screen to start a chat with the selected user
-                            query = searchUser.name;
-                            showResults(context);
-                          },
                         );
                       },
                     );

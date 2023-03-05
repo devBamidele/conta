@@ -1,11 +1,8 @@
 import 'package:conta/view/home/tab_views/message_view/message_list_view.dart';
 import 'package:conta/view/home/tab_views/message_view/story_screen.dart';
 import 'package:conta/view/home/tab_views/message_view/users_search.dart';
-import 'package:conta/view_model/chat_messages_provider.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
-import 'package:provider/provider.dart';
 
 import '../../../../res/color.dart';
 import '../../../../res/components/custom_icon_button.dart';
