@@ -10,6 +10,7 @@ import '../../../../res/color.dart';
 
 class UsersSearch extends SearchDelegate {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
+  final searchItemHeight = 76.0;
 
   @override
   List<Widget>? buildActions(BuildContext context) {
@@ -112,16 +113,53 @@ class UsersSearch extends SearchDelegate {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Padding(
-                          padding:
-                              EdgeInsets.only(left: 18, top: 20, bottom: 5),
-                          child: Text(
-                            'Recent searches',
-                            style: TextStyle(
-                              fontSize: 19,
-                              fontWeight: FontWeight.w600,
-                              height: 1.5,
-                            ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            left: 18,
+                            right: 18,
+                            top: 10,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 10,
+                                ),
+                                child: Text(
+                                  'Recent searches',
+                                  style: TextStyle(
+                                    fontSize: 19,
+                                    fontWeight: FontWeight.w600,
+                                    height: 1.5,
+                                  ),
+                                ),
+                              ),
+                              Visibility(
+                                visible: searchUsers.length > 1,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    searchUsers.clear();
+                                    data.clearRecentSearch();
+                                  },
+                                  child: const Padding(
+                                    padding: EdgeInsets.only(
+                                      top: 10,
+                                      left: 10,
+                                      bottom: 10,
+                                    ),
+                                    child: Text(
+                                      'Clear All',
+                                      style: TextStyle(
+                                        color: AppColors.opaqueTextColor,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                         Expanded(
@@ -130,42 +168,16 @@ class UsersSearch extends SearchDelegate {
                             initialItemCount: searchUsers.length,
                             itemBuilder: (context, index, animation) {
                               final searchUser = searchUsers[index];
-                              return SlideTransition(
-                                position: Tween<Offset>(
-                                  begin: const Offset(1, 0),
-                                  end: Offset.zero,
-                                ).animate(animation),
+                              return buildSlideTransition(
+                                animation: animation,
                                 child: SearchItem(
                                   user: searchUser,
                                   onCancelTap: () {
-                                    removeItem(
-                                      index: index,
-                                      name: searchUser.name,
-                                      context: context,
-                                    );
+                                    removeItem(context, index, searchUsers);
                                   },
                                 ),
                               );
                             },
-                          ),
-                        ),
-                        Visibility(
-                          visible: searchUsers.length > 1,
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                              left: 18,
-                              bottom: 16,
-                            ),
-                            child: GestureDetector(
-                              onTap: () => data.clearRecentSearch(),
-                              child: const Text(
-                                'Clear recent searches',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
                           ),
                         ),
                       ],
@@ -226,20 +238,56 @@ class UsersSearch extends SearchDelegate {
     );
   }
 
-  void removeItem({
-    required int index,
-    required String name,
-    required BuildContext context,
+  Widget buildSlideTransition({
+    required Animation<double> animation,
+    required Widget child,
   }) {
-    Provider.of<ChatMessagesProvider>(context, listen: false)
-        .deleteFromRecentSearch(name: name);
+    return SlideTransition(
+      position: Tween<Offset>(
+        begin: const Offset(1, 0),
+        end: Offset.zero,
+      ).animate(
+        CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeInOut,
+        ),
+      ),
+      child: FadeTransition(
+        opacity: Tween<double>(begin: 0, end: 1).animate(
+          CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeInOut,
+          ),
+        ),
+        child: child,
+      ),
+    );
+  }
+
+  void removeItem(
+    BuildContext context,
+    int index,
+    List<SearchUser> searchUsers,
+  ) {
+    final chatProvider =
+        Provider.of<ChatMessagesProvider>(context, listen: false);
+    final user = searchUsers[index];
+
+    // Remove the item from the list
+    searchUsers.removeAt(index);
+    chatProvider.deleteFromRecentSearch(name: user.name);
+
+    // Animate the item removal
     _listKey.currentState!.removeItem(
       index,
-      (context, animation) => const SizedBox(
-        width: 0,
-        height: 0,
+      (context, animation) => buildSlideTransition(
+        animation: animation,
+        child: SearchItem(
+          user: user,
+          onCancelTap: () {},
+        ),
       ),
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 400),
     );
   }
 }
