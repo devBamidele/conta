@@ -35,7 +35,7 @@ class MessageItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                message.timeStamp,
+                message.lastMessageTime,
                 style: const TextStyle(color: AppColors.extraTextColor),
               ),
               addHeight(6),
@@ -51,7 +51,7 @@ class MessageItem extends StatelessWidget {
             ],
           ),
           title: Text(
-            message.sender,
+            message.username,
             style: const TextStyle(
               fontSize: 18,
               height: 1.2,
@@ -62,7 +62,7 @@ class MessageItem extends StatelessWidget {
           subtitle: Padding(
             padding: const EdgeInsets.only(top: 2),
             child: Text(
-              message.message,
+              message.latestMessage,
               style: const TextStyle(color: AppColors.extraTextColor),
             ),
           ),

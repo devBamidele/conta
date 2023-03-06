@@ -10,11 +10,6 @@ import '../models/search_user.dart';
 class ChatMessagesProvider extends ChangeNotifier {
   final currentUser = FirebaseAuth.instance.currentUser;
 
-  /// Get the messages as a json response and return a list of Json objects
-  List<Chat> getMessages() {
-    return Sample.sampleMessages.map((e) => Chat.fromJson(e)).toList();
-  }
-
   Stream<List<Message>> getChatMessagesStream(
     String currentUserUid,
     String otherUserUid,

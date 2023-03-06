@@ -54,7 +54,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             children: [
               CircleAvatar(
                 radius: 26,
-                backgroundImage: AssetImage(currentChat.profilePic),
+                backgroundImage: AssetImage(currentChat.profilePic!),
               ),
               addWidth(15),
               Expanded(
@@ -62,7 +62,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      currentChat.sender,
+                      currentChat.username,
                       overflow: TextOverflow.fade,
                       style: const TextStyle(
                         fontSize: 17,

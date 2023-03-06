@@ -1,22 +1,21 @@
-import 'package:conta/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 
-import '../../models/search_user.dart';
-import '../../utils/widget_functions.dart';
+import '../../models/chat.dart';
 import '../color.dart';
 
-class SearchTile extends StatelessWidget {
-  const SearchTile({
+class ChatListTile extends StatelessWidget {
+  const ChatListTile({
     Key? key,
-    required this.user,
+    required this.chat,
     this.onCancelTap,
     this.onTileTap,
   }) : super(key: key);
 
-  final SearchChat user;
+  final Chat chat;
   final VoidCallback? onCancelTap;
   final VoidCallback? onTileTap;
+
   @override
   Widget build(BuildContext context) {
     return ListTile(
