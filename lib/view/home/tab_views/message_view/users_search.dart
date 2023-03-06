@@ -1,3 +1,4 @@
+import 'package:conta/res/components/search_item.dart';
 import 'package:conta/view_model/chat_messages_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
@@ -105,47 +106,69 @@ class UsersSearch extends SearchDelegate {
                     final searchUsers = snapshot.data!;
                     if (searchUsers.isEmpty) {
                       return const Center(
-                        child: Text('Empty'),
+                        child: Text('No Recent Searches'),
                       );
                     }
-                    return AnimatedList(
-                      key: _listKey,
-                      initialItemCount: searchUsers.length,
-                      itemBuilder: (context, index, animation) {
-                        final searchUser = searchUsers[index];
-                        return SlideTransition(
-                          position: Tween<Offset>(
-                            begin: const Offset(1, 0),
-                            end: Offset.zero,
-                          ).animate(animation),
-                          child: ListTile(
-                            title: Text(searchUser.name),
-                            trailing: IconButton(
-                              onPressed: () {
-                                data.deleteFromRecentSearch(
-                                    name: searchUser.name);
-                                _listKey.currentState!.removeItem(
-                                  index,
-                                  (context, animation) => const SizedBox(
-                                    width: 0,
-                                    height: 0,
-                                  ),
-                                  duration: const Duration(milliseconds: 500),
-                                );
-                              },
-                              icon: const Icon(
-                                Icons.clear_rounded,
-                                size: 24,
-                                color: AppColors.opaqueTextColor,
-                              ),
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(
+                          padding:
+                              EdgeInsets.only(left: 18, top: 20, bottom: 5),
+                          child: Text(
+                            'Recent searches',
+                            style: TextStyle(
+                              fontSize: 19,
+                              fontWeight: FontWeight.w600,
+                              height: 1.5,
                             ),
-                            onTap: () {
-                              query = searchUser.name;
-                              showResults(context);
+                          ),
+                        ),
+                        Expanded(
+                          child: AnimatedList(
+                            key: _listKey,
+                            initialItemCount: searchUsers.length,
+                            itemBuilder: (context, index, animation) {
+                              final searchUser = searchUsers[index];
+                              return SlideTransition(
+                                position: Tween<Offset>(
+                                  begin: const Offset(1, 0),
+                                  end: Offset.zero,
+                                ).animate(animation),
+                                child: SearchItem(
+                                  user: searchUser,
+                                  onCancelTap: () {
+                                    removeItem(
+                                      index: index,
+                                      name: searchUser.name,
+                                      context: context,
+                                    );
+                                  },
+                                ),
+                              );
                             },
                           ),
-                        );
-                      },
+                        ),
+                        Visibility(
+                          visible: searchUsers.length > 1,
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                              left: 18,
+                              bottom: 16,
+                            ),
+                            child: GestureDetector(
+                              onTap: () => data.clearRecentSearch(),
+                              child: const Text(
+                                'Clear recent searches',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     );
                   } else if (snapshot.hasError) {
                     return const Text('Sorry, try again later');
@@ -200,6 +223,23 @@ class UsersSearch extends SearchDelegate {
                 },
               );
       },
+    );
+  }
+
+  void removeItem({
+    required int index,
+    required String name,
+    required BuildContext context,
+  }) {
+    Provider.of<ChatMessagesProvider>(context, listen: false)
+        .deleteFromRecentSearch(name: name);
+    _listKey.currentState!.removeItem(
+      index,
+      (context, animation) => const SizedBox(
+        width: 0,
+        height: 0,
+      ),
+      duration: const Duration(milliseconds: 500),
     );
   }
 }

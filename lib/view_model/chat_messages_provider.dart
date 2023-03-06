@@ -66,7 +66,7 @@ class ChatMessagesProvider extends ChangeNotifier {
     });
   }
 
-  addToRecentSearch({required String name}) {
+  void addToRecentSearch({required String name}) {
     final user = SearchUser(
       timestamp: Timestamp.now(),
       name: name,
@@ -76,6 +76,20 @@ class ChatMessagesProvider extends ChangeNotifier {
     FirebaseFirestore.instance.collection('recent_searches').add(
           user.toMap(),
         );
+  }
+
+  Future<void> clearRecentSearch() async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('recent_searches')
+        .where('uid', isEqualTo: currentUser!.uid)
+        .get();
+
+    final batch = FirebaseFirestore.instance.batch();
+    for (final doc in querySnapshot.docs) {
+      batch.delete(doc.reference);
+    }
+
+    await batch.commit();
   }
 
   void deleteFromRecentSearch({required String name}) async {
