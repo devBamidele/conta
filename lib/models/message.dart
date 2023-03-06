@@ -1,4 +1,5 @@
 /// The class representing a [Message] object
+/// Like an actual message when chatting
 class Message {
   String id;
   String senderId;

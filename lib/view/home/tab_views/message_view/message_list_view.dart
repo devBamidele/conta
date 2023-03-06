@@ -5,8 +5,8 @@ import '../../../../models/chat.dart';
 import '../../../../view_model/chat_messages_provider.dart';
 import 'message_item.dart';
 
-class MessageListView extends StatelessWidget {
-  const MessageListView({Key? key}) : super(key: key);
+class ChatListView extends StatelessWidget {
+  const ChatListView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

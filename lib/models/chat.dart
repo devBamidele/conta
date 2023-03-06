@@ -1,4 +1,3 @@
-/// A Message Object
 class Chat {
   int? id;
 

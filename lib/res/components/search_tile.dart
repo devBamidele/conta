@@ -6,15 +6,15 @@ import '../../models/search_user.dart';
 import '../../utils/widget_functions.dart';
 import '../color.dart';
 
-class SearchItem extends StatelessWidget {
-  const SearchItem({
+class SearchTile extends StatelessWidget {
+  const SearchTile({
     Key? key,
     required this.user,
     required this.onCancelTap,
     this.onTileTap,
   }) : super(key: key);
 
-  final SearchUser user;
+  final SearchChat user;
   final VoidCallback? onCancelTap;
   final VoidCallback? onTileTap;
   @override

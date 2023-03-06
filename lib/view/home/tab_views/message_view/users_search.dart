@@ -1,4 +1,4 @@
-import 'package:conta/res/components/search_item.dart';
+import 'package:conta/res/components/search_tile.dart';
 import 'package:conta/view_model/chat_messages_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
@@ -101,11 +101,11 @@ class UsersSearch extends SearchDelegate {
                 stream: data.getRecentSearches(),
                 builder: (
                   context,
-                  AsyncSnapshot<List<SearchUser>> snapshot,
+                  AsyncSnapshot<List<SearchChat>> snapshot,
                 ) {
                   if (snapshot.hasData) {
-                    final searchUsers = snapshot.data!;
-                    if (searchUsers.isEmpty) {
+                    final searchChats = snapshot.data!;
+                    if (searchChats.isEmpty) {
                       return const Center(
                         child: Text('No Recent Searches'),
                       );
@@ -136,12 +136,9 @@ class UsersSearch extends SearchDelegate {
                                 ),
                               ),
                               Visibility(
-                                visible: searchUsers.length > 1,
+                                visible: searchChats.length > 1,
                                 child: GestureDetector(
-                                  onTap: () {
-                                    searchUsers.clear();
-                                    data.clearRecentSearch();
-                                  },
+                                  onTap: () => data.clearRecentSearch(),
                                   child: const Padding(
                                     padding: EdgeInsets.only(
                                       top: 10,
@@ -165,15 +162,15 @@ class UsersSearch extends SearchDelegate {
                         Expanded(
                           child: AnimatedList(
                             key: _listKey,
-                            initialItemCount: searchUsers.length,
+                            initialItemCount: searchChats.length,
                             itemBuilder: (context, index, animation) {
-                              final searchUser = searchUsers[index];
+                              final searchUser = searchChats[index];
                               return buildSlideTransition(
                                 animation: animation,
-                                child: SearchItem(
+                                child: SearchTile(
                                   user: searchUser,
                                   onCancelTap: () {
-                                    removeItem(context, index, searchUsers);
+                                    removeItem(context, index, searchChats);
                                   },
                                 ),
                               );
@@ -267,14 +264,14 @@ class UsersSearch extends SearchDelegate {
   void removeItem(
     BuildContext context,
     int index,
-    List<SearchUser> searchUsers,
+    List<SearchChat> searchChats,
   ) {
     final chatProvider =
         Provider.of<ChatMessagesProvider>(context, listen: false);
-    final user = searchUsers[index];
+    final user = searchChats[index];
 
     // Remove the item from the list
-    searchUsers.removeAt(index);
+    searchChats.removeAt(index);
     chatProvider.deleteFromRecentSearch(name: user.name);
 
     // Animate the item removal
@@ -282,12 +279,12 @@ class UsersSearch extends SearchDelegate {
       index,
       (context, animation) => buildSlideTransition(
         animation: animation,
-        child: SearchItem(
+        child: SearchTile(
           user: user,
           onCancelTap: () {},
         ),
       ),
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 500),
     );
   }
 }

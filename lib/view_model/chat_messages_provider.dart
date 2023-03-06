@@ -66,16 +66,28 @@ class ChatMessagesProvider extends ChangeNotifier {
     });
   }
 
-  void addToRecentSearch({required String name}) {
-    final user = SearchUser(
-      timestamp: Timestamp.now(),
-      name: name,
-      uid: currentUser!.uid,
-    );
+  void addToRecentSearch({required String name}) async {
+    final userQuery = await FirebaseFirestore.instance
+        .collection('recent_searches')
+        .where('name', isEqualTo: name)
+        .where('uid', isEqualTo: currentUser!.uid)
+        .get();
 
-    FirebaseFirestore.instance.collection('recent_searches').add(
-          user.toMap(),
-        );
+    if (userQuery.docs.isEmpty) {
+      // If the user doesn't exist, add them as a new user
+      final user = SearchChat(
+        timestamp: Timestamp.now(),
+        name: name,
+        uid: currentUser!.uid,
+      );
+      await FirebaseFirestore.instance
+          .collection('recent_searches')
+          .add(user.toMap());
+    } else {
+      // If the user exists, update their timestamp
+      final userDoc = userQuery.docs.first;
+      await userDoc.reference.update({'timestamp': Timestamp.now()});
+    }
   }
 
   Future<void> clearRecentSearch() async {
@@ -104,7 +116,7 @@ class ChatMessagesProvider extends ChangeNotifier {
     }
   }
 
-  Stream<List<SearchUser>> getRecentSearches() {
+  Stream<List<SearchChat>> getRecentSearches() {
     return FirebaseFirestore.instance
         .collection('recent_searches')
         .where('uid', isEqualTo: currentUser!.uid)
@@ -112,7 +124,7 @@ class ChatMessagesProvider extends ChangeNotifier {
         .limit(10)
         .snapshots()
         .map((querySnapshot) => querySnapshot.docs
-            .map((doc) => SearchUser.fromMap(doc.data()))
+            .map((doc) => SearchChat.fromMap(doc.data()))
             .toList());
   }
 

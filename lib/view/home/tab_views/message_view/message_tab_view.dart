@@ -40,7 +40,7 @@ class _MessageTabViewState extends State<MessageTabView>
   ];
 
   final _tabViews = [
-    const MessageListView(),
+    const ChatListView(),
     const StoryScreen(),
   ];
 
