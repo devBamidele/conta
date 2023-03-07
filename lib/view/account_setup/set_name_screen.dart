@@ -10,7 +10,6 @@ import '../../res/color.dart';
 import '../../res/components/custom_back_button.dart';
 import '../../res/components/custom_text_field.dart';
 import '../../res/components/shake_error.dart';
-import '../../utils/app_utils.dart';
 import '../../utils/widget_functions.dart';
 import '../../view_model/authentication_provider.dart';
 
@@ -27,17 +26,26 @@ class SetNameScreen extends StatefulWidget {
 
 class _SetNameScreenState extends State<SetNameScreen> {
   final myNameController = TextEditingController();
+  final myUserNameController = TextEditingController();
+  String? existingUserName;
 
   final nameFocusNode = FocusNode();
+  final usernameFocusNode = FocusNode();
 
   final formKey1 = GlobalKey<FormState>();
+  final formKey2 = GlobalKey<FormState>();
 
   final shakeState1 = GlobalKey<ShakeWidgetState>();
+  final shakeState2 = GlobalKey<ShakeWidgetState>();
 
   Color nameColor = AppColors.hintTextColor;
   Color fillNameColor = AppColors.inputBackGround;
 
+  Color usernameColor = AppColors.hintTextColor;
+  Color fillUserNameColor = AppColors.inputBackGround;
+
   bool _isNameEmpty = true;
+  bool _isUserNameEmpty = true;
 
   @override
   void initState() {
@@ -45,6 +53,31 @@ class _SetNameScreenState extends State<SetNameScreen> {
     myNameController.addListener(_updateNameEmpty);
 
     nameFocusNode.addListener(_updateNameColor);
+
+    myUserNameController.addListener(_updateUserNameEmpty);
+
+    myUserNameController.addListener(_checkIfUsernameExits);
+
+    usernameFocusNode.addListener(_updateUserNameColor);
+  }
+
+  void _checkIfUsernameExits() async {
+    final authProvider =
+        Provider.of<AuthenticationProvider>(context, listen: false);
+
+    // check if the username already exists in the Firestore database
+    bool exists =
+        await authProvider.checkIfUsernameExists(myUserNameController.text);
+
+    if (exists) {
+      setState(() {
+        existingUserName = 'This username is already occupied';
+      });
+    } else {
+      setState(() {
+        existingUserName = null;
+      });
+    }
   }
 
   void _updateNameEmpty() {
@@ -66,42 +99,90 @@ class _SetNameScreenState extends State<SetNameScreen> {
     });
   }
 
+  void _updateUserNameEmpty() {
+    setState(() {
+      _isUserNameEmpty = myUserNameController.text.isEmpty;
+    });
+  }
+
+  void _updateUserNameColor() {
+    setState(() {
+      usernameColor = usernameFocusNode.hasFocus
+          ? AppColors.selectedFieldColor
+          : _isUserNameEmpty
+              ? AppColors.hintTextColor
+              : Colors.black87;
+      fillUserNameColor = usernameFocusNode.hasFocus
+          ? AppColors.selectedBackgroundColor
+          : AppColors.inputBackGround;
+    });
+  }
+
   @override
   void dispose() {
     myNameController.dispose();
     nameFocusNode.dispose();
 
+    myUserNameController.dispose();
+    usernameFocusNode.dispose();
+
     formKey1.currentState?.dispose();
+    formKey2.currentState?.dispose();
 
     shakeState1.currentState?.dispose();
+    shakeState2.currentState?.dispose();
 
     super.dispose();
   }
 
-  String? validateUsername(String? value) {
+  String? name(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your full name';
+    } else if (!RegExp(r'^[a-zA-Z0-9\s]+$').hasMatch(value)) {
+      return 'Only letters, numbers, underscores, and spaces are allowed.';
+    } else if (value.trim().length < 4 || value.trim().length > 25) {
+      return 'Username must be between 4 and 20 characters long';
+    } else {
+      return null;
+    }
+  }
+
+  String? username(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter your username';
-    } else if (!RegExp(r'^[a-zA-Z0-9\s]+$').hasMatch(value)) {
-      return 'Username can only contain letters, numbers, and spaces';
+    } else if (!RegExp(r'^[a-zA-Z0-9_\s]+$').hasMatch(value)) {
+      return 'Only letters, numbers, underscores, and spaces are allowed.';
     } else if (value.trim().length < 4 || value.trim().length > 20) {
       return 'Username must be between 4 and 20 characters long';
+    } else {
+      return existingUserName;
     }
-    return null;
   }
 
   void onContinuePressed() {
-    if (formKey1.currentState!.validate()) {
-      setValues();
-    } else {
+    final name = formKey1.currentState?.validate();
+    final username = formKey2.currentState?.validate();
+
+    if (!name! && !username!) {
       shakeState1.currentState?.shake();
-      Vibrate.feedback(FeedbackType.heavy);
+      shakeState2.currentState?.shake();
+    } else if (!name) {
+      shakeState1.currentState?.shake();
+    } else if (!username!) {
+      shakeState2.currentState?.shake();
+    } else {
+      setValues();
+      return;
     }
+    Vibrate.feedback(FeedbackType.heavy);
   }
 
+  // Save the values to the authentication provider and proceed
   void setValues() {
     final name = myNameController.text.trim();
+    final userName = myUserNameController.text.trim();
     Provider.of<AuthenticationProvider>(context, listen: false)
-        .setUsername(name);
+        .setNames(name: name, username: userName);
 
     context.router.pushNamed(SetPhotoScreen.tag);
   }
@@ -112,6 +193,7 @@ class _SetNameScreenState extends State<SetNameScreen> {
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
         backgroundColor: Colors.white,
+        resizeToAvoidBottomInset: false,
         body: SafeArea(
           child: Padding(
             padding: pagePadding,
@@ -154,12 +236,37 @@ class _SetNameScreenState extends State<SetNameScreen> {
                       focusNode: nameFocusNode,
                       textController: myNameController,
                       customFillColor: fillNameColor,
-                      hintText: 'Name',
+                      hintText: 'Full Name',
                       prefixIcon: Icon(
                         IconlyBold.profile,
                         color: nameColor,
                       ),
-                      validation: validateUsername,
+                      validation: name,
+                    ),
+                  ),
+                ),
+                Form(
+                  key: formKey2,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      top: 20,
+                      bottom: 20,
+                    ),
+                    child: ShakeWidget(
+                      key: shakeState2,
+                      shakeCount: 3,
+                      shakeOffset: 6,
+                      child: CustomTextField(
+                        focusNode: usernameFocusNode,
+                        textController: myUserNameController,
+                        customFillColor: fillUserNameColor,
+                        hintText: 'User Name',
+                        prefixIcon: Icon(
+                          Icons.alternate_email_rounded,
+                          color: usernameColor,
+                        ),
+                        validation: username,
+                      ),
                     ),
                   ),
                 ),

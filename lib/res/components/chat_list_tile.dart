@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 
 import '../../models/chat.dart';
+import '../../utils/widget_functions.dart';
 import '../color.dart';
 
 class ChatListTile extends StatelessWidget {
@@ -43,9 +44,9 @@ class ChatListTile extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text(
-                  user.timestamp.timeFormat(),
-                  style: const TextStyle(color: AppColors.extraTextColor),
+                const Text(
+                  '12 : 44 PM',
+                  style: TextStyle(color: AppColors.extraTextColor),
                 ),
                 addHeight(6),
                 const Icon(
@@ -55,9 +56,9 @@ class ChatListTile extends StatelessWidget {
                 )
               ],
             ),
-      title: Text(
-        user.name,
-        style: const TextStyle(
+      title: const Text(
+        'Bamidele',
+        style: TextStyle(
           fontSize: 18,
           height: 1.2,
         ),

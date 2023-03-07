@@ -83,11 +83,11 @@ class _VerifyAccountScreenState extends State<VerifyAccountScreen> {
           child: Stack(
             children: [
               Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   addHeight(70),
                   const Text(
                     'Verify your email',
-                    textAlign: TextAlign.left,
                     style: TextStyle(
                       height: 1.1,
                       fontSize: 42,

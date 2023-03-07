@@ -1,8 +1,6 @@
 import 'dart:io';
 
 import 'package:auto_route/auto_route.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:conta/models/new_user_data.dart';
 import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -29,24 +27,21 @@ class SetPhotoScreen extends StatefulWidget {
 
 class _SetPhotoScreenState extends State<SetPhotoScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   final _picker = ImagePicker();
   File? _imageFile;
 
-  void proceed() async {
-    final data = Provider.of<AuthenticationProvider>(context, listen: false)
-        .getUserData();
-    createUser(data);
-  }
+  Future<void> createUser() async {
+    final authProvider =
+        Provider.of<AuthenticationProvider>(context, listen: false);
 
-  Future<void> createUser(UserData data) async {
-    final name = data.username;
-    final email = data.email;
-    final password = data.password;
+    final username = authProvider.username!;
+    final email = authProvider.email!;
+    final password = authProvider.password!;
 
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) => Center(
         child: LoadingAnimationWidget.staggeredDotsWave(
           color: AppColors.primaryShadeColor,
@@ -61,13 +56,14 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
         email: email,
         password: password,
       );
-      // Update the display name
-      await userCredential.user!.updateDisplayName(name);
 
-      await _firestore.collection('users').doc(userCredential.user!.uid).set({
-        'name': name,
-        'email': email,
-      });
+      final userId = userCredential.user!.uid; //
+
+      // Upload the image and create the User in firestore
+      authProvider.uploadImageWithData(userId, _imageFile);
+
+      // Update the display name
+      await userCredential.user!.updateDisplayName(username);
 
       // Send email verification to new user
       await userCredential.user!.sendEmailVerification();
@@ -75,8 +71,12 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
       verifyAccount(userCredential);
     } catch (e) {
       // Handle exceptions
-      AppUtils.showSnackbar('An error occurred while creating the account. '
-          'Please try again later.');
+      if (e.toString() == 'An error occurred while uploading the image') {
+        AppUtils.showSnackbar(e.toString());
+      } else {
+        AppUtils.showSnackbar('An error occurred while creating the account. '
+            'Please try again later.');
+      }
     } finally {
       context.router.pop();
     }
@@ -86,11 +86,11 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
         [VerifyAccountScreenRoute(userCredential: credential)],
       );
 
-  void buttonPressed() {
+  void addPhoto() {
     if (_imageFile == null) {
       _pickImage(ImageSource.gallery);
     } else {
-      proceed();
+      createUser();
     }
   }
 
@@ -128,7 +128,7 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
                             Padding(
                               padding: const EdgeInsets.only(top: 24),
                               child: GestureDetector(
-                                onTap: proceed,
+                                onTap: createUser,
                                 child: const Text(
                                   'Skip',
                                   style: TextStyle(
@@ -200,7 +200,7 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
                         ),
                         child: ElevatedButton(
                           style: elevatedButton,
-                          onPressed: () => buttonPressed(),
+                          onPressed: () => addPhoto(),
                           child: Text(
                             _imageFile == null ? 'Add a photo' : 'Continue',
                             style: const TextStyle(

@@ -127,8 +127,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   useSecondLogin() {
-    myEmailController.text = 'abbie.ajewole@gmail.com';
-    myPasswordController.text = 'damilola';
+    myEmailController.text = 'bamideledavid.femi@gmail.com';
+    myPasswordController.text = 'Olorunfemi004';
   }
 
   useThirdLogin() {
@@ -137,7 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void onContinuePressed() {
-    useThirdLogin();
+    //useThirdLogin();
 
     final email = formKey1.currentState?.validate();
     final password = formKey2.currentState?.validate();
@@ -203,7 +203,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  navigateToHome() => context.router.pushAll([const PersistentTabRoute()]);
+  navigateToHome() => context.router.replaceAll([const PersistentTabRoute()]);
 
   @override
   Widget build(BuildContext context) {

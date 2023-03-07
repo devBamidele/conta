@@ -146,6 +146,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) => Center(
         child: LoadingAnimationWidget.staggeredDotsWave(
           color: AppColors.primaryShadeColor,
