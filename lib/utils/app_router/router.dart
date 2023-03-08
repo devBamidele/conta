@@ -11,15 +11,15 @@ import '../../view/account_setup/set_photo_page.dart';
 
 @AdaptiveAutoRouter(
   routes: [
-    AutoRoute(page: SignUpScreen, initial: true),
+    AutoRoute(page: LoginScreen, initial: true),
     AutoRoute(page: SetNameScreen, path: SetNameScreen.tag),
     AutoRoute(page: SetPhotoScreen, path: SetPhotoScreen.tag),
     AutoRoute(page: VerifyAccountScreen, path: VerifyAccountScreen.tag),
 
     // Authentication screens
-    //AutoRoute(page: SignUpScreen, path: SignUpScreen.tag),
+    AutoRoute(page: SignUpScreen, path: SignUpScreen.tag),
     AutoRoute(page: ForgotPasswordScreen, path: ForgotPasswordScreen.tag),
-    AutoRoute(page: LoginScreen, path: LoginScreen.tag),
+    //AutoRoute(page: LoginScreen, path: LoginScreen.tag),
 
     AutoRoute(page: PersistentTab, path: PersistentTab.tag),
     CustomRoute(

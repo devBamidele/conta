@@ -57,7 +57,7 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
         password: password,
       );
 
-      final userId = userCredential.user!.uid; //
+      final userId = userCredential.user!.uid;
 
       // Upload the image and create the User in firestore
       authProvider.uploadImageWithData(userId, _imageFile);

@@ -4,6 +4,7 @@ import 'package:conta/res/components/shake_error.dart';
 import 'package:conta/res/style/component_style.dart';
 import 'package:conta/utils/widget_functions.dart';
 import 'package:conta/view/account_setup/set_name_screen.dart';
+import 'package:conta/view/authentication/login_screen.dart';
 import 'package:conta/view_model/authentication_provider.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -325,7 +326,35 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
                 ),
-                addHeight(51),
+                addHeight(28),
+                RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    style: const TextStyle(
+                      fontSize: 16,
+                      height: 1.4,
+                      letterSpacing: 0.2,
+                      color: AppColors.opaqueTextColor,
+                    ),
+                    children: [
+                      const TextSpan(
+                        text: 'Already have an account?',
+                      ),
+                      TextSpan(
+                        text: ' Login',
+                        style: const TextStyle(
+                          color: AppColors.primaryColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          // handle click event for the Login link
+                          ..onTap =
+                              () => context.router.pushNamed(LoginScreen.tag),
+                      ),
+                    ],
+                  ),
+                ),
+                addHeight(50),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 40),
                   child: RichText(

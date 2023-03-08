@@ -132,12 +132,12 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   useThirdLogin() {
-    myEmailController.text = 'toyin.ajewole@gmail.com';
-    myPasswordController.text = 'toyin2008';
+    myEmailController.text = 'ajewole.bamidele@stu.cu.edu.ng';
+    myPasswordController.text = 'dele004';
   }
 
   void onContinuePressed() {
-    //useThirdLogin();
+    useThirdLogin();
 
     final email = formKey1.currentState?.validate();
     final password = formKey2.currentState?.validate();
