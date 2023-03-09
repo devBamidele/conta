@@ -54,7 +54,7 @@ dependencies:
   image_picker: ^0.8.6+3
   loading_animation_widget: ^1.2.0+4
   intl: ^0.17.0
-  firebase_analytics: ^10.1.5
+  cached_network_image: ^3.2.3
 
 
 dev_dependencies:

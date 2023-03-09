@@ -2,24 +2,19 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 
-import '../../models/search_user.dart';
+import '../../models/Person.dart';
 import '../color.dart';
 
-class SearchTile extends StatelessWidget {
-  const SearchTile({
-    Key? key,
-    required this.user,
-    this.onCancelTap,
-    this.onTileTap,
-  }) : super(key: key);
+class UserTile extends StatelessWidget {
+  const UserTile({Key? key, required this.user, this.onTap}) : super(key: key);
 
-  final SearchUser user;
-  final VoidCallback? onCancelTap;
-  final VoidCallback? onTileTap;
+  final Person user;
+  final VoidCallback? onTap;
+
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      onTap: onTileTap,
+      onTap: onTap,
       leading: CircleAvatar(
         radius: 30,
         backgroundColor: Colors.white,
@@ -45,15 +40,6 @@ class SearchTile extends StatelessWidget {
                 size: 25,
               ),
       ),
-      trailing: IconButton(
-        padding: const EdgeInsets.only(left: 20),
-        onPressed: onCancelTap,
-        icon: const Icon(
-          Icons.clear_rounded,
-          size: 28,
-          color: AppColors.opaqueTextColor,
-        ),
-      ),
       title: Text(
         user.username,
         style: const TextStyle(
@@ -61,7 +47,7 @@ class SearchTile extends StatelessWidget {
           height: 1.2,
         ),
       ),
-      contentPadding: const EdgeInsets.symmetric(vertical: 2, horizontal: 18),
+      contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 18),
       subtitle: Padding(
         padding: const EdgeInsets.only(top: 2),
         child: Text(

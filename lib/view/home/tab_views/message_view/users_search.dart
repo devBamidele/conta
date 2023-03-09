@@ -1,5 +1,10 @@
+import 'package:auto_route/auto_route.dart';
+import 'package:conta/models/Person.dart';
 import 'package:conta/res/components/search_tile.dart';
+import 'package:conta/res/components/user_tile.dart';
+import 'package:conta/view/home/tab_views/message_view/chat_screen.dart';
 import 'package:conta/view_model/chat_messages_provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -10,7 +15,7 @@ import '../../../../res/color.dart';
 
 class UsersSearch extends SearchDelegate {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
-  final searchItemHeight = 76.0;
+  final currentUser = FirebaseAuth.instance.currentUser;
 
   @override
   List<Widget>? buildActions(BuildContext context) {
@@ -53,7 +58,7 @@ class UsersSearch extends SearchDelegate {
           stream: data.getSuggestionsStream(query),
           builder: (
             context,
-            AsyncSnapshot<List<String>> snapshot,
+            AsyncSnapshot<List<Person>> snapshot,
           ) {
             if (snapshot.hasData) {
               final suggestions = snapshot.data!;
@@ -65,15 +70,8 @@ class UsersSearch extends SearchDelegate {
               return ListView.builder(
                 itemCount: suggestions.length,
                 itemBuilder: (context, index) {
-                  final name = suggestions[index];
-                  return ListTile(
-                    title: Text(name),
-                    onTap: () {
-                      data.addToRecentSearch(name: name);
-                      query = name;
-                      showResults(context);
-                    },
-                  );
+                  final user = suggestions[index];
+                  return UserTile(user: user);
                 },
               );
             } else if (snapshot.hasError) {
@@ -101,7 +99,7 @@ class UsersSearch extends SearchDelegate {
                 stream: data.getRecentSearches(),
                 builder: (
                   context,
-                  AsyncSnapshot<List<SearchChat>> snapshot,
+                  AsyncSnapshot<List<SearchUser>> snapshot,
                 ) {
                   if (snapshot.hasData) {
                     final searchChats = snapshot.data!;
@@ -172,6 +170,15 @@ class UsersSearch extends SearchDelegate {
                                   onCancelTap: () {
                                     removeItem(context, index, searchChats);
                                   },
+                                  onTileTap: () {
+                                    data.setCurrentChat(
+                                      username: searchUser.username,
+                                      uidUser: currentUser!.uid,
+                                      uidChat: searchUser.uidSearch,
+                                      profilePicUrl: searchUser.profilePicUrl,
+                                    );
+                                    navigateToChat(context);
+                                  },
                                 ),
                               );
                             },
@@ -196,7 +203,7 @@ class UsersSearch extends SearchDelegate {
                 stream: data.getSuggestionsStream(query),
                 builder: (
                   context,
-                  AsyncSnapshot<List<String>> snapshot,
+                  AsyncSnapshot<List<Person>> snapshot,
                 ) {
                   if (snapshot.hasData) {
                     final suggestions = snapshot.data!;
@@ -208,13 +215,18 @@ class UsersSearch extends SearchDelegate {
                     return ListView.builder(
                       itemCount: suggestions.length,
                       itemBuilder: (context, index) {
-                        final name = suggestions[index];
-                        return ListTile(
-                          title: Text(name),
+                        final user = suggestions[index];
+                        return UserTile(
+                          user: user,
                           onTap: () {
-                            data.addToRecentSearch(name: name);
-                            query = name;
-                            showResults(context);
+                            data.addToRecentSearch(person: user);
+                            data.setCurrentChat(
+                              username: user.username,
+                              uidUser: currentUser!.uid,
+                              uidChat: user.id,
+                              profilePicUrl: user.profilePicUrl,
+                            );
+                            navigateToChat(context);
                           },
                         );
                       },
@@ -233,6 +245,10 @@ class UsersSearch extends SearchDelegate {
               );
       },
     );
+  }
+
+  navigateToChat(BuildContext context) {
+    context.router.pushNamed(ChatScreen.tag);
   }
 
   Widget buildSlideTransition({
@@ -264,7 +280,7 @@ class UsersSearch extends SearchDelegate {
   void removeItem(
     BuildContext context,
     int index,
-    List<SearchChat> searchChats,
+    List<SearchUser> searchChats,
   ) {
     final chatProvider =
         Provider.of<ChatMessagesProvider>(context, listen: false);
@@ -272,7 +288,7 @@ class UsersSearch extends SearchDelegate {
 
     // Remove the item from the list
     searchChats.removeAt(index);
-    chatProvider.deleteFromRecentSearch(name: user.name);
+    chatProvider.deleteFromRecentSearch(username: user.username);
 
     // Animate the item removal
     _listKey.currentState!.removeItem(

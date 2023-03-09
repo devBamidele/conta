@@ -10,7 +10,6 @@ import 'package:conta/view_model/chat_messages_provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-
   runApp(
     MultiProvider(
       providers: [
