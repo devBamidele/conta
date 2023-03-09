@@ -55,6 +55,7 @@ dependencies:
   loading_animation_widget: ^1.2.0+4
   intl: ^0.17.0
   cached_network_image: ^3.2.3
+  emoji_picker_flutter: ^1.5.2
 
 
 dev_dependencies:

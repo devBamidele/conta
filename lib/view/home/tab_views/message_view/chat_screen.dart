@@ -8,6 +8,7 @@ import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../res/color.dart';
+import '../../../../res/components/custom_emoji_picker.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
@@ -23,12 +24,23 @@ class _ChatScreenState extends State<ChatScreen> {
   final messagesFocusNode = FocusNode();
   Color fillMessagesColor = AppColors.inputBackGround;
   bool typing = false;
+  bool emojiShowing = false;
 
   @override
   void initState() {
     super.initState();
 
     messagesController.addListener(_updateIcon);
+
+    messagesFocusNode.addListener(() {
+      if (messagesFocusNode.hasFocus) {
+        Future.delayed(const Duration(milliseconds: 150), () {
+          setState(() {
+            emojiShowing = false;
+          });
+        });
+      }
+    });
   }
 
   _updateIcon() {
@@ -52,25 +64,13 @@ class _ChatScreenState extends State<ChatScreen> {
         return Scaffold(
           appBar: const CustomAppBar(),
           body: SafeArea(
-            child: Stack(
+            child: Column(
               children: [
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20),
-                      ),
-                      color: Colors.white,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 30,
-                        horizontal: 20,
-                      ),
+                Expanded(child: Container()),
+                Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                       child: Row(
                         children: [
                           Expanded(
@@ -79,27 +79,56 @@ class _ChatScreenState extends State<ChatScreen> {
                               focusNode: messagesFocusNode,
                               controller: messagesController,
                               decoration: InputDecoration(
-                                focusedBorder: const OutlineInputBorder(
+                                enabledBorder: const OutlineInputBorder(
                                   borderSide: BorderSide(
-                                      color: AppColors.backGroundColor),
+                                    color: AppColors.backGroundColor,
+                                  ),
                                   borderRadius: BorderRadius.all(
-                                    Radius.circular(20),
+                                    Radius.circular(30),
                                   ),
                                 ),
-                                fillColor: fillMessagesColor.withOpacity(0.5),
+                                focusedBorder: const OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: AppColors.backGroundColor,
+                                  ),
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(30),
+                                  ),
+                                ),
+                                fillColor: Colors.white,
                                 hintText: 'Type Here',
                                 contentPadding: const EdgeInsets.all(18),
-                                prefixIcon: const Icon(
-                                  Icons.attach_file_rounded,
-                                  size: 26,
-                                  color: AppColors.hintTextColor,
+                                prefixIcon: GestureDetector(
+                                  onTap: () {
+                                    messagesFocusNode.unfocus();
+                                    messagesFocusNode.canRequestFocus = true;
+                                    Future.delayed(
+                                        const Duration(milliseconds: 200), () {
+                                      setState(() {
+                                        emojiShowing = !emojiShowing;
+                                      });
+                                    });
+                                  },
+                                  child: const Icon(
+                                    Icons.emoji_emotions_outlined,
+                                    color: AppColors.hintTextColor,
+                                    size: 28,
+                                  ),
+                                ),
+                                suffixIcon: Transform.rotate(
+                                  angle: -math.pi / 1.3,
+                                  child: const Icon(
+                                    Icons.attach_file_rounded,
+                                    size: 28,
+                                    color: AppColors.hintTextColor,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                          addWidth(20),
+                          addWidth(10),
                           CircleAvatar(
-                            radius: 26,
+                            radius: 25,
                             backgroundColor: AppColors.primaryColor,
                             child: typing
                                 ? Transform.rotate(
@@ -119,7 +148,24 @@ class _ChatScreenState extends State<ChatScreen> {
                         ],
                       ),
                     ),
-                  ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        10,
+                        0,
+                        10,
+                        10,
+                      ),
+                      child: Offstage(
+                        offstage: !emojiShowing,
+                        child: SizedBox(
+                          height: 250,
+                          child: CustomEmojiPicker(
+                            messagesController: messagesController,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
