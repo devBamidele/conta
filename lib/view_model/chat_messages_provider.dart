@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:conta/models/chat.dart';
+import 'package:uuid/uuid.dart';
 
 import '../models/Person.dart';
 import '../models/current_chat.dart';
@@ -11,28 +14,26 @@ import '../models/search_user.dart';
 class ChatMessagesProvider extends ChangeNotifier {
   final currentUser = FirebaseAuth.instance.currentUser;
 
-  Stream<List<Message>> getChatMessagesStream(
-    String currentUserUid,
-    String otherUserUid,
-  ) {
+  Stream<List<Message>> getChatMessagesStream({
+    required String currentUserUid,
+    required String otherUserUid,
+  }) {
     CollectionReference chatRef =
         FirebaseFirestore.instance.collection('chats');
-    String chatId = generateChatId(
-      currentUserUid,
-      otherUserUid,
-    ); // Generate a unique chat id between the two users
+    String chatId = generateChatId(currentUserUid, otherUserUid);
 
-    return chatRef
-        .doc(chatId)
-        .collection('messages')
-        .orderBy(
-          'timestamp',
-          descending: true,
-        ) // Order messages by timestamp in descending order
-        .snapshots()
-        .map((querySnapshot) => querySnapshot.docs
-            .map((doc) => Message.fromJson(doc.data()))
-            .toList());
+    return chatRef.doc(chatId).snapshots().map((snapshot) {
+      if (!snapshot.exists) {
+        return [];
+      }
+
+      List<dynamic> messages = snapshot.get('messages');
+
+      return messages
+          .map(
+              (message) => Message.fromJson(Map<String, dynamic>.from(message)))
+          .toList();
+    });
   }
 
   /// Generate unique chat id's for each Dm
@@ -141,6 +142,49 @@ class ChatMessagesProvider extends ChangeNotifier {
       profilePicUrl: profilePicUrl,
     );
     currentChat = chat;
+  }
+
+  Future<void> addNewMessageToChat(Chat chat, String content) async {
+    String messageId = const Uuid().v4();
+    Message newMessage = Message(
+      id: messageId,
+      senderId: currentUser!.uid,
+      recipientId: currentChat!.uidChat,
+      content: content,
+      timestamp: Timestamp.now(),
+    );
+    chat.messages.add(newMessage);
+    await FirebaseFirestore.instance
+        .collection('chats')
+        .doc(chat.id)
+        .update({'messages': chat.messages.map((m) => m.toJson()).toList()});
+  }
+
+  Future<void> uploadChat(String content) async {
+    String chatId = generateChatId(currentUser!.uid, currentChat!.uidChat);
+
+    // Check if chat already exists in Firestore
+    DocumentSnapshot chatSnapshot =
+        await FirebaseFirestore.instance.collection('chats').doc(chatId).get();
+
+    if (!chatSnapshot.exists) {
+      // Chat doesn't exist, create new chat document
+      Chat newChat = Chat(
+        id: chatId,
+        user1Id: currentUser!.uid,
+        user2Id: currentChat!.uidChat,
+        messages: [],
+      );
+      await FirebaseFirestore.instance
+          .collection('chats')
+          .doc(chatId)
+          .set(newChat.toJson());
+
+      await addNewMessageToChat(newChat, content);
+    } else {
+      Chat chat = Chat.fromJson(chatSnapshot.data() as Map<String, dynamic>);
+      await addNewMessageToChat(chat, content);
+    }
   }
 
   /// Holds the profile information of the current selected chat

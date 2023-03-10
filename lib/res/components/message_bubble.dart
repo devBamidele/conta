@@ -1,0 +1,58 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:conta/utils/extensions.dart';
+import 'package:flutter/material.dart';
+
+import '../color.dart';
+
+class MessageBubble extends StatelessWidget {
+  const MessageBubble({
+    Key? key,
+    required this.isMe,
+    required this.text,
+    required this.timeSent,
+    required this.unread,
+  }) : super(key: key);
+
+  final String text;
+  final bool isMe;
+  final Timestamp timeSent;
+  final bool unread;
+
+  final double edges = 15;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: Column(
+        crossAxisAlignment:
+            isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          Material(
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(edges),
+              bottomRight:
+                  isMe ? const Radius.circular(0) : Radius.circular(edges),
+              topLeft: isMe ? Radius.circular(edges) : const Radius.circular(0),
+              topRight: Radius.circular(edges),
+            ),
+            color: isMe ? AppColors.primaryColor : Colors.white,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+              child: Text(
+                text,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: isMe ? Colors.white : Colors.black,
+                ),
+              ),
+            ),
+          ),
+          Text(
+            timeSent.timeFormat(),
+          ),
+        ],
+      ),
+    );
+  }
+}

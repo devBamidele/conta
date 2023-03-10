@@ -9,6 +9,18 @@ const inputBorder = OutlineInputBorder(
   ),
 );
 
+/// The border for the input fields
+const chatInputBorder = OutlineInputBorder(
+  borderSide: BorderSide(
+    color: AppColors.backGroundColor,
+  ),
+  borderRadius: BorderRadius.all(
+    Radius.circular(30),
+  ),
+);
+
+
+
 /// The decoration for the elevated button
 final elevatedButton = ElevatedButton.styleFrom(
   backgroundColor: AppColors.primaryColor,

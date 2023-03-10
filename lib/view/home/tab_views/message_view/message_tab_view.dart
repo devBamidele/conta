@@ -1,4 +1,4 @@
-import 'package:conta/view/home/tab_views/message_view/message_list_view.dart';
+import 'package:conta/view/home/tab_views/message_view/chat_list_view.dart';
 import 'package:conta/view/home/tab_views/message_view/story_screen.dart';
 import 'package:conta/view/home/tab_views/message_view/users_search.dart';
 import 'package:flutter/material.dart';

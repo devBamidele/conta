@@ -16,7 +16,7 @@ class Message {
     required this.recipientId,
     required this.content,
     required this.timestamp,
-    required this.isUnread,
+    this.isUnread = true,
   });
 
   // Deserialize the JSON data received from Firestore into a Message object.
