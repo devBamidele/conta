@@ -8,7 +8,12 @@ import '../../../../res/color.dart';
 import '../../../../res/components/message_bubble.dart';
 
 class MessagesStream extends StatelessWidget {
-  const MessagesStream({Key? key}) : super(key: key);
+  const MessagesStream({
+    Key? key,
+    this.scrollController,
+  }) : super(key: key);
+
+  final ScrollController? scrollController;
 
   @override
   Widget build(BuildContext context) {
@@ -29,8 +34,9 @@ class MessagesStream extends StatelessWidget {
                 return const Center(
                   child: Text('Empty'),
                 );
-              } //
+              }
               return ListView.builder(
+                controller: scrollController,
                 itemCount: messages.length,
                 itemBuilder: (context, index) {
                   Message message = messages[index];

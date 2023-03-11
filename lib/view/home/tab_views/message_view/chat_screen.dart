@@ -24,6 +24,8 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final messagesController = TextEditingController();
   final messagesFocusNode = FocusNode();
+  final scrollController = ScrollController();
+
   bool typing = false;
   bool emojiShowing = false;
 
@@ -34,12 +36,15 @@ class _ChatScreenState extends State<ChatScreen> {
     messagesController.addListener(_updateIcon);
 
     messagesFocusNode.addListener(_removeEmojiPicker);
+
+    _scrollToBottom();
   }
 
   @override
   void dispose() {
     messagesFocusNode.dispose();
     messagesController.dispose();
+    scrollController.dispose();
 
     super.dispose();
   }
@@ -66,13 +71,26 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  _scrollToBottom() {
+    // Scroll to the bottom of the list
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(const Duration(milliseconds: 200), () {
+        scrollController.animateTo(
+          scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+        );
+      });
+    });
+  }
+
   _onSendMessageTap() {
     final chatProvider =
         Provider.of<ChatMessagesProvider>(context, listen: false);
-    final content = messagesController.text;
 
-    chatProvider.uploadChat(content);
+    chatProvider.uploadChat(messagesController.text);
 
+    _scrollToBottom();
     messagesController.clear();
   }
 
@@ -96,16 +114,18 @@ class _ChatScreenState extends State<ChatScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            const Expanded(
+            Expanded(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10),
-                child: MessagesStream(),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: MessagesStream(
+                  scrollController: scrollController,
+                ),
               ),
             ),
             Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
                   child: Row(
                     children: [
                       Expanded(

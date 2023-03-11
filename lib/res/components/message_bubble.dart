@@ -23,33 +23,50 @@ class MessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 10),
+      padding: const EdgeInsets.only(top: 8),
       child: Column(
         crossAxisAlignment:
             isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
-          Material(
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(edges),
-              bottomRight:
-                  isMe ? const Radius.circular(0) : Radius.circular(edges),
-              topLeft: isMe ? Radius.circular(edges) : const Radius.circular(0),
-              topRight: Radius.circular(edges),
-            ),
-            color: isMe ? AppColors.primaryColor : Colors.white,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-              child: Text(
-                text,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: isMe ? Colors.white : Colors.black,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Material(
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(edges),
+                  bottomRight:
+                      isMe ? const Radius.circular(0) : Radius.circular(edges),
+                  topLeft:
+                      isMe ? Radius.circular(edges) : const Radius.circular(0),
+                  topRight: Radius.circular(edges),
+                ),
+                color: isMe ? AppColors.primaryColor : Colors.white,
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                  child: Text(
+                    text,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: isMe ? Colors.white : Colors.black,
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-          Text(
-            timeSent.timeFormat(),
+              Padding(
+                padding: const EdgeInsets.only(
+                  top: 3,
+                  left: 5,
+                ),
+                child: Text(
+                  timeSent.timeFormat(),
+                  style: const TextStyle(
+                    color: Colors.black45,
+                    fontSize: 11.5,
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
