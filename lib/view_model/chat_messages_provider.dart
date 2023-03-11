@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +10,9 @@ import '../models/message.dart';
 import '../models/search_user.dart';
 
 class ChatMessagesProvider extends ChangeNotifier {
+  final FirebaseAuth auth = FirebaseAuth.instance;
   final currentUser = FirebaseAuth.instance.currentUser;
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   Stream<List<Message>> getChatMessagesStream({
     required String currentUserUid,
@@ -131,15 +131,15 @@ class ChatMessagesProvider extends ChangeNotifier {
 
   setCurrentChat({
     required String username,
-    required String uidUser,
-    required String uidChat,
+    required String uidUser1,
+    required String uidUser2,
     String? profilePicUrl,
   }) {
     final chat = CurrentChat(
       username: username,
-      uidUser: uidUser,
-      uidChat: uidChat,
+      uidUser1: uidUser1,
       profilePicUrl: profilePicUrl,
+      uidUser2: uidUser2,
     );
     currentChat = chat;
   }
@@ -149,7 +149,7 @@ class ChatMessagesProvider extends ChangeNotifier {
     Message newMessage = Message(
       id: messageId,
       senderId: currentUser!.uid,
-      recipientId: currentChat!.uidChat,
+      recipientId: currentChat!.uidUser2,
       content: content,
       timestamp: Timestamp.now(),
     );
@@ -161,7 +161,7 @@ class ChatMessagesProvider extends ChangeNotifier {
   }
 
   Future<void> uploadChat(String content) async {
-    String chatId = generateChatId(currentUser!.uid, currentChat!.uidChat);
+    String chatId = generateChatId(currentUser!.uid, currentChat!.uidUser2);
 
     // Check if chat already exists in Firestore
     DocumentSnapshot chatSnapshot =
@@ -172,7 +172,7 @@ class ChatMessagesProvider extends ChangeNotifier {
       Chat newChat = Chat(
         id: chatId,
         user1Id: currentUser!.uid,
-        user2Id: currentChat!.uidChat,
+        user2Id: currentChat!.uidUser2,
         messages: [],
       );
       await FirebaseFirestore.instance
@@ -189,4 +189,7 @@ class ChatMessagesProvider extends ChangeNotifier {
 
   /// Holds the profile information of the current selected chat
   CurrentChat? currentChat;
+
+  Stream<DocumentSnapshot<Map<String, dynamic>>> getOnlineStatusStream() =>
+      firestore.doc('users/${currentChat!.uidUser2}').snapshots();
 }

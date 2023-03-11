@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 import '../../res/color.dart';
 import '../../utils/app_router/router.gr.dart';
-import '../../utils/countdown_timer.dart';
+import '../../res/components/countdown_timer.dart';
 
 class VerifyAccountScreen extends StatefulWidget {
   const VerifyAccountScreen({

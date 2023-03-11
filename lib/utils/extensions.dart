@@ -9,9 +9,33 @@ extension TimeOfDayExtension on TimeOfDay {
 }
 
 extension TimeStampExtension on Timestamp {
-  String timeFormat() {
-    final date = toDate();
-    return DateFormat.jm().format(date);
+  String timeFormat() => DateFormat.jm().format(toDate());
+}
+
+extension TimestampExtension on Timestamp {
+  String lastSeen() {
+    DateTime dateTime = toDate();
+    DateTime now = DateTime.now();
+    if (dateTime.year != now.year) {
+      return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
+    } else if (dateTime.day != now.day) {
+      int hour = dateTime.hour;
+      String period = 'AM';
+      if (hour > 12) {
+        hour = hour - 12;
+        period = 'PM';
+      }
+      return 'Yesterday at $hour:${dateTime.minute} $period';
+    } else {
+      int hour = dateTime.hour;
+      String period = 'am';
+      if (hour > 12) {
+        hour = hour - 12;
+        period = 'pm';
+      }
+      String minute = dateTime.minute.toString().padLeft(2, '0');
+      return 'Today at $hour:$minute $period';
+    }
   }
 }
 

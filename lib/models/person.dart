@@ -23,6 +23,7 @@ class Person {
   final String bio;
   final List<String> contactUids;
   final Timestamp lastSeen;
+  final bool online;
 
   Person({
     required this.id,
@@ -33,6 +34,7 @@ class Person {
     this.bio = 'Hello there I\'m a new user',
     required this.contactUids,
     required this.lastSeen,
+    this.online = false,
   });
 
   Person.fromJson(Map<String, dynamic> json)
@@ -43,7 +45,8 @@ class Person {
         profilePicUrl = json['profilePicUrl'],
         bio = json['bio'],
         contactUids = List<String>.from(json['contactUids'] ?? []),
-        lastSeen = json['lastSeen'];
+        lastSeen = json['lastSeen'],
+        online = json['online'];
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -54,5 +57,6 @@ class Person {
         'bio': bio,
         'contactUids': contactUids,
         'lastSeen': lastSeen,
+        'online': online,
       };
 }

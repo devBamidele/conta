@@ -16,6 +16,7 @@ import '../../res/color.dart';
 import '../../res/components/custom_text_field.dart';
 import '../../res/components/shake_error.dart';
 import '../../utils/app_utils.dart';
+import '../../utils/auth_service/auth_service.dart';
 import '../../utils/widget_functions.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -28,6 +29,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  late final AuthService _authService = AuthService();
+
   final myEmailController = TextEditingController();
   final myPasswordController = TextEditingController();
 
@@ -137,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void onContinuePressed() {
-    useFirstLogin();
+    useThirdLogin();
 
     final email = formKey1.currentState?.validate();
     final password = formKey2.currentState?.validate();
@@ -181,6 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (user != null && user.emailVerified) {
         // User is authenticated and email is verified
+        _authService.updateUserOnlineStatus(true);
         navigateToHome();
       } else {
         // Email is not verified

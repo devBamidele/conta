@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:conta/res/components/custom_back_button.dart';
+import 'package:conta/res/components/online_status.dart';
 import 'package:conta/utils/widget_functions.dart';
 import 'package:conta/view_model/chat_messages_provider.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final double customSize = 27;
 
   @override
-  Size get preferredSize => const Size.fromHeight(65);
+  Size get preferredSize => const Size.fromHeight(62);
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +23,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       builder: (_, data, Widget? child) {
         final currentChat = data.currentChat!;
         return AppBar(
+          surfaceTintColor: AppColors.appBarColor,
           titleSpacing: 10,
           leading: const CustomBackButton(
             padding: EdgeInsets.only(left: 15),
@@ -53,7 +55,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           title: Row(
             children: [
               CircleAvatar(
-                radius: 30,
+                radius: 25,
                 backgroundColor: Colors.white,
                 child: currentChat.profilePicUrl != null
                     ? CachedNetworkImage(
@@ -87,18 +89,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                       currentChat.username,
                       overflow: TextOverflow.fade,
                       style: const TextStyle(
-                        fontSize: 17,
+                        fontSize: 18,
                         height: 1.2,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                     addHeight(2),
-                    const Text(
-                      'Online',
-                      style: TextStyle(
-                        fontSize: 14.5,
-                        color: AppColors.extraTextColor,
-                      ),
-                    ),
+                    const OnlineStatus(),
                   ],
                 ),
               ),

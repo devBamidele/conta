@@ -19,6 +19,7 @@ class AppColors {
   static const Color selectedBackgroundColor = Color(0xFFFFEEEB);
 
   // Main App Colors
+  static const Color appBarColor = Color(0xFFFFCBC2);
   static const Color primaryColor = Color(0xFFFC7F6C);
   static const Color primaryShadeColor = Color(0xFFF67C69);
   static const Color unreadColor = Color(0xFFD95959);

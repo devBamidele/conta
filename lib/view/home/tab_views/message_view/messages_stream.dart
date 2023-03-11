@@ -22,7 +22,7 @@ class MessagesStream extends StatelessWidget {
         return StreamBuilder(
           stream: data.getChatMessagesStream(
             currentUserUid: data.currentUser!.uid,
-            otherUserUid: data.currentChat!.uidChat,
+            otherUserUid: data.currentChat!.uidUser2,
           ),
           builder: (
             context,

@@ -173,8 +173,8 @@ class UsersSearch extends SearchDelegate {
                                   onTileTap: () {
                                     data.setCurrentChat(
                                       username: searchUser.username,
-                                      uidUser: currentUser!.uid,
-                                      uidChat: searchUser.uidSearch,
+                                      uidUser1: currentUser!.uid,
+                                      uidUser2: searchUser.uidSearch,
                                       profilePicUrl: searchUser.profilePicUrl,
                                     );
                                     navigateToChat(context);
@@ -222,9 +222,9 @@ class UsersSearch extends SearchDelegate {
                             data.addToRecentSearch(person: user);
                             data.setCurrentChat(
                               username: user.username,
-                              uidUser: currentUser!.uid,
-                              uidChat: user.id,
+                              uidUser1: currentUser!.uid,
                               profilePicUrl: user.profilePicUrl,
+                              uidUser2: user.id,
                             );
                             navigateToChat(context);
                           },
