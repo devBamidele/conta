@@ -74,13 +74,13 @@ class _ChatScreenState extends State<ChatScreen> {
   _scrollToBottom() {
     // Scroll to the bottom of the list
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Future.delayed(const Duration(milliseconds: 200), () {
+      if (scrollController.hasClients) {
         scrollController.animateTo(
           scrollController.position.maxScrollExtent,
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeOut,
         );
-      });
+      }
     });
   }
 

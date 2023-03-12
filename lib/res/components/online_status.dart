@@ -26,7 +26,7 @@ class OnlineStatus extends StatelessWidget {
               isOnline ? 'Online' : lastSeen,
               style: TextStyle(
                 color: isOnline
-                    ? AppColors.primaryColor //
+                    ? AppColors.primaryColor
                     : AppColors.extraTextColor,
                 fontSize: 13,
               ),
