@@ -71,18 +71,17 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  _scrollToBottom() {
-    // Scroll to the bottom of the list
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (scrollController.hasClients) {
-        scrollController.animateTo(
-          scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
-        );
-      }
-    });
-  }
+  _scrollToBottom() =>
+      // Scroll to the bottom of the list
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (scrollController.hasClients) {
+          scrollController.animateTo(
+            scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOut,
+          );
+        }
+      });
 
   _onSendMessageTap() {
     final chatProvider =
@@ -90,7 +89,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
     chatProvider.uploadChat(messagesController.text);
 
-    _scrollToBottom();
+    setState(() {
+      _scrollToBottom();
+    });
     messagesController.clear();
   }
 

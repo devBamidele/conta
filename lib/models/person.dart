@@ -1,19 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-/*
-Stream<List<SearchChat>> getRecentSearches() {
-    return FirebaseFirestore.instance
-        .collection('recent_searches')
-        .where('uid', isEqualTo: currentUser!.uid)
-        .orderBy('timestamp', descending: true)
-        .limit(10)
-        .snapshots()
-        .map((querySnapshot) => querySnapshot.docs
-            .map((doc) => SearchChat.fromMap(doc.data()))
-            .toList());
-  }
-
- */
 class Person {
   final String id;
   final String name;

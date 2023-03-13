@@ -10,10 +10,10 @@ import '../../../../res/components/message_bubble.dart';
 class MessagesStream extends StatelessWidget {
   const MessagesStream({
     Key? key,
-    this.scrollController,
+    required this.scrollController,
   }) : super(key: key);
 
-  final ScrollController? scrollController;
+  final ScrollController scrollController;
 
   @override
   Widget build(BuildContext context) {

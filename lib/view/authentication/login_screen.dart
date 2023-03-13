@@ -16,7 +16,7 @@ import '../../res/color.dart';
 import '../../res/components/custom_text_field.dart';
 import '../../res/components/shake_error.dart';
 import '../../utils/app_utils.dart';
-import '../../utils/auth_service/auth_service.dart';
+import '../../utils/services/auth_service.dart';
 import '../../utils/widget_functions.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -140,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void onContinuePressed() {
-    useFirstLogin();
+    useThirdLogin();
 
     final email = formKey1.currentState?.validate();
     final password = formKey2.currentState?.validate();
