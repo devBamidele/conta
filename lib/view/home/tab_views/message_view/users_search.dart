@@ -176,6 +176,7 @@ class UsersSearch extends SearchDelegate {
                                       uidUser1: currentUser!.uid,
                                       uidUser2: searchUser.uidSearch,
                                       profilePicUrl: searchUser.profilePicUrl,
+                                      tokenId: searchUser.tokenId,
                                     );
                                     navigateToChat(context);
                                   },
@@ -223,8 +224,9 @@ class UsersSearch extends SearchDelegate {
                             data.setCurrentChat(
                               username: user.username,
                               uidUser1: currentUser!.uid,
-                              profilePicUrl: user.profilePicUrl,
                               uidUser2: user.id,
+                              profilePicUrl: user.profilePicUrl,
+                              tokenId: user.tokenId,
                             );
                             navigateToChat(context);
                           },

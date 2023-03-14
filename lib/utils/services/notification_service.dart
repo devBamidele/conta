@@ -1,19 +1,30 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 
-class NotificationService {
+class MessagingService {
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+  final _tokenController = StreamController<String?>.broadcast();
+
+  Stream<String?> get tokenStream => _tokenController.stream;
 
   Future<void> getToken() async {
     String? token = await _messaging.getToken();
     log('The token is $token');
+    _tokenController.add(token);
+
     _messaging.onTokenRefresh.listen((fcmToken) {
       // Note: This callback is fired at each app startup and whenever a new
       // token is generated.
+      _tokenController.add(fcmToken);
     }).onError((err) {
       // Error getting token.
     });
+  }
+
+  void dispose() {
+    _tokenController.close();
   }
 
   getMessagesInForeground() {
@@ -34,8 +45,6 @@ class NotificationService {
     RemoteMessage? initialMessage =
         await FirebaseMessaging.instance.getInitialMessage();
 
-    // If the message also contains a data property with a "type" of "chat",
-    // navigate to a chat screen
     if (initialMessage != null) {
       _handleMessage(initialMessage);
     }
@@ -50,4 +59,26 @@ class NotificationService {
       // Navigate to the chat screen here
     }
   }
+
+  void sendNotification(String? tokenId, String sender, String message) async {
+    // Create a message payload
+    Map<String, String>? payload = {
+      'title': sender,
+      'body': message,
+    };
+
+    log('The token id of the person who will receive the message is $tokenId');
+    // Send the message payload to the other user's device
+    await FirebaseMessaging.instance.sendMessage(
+      // Set the FCM registration token of the other user's device
+      to: tokenId,
+      data: payload,
+      collapseKey: '',
+      messageId: '',
+      messageType: '',
+      ttl: 10,
+    );
+  }
+
+  //data: payload.toJson()
 }

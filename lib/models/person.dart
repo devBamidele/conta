@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Person {
   final String id;
+  final String? tokenId;
   final String name;
   final String username;
   final String email;
@@ -13,6 +14,7 @@ class Person {
 
   Person({
     required this.id,
+    this.tokenId,
     required this.name,
     required this.username,
     required this.email,
@@ -25,6 +27,7 @@ class Person {
 
   Person.fromJson(Map<String, dynamic> json)
       : id = json['id'],
+        tokenId = json['tokenId'],
         name = json['name'],
         username = json['username'],
         email = json['email'],
@@ -36,6 +39,7 @@ class Person {
 
   Map<String, dynamic> toJson() => {
         'id': id,
+        'tokenId': tokenId,
         'name': name,
         'username': username,
         'email': email,

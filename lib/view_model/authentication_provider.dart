@@ -9,7 +9,7 @@ import '../models/person.dart';
 class AuthenticationProvider extends ChangeNotifier {
   // Instantiate Firebase Firestore and Firebase Authentication
   final _fireStore = FirebaseFirestore.instance;
-  final storage = FirebaseStorage.instance;
+  final _storage = FirebaseStorage.instance;
 
   String? username;
   String? name;
@@ -18,10 +18,11 @@ class AuthenticationProvider extends ChangeNotifier {
   String? password;
 
   File? profilePic;
+  String? deviceToken;
 
   Future<void> uploadImageWithData(String userId, File? file) async {
     try {
-      final ref = storage.ref().child("profile_pictures").child(userId);
+      final ref = _storage.ref().child("profile_pictures").child(userId);
       String? photoUrl;
 
       if (file != null) {
@@ -31,15 +32,16 @@ class AuthenticationProvider extends ChangeNotifier {
 
       final person = Person(
         id: userId,
+        tokenId: deviceToken,
         name: name!,
         username: username!,
         email: email!,
         profilePicUrl: photoUrl,
         contactUids: [],
         lastSeen: Timestamp.now(),
-      );
+      ).toJson();
 
-      await _fireStore.collection('users').doc(userId).set(person.toJson());
+      await _fireStore.collection('users').doc(userId).set(person);
     } catch (e) {
       throw 'An error occurred while uploading the image';
     }

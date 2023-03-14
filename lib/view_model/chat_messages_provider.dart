@@ -8,11 +8,13 @@ import '../models/Person.dart';
 import '../models/current_chat.dart';
 import '../models/message.dart';
 import '../models/search_user.dart';
+import '../utils/services/notification_service.dart';
 
 class ChatMessagesProvider extends ChangeNotifier {
   final FirebaseAuth auth = FirebaseAuth.instance;
   final currentUser = FirebaseAuth.instance.currentUser;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  late final MessagingService _messagingService = MessagingService();
 
   Stream<List<Message>> getChatMessagesStream({
     required String currentUserUid,
@@ -80,10 +82,11 @@ class ChatMessagesProvider extends ChangeNotifier {
         username: person.username,
         uidSearch: person.id,
         profilePicUrl: person.profilePicUrl,
-      );
+        tokenId: person.tokenId,
+      ).toMap();
       await FirebaseFirestore.instance
           .collection('recent_searches')
-          .add(search.toMap());
+          .add(search);
     } else {
       // If the user exists, update their timestamp
       final userDoc = userQuery.docs.first;
@@ -134,12 +137,14 @@ class ChatMessagesProvider extends ChangeNotifier {
     required String uidUser1,
     required String uidUser2,
     String? profilePicUrl,
+    String? tokenId,
   }) {
     final chat = CurrentChat(
       username: username,
       uidUser1: uidUser1,
-      profilePicUrl: profilePicUrl,
       uidUser2: uidUser2,
+      profilePicUrl: profilePicUrl,
+      tokenId: tokenId,
     );
     currentChat = chat;
   }
@@ -185,6 +190,10 @@ class ChatMessagesProvider extends ChangeNotifier {
       Chat chat = Chat.fromJson(chatSnapshot.data() as Map<String, dynamic>);
       await addNewMessageToChat(chat, content);
     }
+
+    // Send a notification to the user
+    _messagingService.sendNotification(
+        currentChat!.tokenId, currentChat!.username, content);
   }
 
   /// Holds the profile information of the current selected chat

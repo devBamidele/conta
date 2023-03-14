@@ -1,4 +1,6 @@
+import 'package:conta/view_model/authentication_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../res/app_theme.dart';
 import '../utils/app_router/router.gr.dart';
@@ -15,13 +17,28 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   late final AuthService _authService = AuthService();
-  late final NotificationService _notificationService = NotificationService();
+  late final MessagingService _messagingService = MessagingService();
 
   @override
   void initState() {
     super.initState();
     // Get the unique token for the device
-    _notificationService.getToken();
+    _messagingService.getToken();
+
+    final authProvider =
+        Provider.of<AuthenticationProvider>(context, listen: false);
+
+    // Listen for token updates
+    _messagingService.tokenStream
+        .listen((token) => authProvider.deviceToken = token);
+
+    // Listen for foreground messages
+    _messagingService.getMessagesInForeground();
+
+    // Run code required to handle interacted messages in an async function
+    // as initState() must not be async
+    _messagingService.setupInteractedMessage();
+
     // Register this object as a observer of the WidgetsBinding instance
     WidgetsBinding.instance.addObserver(this);
   }
@@ -29,6 +46,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void dispose() {
     super.dispose();
+    // Close the Stream Controller
+    _messagingService.dispose();
     // Unregister this object as a observer of the WidgetsBinding instance
     WidgetsBinding.instance.removeObserver(this);
   }

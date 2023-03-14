@@ -6,6 +6,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:conta/view_model/chat_messages_provider.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 import 'app/my_app.dart';
 
@@ -20,6 +21,14 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  OneSignal.shared.setAppId('2abe9a4d-e1f6-4532-b940-ade3289c7227');
+
+// The promptForPushNotificationsWithUserResponse function will show the iOS or Android push notification prompt.
+// We recommend removing the following code and instead using an In-App Message to prompt for notification permission
+  OneSignal.shared.promptUserForPushNotificationPermission().then((accepted) {
+    log("Accepted permission: $accepted");
+  });
+
   runApp(
     MultiProvider(
       providers: [
