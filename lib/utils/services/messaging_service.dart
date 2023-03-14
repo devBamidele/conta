@@ -59,26 +59,4 @@ class MessagingService {
       // Navigate to the chat screen here
     }
   }
-
-  void sendNotification(String? tokenId, String sender, String message) async {
-    // Create a message payload
-    Map<String, String>? payload = {
-      'title': sender,
-      'body': message,
-    };
-
-    log('The token id of the person who will receive the message is $tokenId');
-    // Send the message payload to the other user's device
-    await FirebaseMessaging.instance.sendMessage(
-      // Set the FCM registration token of the other user's device
-      to: tokenId,
-      data: payload,
-      collapseKey: '',
-      messageId: '',
-      messageType: '',
-      ttl: 10,
-    );
-  }
-
-  //data: payload.toJson()
 }

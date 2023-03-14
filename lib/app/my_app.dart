@@ -6,7 +6,7 @@ import '../res/app_theme.dart';
 import '../utils/app_router/router.gr.dart';
 import '../utils/app_utils.dart';
 import '../utils/services/auth_service.dart';
-import '../utils/services/notification_service.dart';
+import '../utils/services/messaging_service.dart';
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -33,7 +33,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         .listen((token) => authProvider.deviceToken = token);
 
     // Listen for foreground messages
-    _messagingService.getMessagesInForeground();
+    //_messagingService.getMessagesInForeground();
 
     // Run code required to handle interacted messages in an async function
     // as initState() must not be async

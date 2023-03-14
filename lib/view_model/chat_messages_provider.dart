@@ -8,7 +8,7 @@ import '../models/Person.dart';
 import '../models/current_chat.dart';
 import '../models/message.dart';
 import '../models/search_user.dart';
-import '../utils/services/notification_service.dart';
+import '../utils/services/messaging_service.dart';
 
 class ChatMessagesProvider extends ChangeNotifier {
   final FirebaseAuth auth = FirebaseAuth.instance;
@@ -190,10 +190,6 @@ class ChatMessagesProvider extends ChangeNotifier {
       Chat chat = Chat.fromJson(chatSnapshot.data() as Map<String, dynamic>);
       await addNewMessageToChat(chat, content);
     }
-
-    // Send a notification to the user
-    _messagingService.sendNotification(
-        currentChat!.tokenId, currentChat!.username, content);
   }
 
   /// Holds the profile information of the current selected chat
