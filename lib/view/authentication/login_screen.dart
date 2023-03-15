@@ -17,6 +17,7 @@ import '../../res/components/custom_text_field.dart';
 import '../../res/components/shake_error.dart';
 import '../../utils/app_utils.dart';
 import '../../utils/services/auth_service.dart';
+import '../../utils/services/messaging_service.dart';
 import '../../utils/widget_functions.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -30,6 +31,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   late final AuthService _authService = AuthService();
+  late final MessagingService _messagingService = MessagingService();
 
   final myEmailController = TextEditingController();
   final myPasswordController = TextEditingController();
@@ -182,8 +184,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
       User? user = userCredential.user;
 
+      // User is authenticated and email is verified
       if (user != null && user.emailVerified) {
-        // User is authenticated and email is verified
+        // Set One Signal id for the User
+        _messagingService.setExternalUserId(user.uid);
+        // Tell Firebase the user is now online
         _authService.updateUserOnlineStatus(true);
         navigateToHome();
       } else {

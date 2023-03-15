@@ -32,13 +32,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     _messagingService.tokenStream
         .listen((token) => authProvider.deviceToken = token);
 
-    // Listen for foreground messages
-    //_messagingService.getMessagesInForeground();
-
-    // Run code required to handle interacted messages in an async function
-    // as initState() must not be async
-    _messagingService.setupInteractedMessage();
-
     // Register this object as a observer of the WidgetsBinding instance
     WidgetsBinding.instance.addObserver(this);
   }
