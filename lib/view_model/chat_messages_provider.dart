@@ -190,6 +190,9 @@ class ChatMessagesProvider extends ChangeNotifier {
       Chat chat = Chat.fromJson(chatSnapshot.data() as Map<String, dynamic>);
       await addNewMessageToChat(chat, content);
     }
+
+    _messagingService
+        .sendOneSignalNotification([currentChat!.uidUser2], content);
   }
 
   /// Holds the profile information of the current selected chat
