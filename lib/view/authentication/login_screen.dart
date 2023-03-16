@@ -142,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void onContinuePressed() {
-    useThirdLogin();
+    useSecondLogin();
 
     final email = formKey1.currentState?.validate();
     final password = formKey2.currentState?.validate();

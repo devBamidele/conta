@@ -16,6 +16,9 @@ class ChatMessagesProvider extends ChangeNotifier {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   late final MessagingService _messagingService = MessagingService();
 
+  /// Holds the profile information of the current selected chat
+  CurrentChat? currentChat;
+
   Stream<List<Message>> getChatMessagesStream({
     required String currentUserUid,
     required String otherUserUid,
@@ -82,7 +85,6 @@ class ChatMessagesProvider extends ChangeNotifier {
         username: person.username,
         uidSearch: person.id,
         profilePicUrl: person.profilePicUrl,
-        tokenId: person.tokenId,
       ).toMap();
       await FirebaseFirestore.instance
           .collection('recent_searches')
@@ -137,14 +139,12 @@ class ChatMessagesProvider extends ChangeNotifier {
     required String uidUser1,
     required String uidUser2,
     String? profilePicUrl,
-    String? tokenId,
   }) {
     final chat = CurrentChat(
       username: username,
       uidUser1: uidUser1,
       uidUser2: uidUser2,
       profilePicUrl: profilePicUrl,
-      tokenId: tokenId,
     );
     currentChat = chat;
   }
@@ -191,12 +191,12 @@ class ChatMessagesProvider extends ChangeNotifier {
       await addNewMessageToChat(chat, content);
     }
 
-    _messagingService
-        .sendOneSignalNotification([currentChat!.uidUser2], content);
+    _messagingService.sendNotification(
+      recipientIds: [currentChat!.uidUser2],
+      message: content,
+      senderName: currentUser!.displayName!,
+    );
   }
-
-  /// Holds the profile information of the current selected chat
-  CurrentChat? currentChat;
 
   Stream<DocumentSnapshot<Map<String, dynamic>>> getOnlineStatusStream() =>
       firestore.doc('users/${currentChat!.uidUser2}').snapshots();

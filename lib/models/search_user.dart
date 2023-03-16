@@ -6,7 +6,6 @@ class SearchUser {
   final String username;
   final String uidUser; // This shows the id of the current logged in user
   final String uidSearch;
-  final String? tokenId;
   final String? profilePicUrl;
 
   SearchUser({
@@ -15,7 +14,6 @@ class SearchUser {
     required this.username,
     required this.uidUser,
     required this.uidSearch,
-    this.tokenId,
     this.profilePicUrl,
   });
 
@@ -26,7 +24,6 @@ class SearchUser {
         username: map['username'],
         uidUser: map['uidUser'],
         uidSearch: map['uidSearch'],
-        tokenId: map['tokenId'],
         profilePicUrl: map['profilePicUrl']);
   }
 
@@ -37,7 +34,6 @@ class SearchUser {
       'username': username,
       'uidUser': uidUser,
       'uidSearch': uidSearch,
-      'tokenId': tokenId,
       'profilePicUrl': profilePicUrl,
     };
   }

@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:conta/view_model/authentication_provider.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'package:flutter/material.dart';
@@ -17,11 +18,12 @@ void main() async {
   await Firebase.initializeApp();
   await dotenv.load();
 
+  // Activate app check
+  await FirebaseAppCheck.instance.activate();
+
   OneSignal.shared.setAppId(dotenv.env['APP_ID']!);
 
   OneSignal.shared.setLogLevel(OSLogLevel.debug, OSLogLevel.none);
-
-  // We recommend removing the following code and instead using an
   // In-App Message to prompt for notification permission
   OneSignal.shared.promptUserForPushNotificationPermission().then((accepted) {
     log("Accepted permission: $accepted");

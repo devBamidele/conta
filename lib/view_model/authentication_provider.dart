@@ -18,7 +18,6 @@ class AuthenticationProvider extends ChangeNotifier {
   String? password;
 
   File? profilePic;
-  String? deviceToken;
 
   Future<void> uploadImageWithData(String userId, File? file) async {
     try {
@@ -32,7 +31,6 @@ class AuthenticationProvider extends ChangeNotifier {
 
       final person = Person(
         id: userId,
-        tokenId: deviceToken,
         name: name!,
         username: username!,
         email: email!,

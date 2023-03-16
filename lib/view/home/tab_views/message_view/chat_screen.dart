@@ -9,7 +9,6 @@ import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../res/color.dart';
-import '../../../../res/components/custom_emoji_picker.dart';
 import 'messages_stream.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -27,15 +26,12 @@ class _ChatScreenState extends State<ChatScreen> {
   final scrollController = ScrollController();
 
   bool typing = false;
-  bool emojiShowing = false;
 
   @override
   void initState() {
     super.initState();
 
     messagesController.addListener(_updateIcon);
-
-    messagesFocusNode.addListener(_removeEmojiPicker);
 
     _scrollToBottom();
   }
@@ -47,16 +43,6 @@ class _ChatScreenState extends State<ChatScreen> {
     scrollController.dispose();
 
     super.dispose();
-  }
-
-  _removeEmojiPicker() {
-    if (messagesFocusNode.hasFocus) {
-      Future.delayed(const Duration(milliseconds: 150), () {
-        setState(() {
-          emojiShowing = false;
-        });
-      });
-    }
   }
 
   _updateIcon() {
@@ -97,16 +83,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   _onSuffixIconTap() {}
 
-  // Execute this function when the prefix icon button is tapped
-  _onPrefixIconTap() {
-    messagesFocusNode.unfocus();
-    messagesFocusNode.canRequestFocus = true;
-    Future.delayed(const Duration(milliseconds: 200), () {
-      setState(() {
-        emojiShowing = !emojiShowing;
-      });
-    });
-  }
+  _onPrefixIconTap() {}
 
   @override
   Widget build(BuildContext context) {
@@ -160,18 +137,6 @@ class _ChatScreenState extends State<ChatScreen> {
                               ),
                       )
                     ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-                  child: Offstage(
-                    offstage: !emojiShowing,
-                    child: SizedBox(
-                      height: 250,
-                      child: CustomEmojiPicker(
-                        messagesController: messagesController,
-                      ),
-                    ),
                   ),
                 ),
               ],
