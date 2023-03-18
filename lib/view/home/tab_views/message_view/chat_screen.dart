@@ -47,13 +47,13 @@ class _ChatScreenState extends State<ChatScreen> {
 
   _updateIcon() {
     if (messagesController.text.isNotEmpty) {
-      setState(() {
-        typing = true;
-      });
+      setState(
+        () => typing = true,
+      );
     } else {
-      setState(() {
-        typing = false;
-      });
+      setState(
+        () => typing = false,
+      );
     }
   }
 
@@ -81,8 +81,6 @@ class _ChatScreenState extends State<ChatScreen> {
     messagesController.clear();
   }
 
-  _onSuffixIconTap() {}
-
   _onPrefixIconTap() {}
 
   @override
@@ -100,46 +98,51 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
               ),
             ),
-            Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
-                  child: Row(
-                    children: [
-                      Expanded(
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 5, 8, 5),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxHeight: 5 * 16 * 1.4,
+                      ),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        reverse: true,
                         child: ChatTextFormField(
                           node: messagesFocusNode,
                           controller: messagesController,
                           onPrefixIconTap: _onPrefixIconTap,
-                          onSuffixIconTap: _onSuffixIconTap,
                         ),
                       ),
-                      addWidth(10),
-                      CircleAvatar(
-                        radius: 25,
-                        backgroundColor: AppColors.primaryColor,
-                        child: typing
-                            ? GestureDetector(
-                                onTap: _onSendMessageTap,
-                                child: Transform.rotate(
-                                  angle: math.pi / 4,
-                                  child: const Icon(
-                                    IconlyBold.send,
-                                    size: 23,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              )
-                            : const Icon(
-                                IconlyBold.voice,
+                    ),
+                  ),
+                  addWidth(8),
+                  CircleAvatar(
+                    radius: 25,
+                    backgroundColor: AppColors.primaryColor,
+                    child: typing
+                        ? GestureDetector(
+                            onTap: _onSendMessageTap,
+                            child: Transform.rotate(
+                              angle: math.pi / 4,
+                              child: const Icon(
+                                IconlyBold.send,
                                 size: 23,
                                 color: Colors.white,
                               ),
-                      )
-                    ],
-                  ),
-                ),
-              ],
+                            ),
+                          )
+                        : const Icon(
+                            IconlyBold.voice,
+                            size: 23,
+                            color: Colors.white,
+                          ),
+                  )
+                ],
+              ),
             ),
           ],
         ),

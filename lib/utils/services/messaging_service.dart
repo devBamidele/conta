@@ -30,6 +30,13 @@ class MessagingService {
   Future<void> setExternalUserId(String id) async {
     final authHashToken = await generateHash(id);
     OneSignal.shared.setExternalUserId(id, authHashToken);
+    OneSignal.shared.disablePush(false);
+  }
+
+  Future<void> signOutFromMessaging() async {
+    // Remove the user's tag from OneSignal
+    OneSignal.shared.removeExternalUserId();
+    OneSignal.shared.disablePush(true);
   }
 
   Future<void> sendNotification({

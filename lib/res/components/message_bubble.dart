@@ -22,6 +22,7 @@ class MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Column(
@@ -31,24 +32,31 @@ class MessageBubble extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Material(
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(edges),
-                  bottomRight:
-                      isMe ? const Radius.circular(0) : Radius.circular(edges),
-                  topLeft:
-                      isMe ? Radius.circular(edges) : const Radius.circular(0),
-                  topRight: Radius.circular(edges),
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: screenWidth * 0.8, // set the max width to 250
                 ),
-                color: isMe ? AppColors.primaryColor : Colors.white,
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                  child: Text(
-                    text,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: isMe ? Colors.white : Colors.black,
+                child: Material(
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(edges),
+                    bottomRight: isMe
+                        ? const Radius.circular(0)
+                        : Radius.circular(edges),
+                    topLeft: isMe
+                        ? Radius.circular(edges)
+                        : const Radius.circular(0),
+                    topRight: Radius.circular(edges),
+                  ),
+                  color: isMe ? AppColors.primaryColor : Colors.white,
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 7, horizontal: 10),
+                    child: Text(
+                      text,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: isMe ? Colors.white : Colors.black,
+                      ),
                     ),
                   ),
                 ),

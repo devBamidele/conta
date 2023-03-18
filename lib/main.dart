@@ -19,7 +19,8 @@ void main() async {
   await dotenv.load();
 
   // Activate app check
-  await FirebaseAppCheck.instance.activate();
+  await FirebaseAppCheck.instance
+      .activate(androidProvider: AndroidProvider.debug);
 
   OneSignal.shared.setAppId(dotenv.env['APP_ID']!);
 

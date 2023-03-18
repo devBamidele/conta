@@ -15,11 +15,9 @@ const chatInputBorder = OutlineInputBorder(
     color: AppColors.backGroundColor,
   ),
   borderRadius: BorderRadius.all(
-    Radius.circular(30),
+    Radius.circular(25),
   ),
 );
-
-
 
 /// The decoration for the elevated button
 final elevatedButton = ElevatedButton.styleFrom(

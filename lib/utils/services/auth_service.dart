@@ -17,8 +17,8 @@ class AuthService {
     }
   }
 
-  Future<void> signOut() async {
-    await _auth.signOut();
+  Future<void> signOutFromApp() async {
     updateUserOnlineStatus(false);
+    await _auth.signOut();
   }
 }

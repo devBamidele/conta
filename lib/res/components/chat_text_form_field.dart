@@ -10,19 +10,17 @@ class ChatTextFormField extends StatelessWidget {
     required this.node,
     required this.controller,
     this.onPrefixIconTap,
-    this.onSuffixIconTap,
   }) : super(key: key);
 
   final FocusNode node;
   final TextEditingController controller;
   final VoidCallback? onPrefixIconTap;
-  final VoidCallback? onSuffixIconTap;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       style: const TextStyle(
-        fontSize: 16,
+        fontSize: 16, // Also change the value in the constrains on this widget
         height: 1.4,
         letterSpacing: 0.2,
       ),
@@ -34,19 +32,10 @@ class ChatTextFormField extends StatelessWidget {
         enabledBorder: chatInputBorder,
         focusedBorder: chatInputBorder,
         fillColor: Colors.white,
-        hintText: 'Type Here',
-        contentPadding: const EdgeInsets.all(18),
+        hintText: 'Message',
+        isDense: true,
         prefixIcon: GestureDetector(
           onTap: onPrefixIconTap,
-          child: const Icon(
-            Icons.emoji_emotions_outlined,
-            color: AppColors.hintTextColor,
-            size: 28,
-          ), //
-        ),
-        isDense: true,
-        suffixIcon: GestureDetector(
-          onTap: onSuffixIconTap,
           child: Transform.rotate(
             angle: -math.pi / 1.3,
             child: const Icon(

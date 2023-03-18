@@ -15,7 +15,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final double customSize = 27;
 
   @override
-  Size get preferredSize => const Size.fromHeight(62);
+  Size get preferredSize => const Size.fromHeight(58);
 
   @override
   Widget build(BuildContext context) {
@@ -24,13 +24,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         final currentChat = data.currentChat!;
         return AppBar(
           surfaceTintColor: AppColors.appBarColor,
-          titleSpacing: 10,
+          titleSpacing: 5, //
           leading: const CustomBackButton(
             padding: EdgeInsets.only(left: 15),
+            color: AppColors.extraTextColor,
           ),
           actions: [
             Padding(
-              padding: const EdgeInsets.only(right: 15),
+              padding: const EdgeInsets.only(right: 20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -38,14 +39,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                     padding: const EdgeInsets.only(left: 10),
                     child: Icon(
                       IconlyLight.video,
-                      color: AppColors.extraTextColor.withOpacity(0.8),
+                      color: AppColors.extraTextColor,
                       size: customSize,
                     ),
                   ),
                   addWidth(20),
                   Icon(
                     IconlyLight.call,
-                    color: AppColors.extraTextColor.withOpacity(0.8),
+                    color: AppColors.extraTextColor,
                     size: customSize,
                   ),
                 ],
@@ -55,7 +56,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           title: Row(
             children: [
               CircleAvatar(
-                radius: 25,
+                radius: 23,
                 backgroundColor: Colors.white,
                 child: currentChat.profilePicUrl != null
                     ? CachedNetworkImage(
@@ -80,7 +81,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                         size: 25,
                       ),
               ),
-              addWidth(15),
+              addWidth(10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -89,7 +90,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                       currentChat.username,
                       overflow: TextOverflow.fade,
                       style: const TextStyle(
-                        fontSize: 18,
+                        fontSize: 17.5,
                         height: 1.2,
                         fontWeight: FontWeight.w500,
                       ),
