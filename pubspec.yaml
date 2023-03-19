@@ -57,7 +57,7 @@ dependencies:
   cached_network_image: ^3.2.3
   uuid: ^3.0.7
   shimmer: ^2.0.0
-  onesignal_flutter: ^3.5.0
+  onesignal_flutter: ^3.5.1
   http: ^0.13.5
   flutter_dotenv: ^5.0.2
 

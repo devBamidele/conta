@@ -123,6 +123,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
     super.dispose();
   }
 
+  void showSnackbar(String message) {
+    if (mounted) {
+      AppUtils.showSnackbar(message);
+    }
+  }
+
   void validate() {
     final email = formKey1.currentState?.validate();
     final password = formKey2.currentState?.validate();
@@ -163,13 +169,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       if (signInMethods.isNotEmpty) {
         // Email is already registered with Firebase
-        AppUtils.showSnackbar('An account already exists for that email.');
+        showSnackbar('An account already exists for that email.');
       } else {
         setValues(email, password);
       }
     } catch (e) {
       // Handle exceptions
-      AppUtils.showSnackbar(
+      showSnackbar(
           'An error occurred while checking email and password. Please try again later.');
     } finally {
       context.router.pop();
@@ -281,9 +287,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                           onPressed: () {
                             // Update the state i.e. toggle the state of passwordVisible variable
-                            setState(() {
-                              _passwordVisible = !_passwordVisible;
-                            });
+                            setState(
+                              () => _passwordVisible = !_passwordVisible,
+                            );
                           },
                         ),
                       ),

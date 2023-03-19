@@ -12,6 +12,7 @@ import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:iconly/iconly.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
+import 'dart:developer';
 import '../../res/color.dart';
 import '../../res/components/custom_text_field.dart';
 import '../../res/components/shake_error.dart';
@@ -139,10 +140,16 @@ class _LoginScreenState extends State<LoginScreen> {
   useThirdLogin() {
     myEmailController.text = 'ajewole.bamidele@stu.cu.edu.ng';
     myPasswordController.text = 'dele004';
+  } //
+
+  void showSnackbar(String message) {
+    if (mounted) {
+      AppUtils.showSnackbar(message);
+    }
   }
 
   void onContinuePressed() {
-    useThirdLogin();
+    //useThirdLogin();
 
     final email = formKey1.currentState?.validate();
     final password = formKey2.currentState?.validate();
@@ -184,28 +191,31 @@ class _LoginScreenState extends State<LoginScreen> {
 
       User? user = userCredential.user;
 
+      log('I executed 1st');
       // User is authenticated and email is verified
       if (user != null && user.emailVerified) {
+        log('I executed 2nd');
         // Set One Signal id for the User
         _messagingService.setExternalUserId(user.uid);
+        log('I executed 3rd');
         // Tell Firebase the user is now online
         _authService.updateUserOnlineStatus(true);
         navigateToHome();
       } else {
         // Email is not verified
-        AppUtils.showSnackbar('Please verify your email before logging in');
+        showSnackbar('Please verify your email before logging in');
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'network-request-failed') {
         // User's device is not connected to the internet,
-        AppUtils.showSnackbar('No internet connection');
+        showSnackbar('No internet connection');
       } else {
         // Handle login errors
-        AppUtils.showSnackbar('Invalid email or password');
+        showSnackbar('Invalid email or password');
       }
     } catch (e) {
       // Handle other errors
-      AppUtils.showSnackbar(
+      showSnackbar(
           'An error occurred while checking email and password. Please try again later.');
     } finally {
       context.router.pop();
