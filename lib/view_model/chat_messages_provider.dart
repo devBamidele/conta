@@ -8,13 +8,12 @@ import '../models/Person.dart';
 import '../models/current_chat.dart';
 import '../models/message.dart';
 import '../models/search_user.dart';
-import '../utils/services/messaging_service.dart';
 
 class ChatMessagesProvider extends ChangeNotifier {
   final FirebaseAuth auth = FirebaseAuth.instance;
   final currentUser = FirebaseAuth.instance.currentUser;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  late final MessagingService _messagingService = MessagingService();
+  //late final MessagingService _messagingService = MessagingService();
 
   /// Holds the profile information of the current selected chat
   CurrentChat? currentChat;
@@ -191,11 +190,13 @@ class ChatMessagesProvider extends ChangeNotifier {
       await addNewMessageToChat(chat, content);
     }
 
-    _messagingService.sendNotification(
+    /*
+     _messagingService.sendNotification(
       recipientIds: [currentChat!.uidUser2],
       message: content,
       senderName: currentUser!.displayName!,
     );
+     */
   }
 
   Stream<DocumentSnapshot<Map<String, dynamic>>> getOnlineStatusStream() =>

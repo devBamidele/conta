@@ -39,19 +39,16 @@ extension TimestampExtension on Timestamp {
   }
 }
 
-/*
-
-import 'package:intl/intl.dart';
-
-// Get the Timestamp object
-Timestamp timestamp = Timestamp.now();
-
-// Convert the Timestamp object to a DateTime object
-DateTime dateTime = timestamp.toDate();
-
-// Format the DateTime object to get the time in the format of "9:09 PM"
-String formattedTime = DateFormat.jm().format(dateTime);
-
-print(formattedTime); // Output: 8:56 PM
-
- */
+extension SameDay on Timestamp {
+  bool isSameDay(Timestamp time) {
+    DateTime first = toDate();
+    DateTime second = time.toDate();
+    int difference = DateTime(first.year, first.month, first.day)
+        .difference(DateTime(second.year, second.month, second.day))
+        .inDays;
+    if (difference == 0) {
+      return true;
+    }
+    return false;
+  }
+}

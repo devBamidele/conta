@@ -91,11 +91,8 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Column(
           children: [
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: MessagesStream(
-                  scrollController: scrollController,
-                ),
+              child: MessagesStream(
+                scrollController: scrollController,
               ),
             ),
             Padding(

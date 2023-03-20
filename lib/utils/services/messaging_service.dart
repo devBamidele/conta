@@ -24,22 +24,20 @@ class MessagingService {
       }),
       headers: {'Content-Type': 'application/json'},
     );
+    log(response.body);
     return json.decode(response.body)['hash'];
   }
 
   Future<void> setExternalUserId(String id) async {
-    String authHashToken =
-        '5cee330e508651c157fe561f4204eefc23dfe237ffc3c98fda72bffe506b4bdb';
-    log(authHashToken);
+    String authHashToken = await generateHash(id);
     OneSignal.shared.setExternalUserId(id, authHashToken);
     OneSignal.shared.disablePush(false);
   }
 
-  //
   Future<void> signOutFromMessaging() async {
     // Disable push notifications for this device for that user
-    OneSignal.shared.removeExternalUserId();
     OneSignal.shared.disablePush(true);
+    OneSignal.shared.removeExternalUserId();
   }
 
   Future<void> sendNotification({

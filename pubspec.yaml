@@ -60,6 +60,7 @@ dependencies:
   onesignal_flutter: ^3.5.1
   http: ^0.13.5
   flutter_dotenv: ^5.0.2
+  chat_bubbles: ^1.4.0
 
 
 

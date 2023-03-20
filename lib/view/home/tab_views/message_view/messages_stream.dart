@@ -1,3 +1,6 @@
+import 'package:chat_bubbles/bubbles/bubble_special_three.dart';
+import 'package:chat_bubbles/date_chips/date_chip.dart';
+import 'package:conta/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
@@ -5,15 +8,22 @@ import 'package:provider/provider.dart';
 import '../../../../models/message.dart';
 import '../../../../view_model/chat_messages_provider.dart';
 import '../../../../res/color.dart';
-import '../../../../res/components/message_bubble.dart';
 
-class MessagesStream extends StatelessWidget {
+class MessagesStream extends StatefulWidget {
   const MessagesStream({
     Key? key,
     required this.scrollController,
   }) : super(key: key);
 
   final ScrollController scrollController;
+
+  @override
+  State<MessagesStream> createState() => _MessagesStreamState();
+}
+
+class _MessagesStreamState extends State<MessagesStream> {
+  bool showTail = true;
+  bool showDate = true;
 
   @override
   Widget build(BuildContext context) {
@@ -36,16 +46,50 @@ class MessagesStream extends StatelessWidget {
                 );
               }
               return ListView.builder(
-                controller: scrollController,
+                controller: widget.scrollController,
                 itemCount: messages.length,
                 itemBuilder: (context, index) {
                   Message message = messages[index];
-
-                  return MessageBubble(
-                    text: message.content,
-                    isMe: message.senderId == data.currentUser!.uid,
-                    timeSent: message.timestamp,
-                    unread: message.isUnread,
+                  bool sameUser = message.senderId == data.currentUser!.uid;
+                  if (index < messages.length - 1) {
+                    if (message.timestamp
+                        .isSameDay(messages[index + 1].timestamp)) {
+                      showTail =
+                          message.senderId != messages[index + 1].senderId;
+                    } else {
+                      showTail = true;
+                    }
+                  } else {
+                    // For the very last chat
+                    showTail = true;
+                  }
+                  if (index == 0) {
+                    // For the very first chat
+                    showDate = true;
+                  } else {
+                    showDate = !messages[index - 1]
+                        .timestamp
+                        .isSameDay(message.timestamp);
+                  }
+                  return Column(
+                    children: [
+                      Visibility(
+                        visible: showDate,
+                        child: DateChip(
+                          date: message.timestamp.toDate(),
+                        ),
+                      ),
+                      BubbleSpecialThree(
+                        text: message.content,
+                        color: sameUser ? AppColors.primaryColor : Colors.white,
+                        tail: showTail,
+                        isSender: sameUser,
+                        textStyle: TextStyle(
+                          color: sameUser ? Colors.white : Colors.black,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
                   );
                 },
               );

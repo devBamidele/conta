@@ -1,6 +1,5 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:conta/utils/app_router/router.gr.dart';
-import 'package:conta/utils/services/messaging_service.dart';
 import 'package:flutter/material.dart';
 
 import '../../../res/style/component_style.dart';
@@ -17,10 +16,8 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   late final AuthService _authService = AuthService();
-  late final MessagingService _messagingService = MessagingService();
 
   logout() {
-    _messagingService.signOutFromMessaging();
     _authService.signOutFromApp();
     context.router.replaceAll([const LoginScreenRoute()]);
   }
