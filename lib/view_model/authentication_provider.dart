@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../models/person.dart';
 
@@ -19,7 +21,25 @@ class AuthenticationProvider extends ChangeNotifier {
 
   File? profilePic;
 
-  Future<void> uploadImageWithData(String userId, File? file) async {
+  Future<UserCredential> signInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth =
+    await googleUser?.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
+
+  Future<void> createNewUser(String userId, File? file) async {
     try {
       final ref = _storage.ref().child("profile_pictures").child(userId);
       String? photoUrl;
@@ -45,7 +65,7 @@ class AuthenticationProvider extends ChangeNotifier {
     }
   }
 
-  setNames({required String name, required String username}) {
+  setNameAndUserName(String name, String username) {
     this.name = name;
     this.username = username;
     notifyListeners();

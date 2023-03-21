@@ -60,7 +60,7 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
       final userId = userCredential.user!.uid;
 
       // Upload the image and create the User in firestore
-      authProvider.uploadImageWithData(userId, _imageFile);
+      authProvider.createNewUser(userId, _imageFile);
 
       // Update the display name
       await userCredential.user!.updateDisplayName(username);

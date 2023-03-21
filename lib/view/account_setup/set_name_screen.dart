@@ -182,7 +182,7 @@ class _SetNameScreenState extends State<SetNameScreen> {
     final name = myNameController.text.trim();
     final userName = myUserNameController.text.trim();
     Provider.of<AuthenticationProvider>(context, listen: false)
-        .setNames(name: name, username: userName);
+        .setNameAndUserName(name, userName);
 
     context.router.pushNamed(SetPhotoScreen.tag);
   }
