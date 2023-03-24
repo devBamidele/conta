@@ -90,13 +90,14 @@ class _MessagesStreamState extends State<MessagesStream> {
                         child: MessageBubble(
                           text: message.content,
                           color:
-                              sameUser ? AppColors.primaryColor : Colors.white,
+                              sameUser ? AppColors.bubbleColor : Colors.white,
                           tail: showTail,
                           isSender: sameUser,
-                          seen: message.isUnread,
-                          timeSent: message.timestamp,
-                          textStyle: TextStyle(
-                            color: sameUser ? Colors.white : Colors.black,
+                          sent: message.sent,
+                          seen: message.seen,
+                          timeSent: message.timestamp.customFormat(),
+                          textStyle: const TextStyle(
+                            color: Colors.black87,
                             fontSize: 15.5,
                           ),
                         ),

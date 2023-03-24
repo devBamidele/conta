@@ -52,6 +52,6 @@ class Chat {
       return false;
     }
     final lastMessage = messages.last;
-    return lastMessage.senderId != userId && lastMessage.isUnread;
+    return lastMessage.senderId != userId && lastMessage.seen;
   }
 }

@@ -133,6 +133,20 @@ class ChatMessagesProvider extends ChangeNotifier {
             .toList());
   }
 
+  void messageStataListener() {
+    //final CollectionReference messagesRef = FirebaseFirestore.instance.collection('messages');
+    String chatId = generateChatId(currentUser!.uid, currentChat!.uidUser2);
+
+    // Listen for changes to the message document
+    firestore.collection('chats').doc(chatId).snapshots().listen((snapshot) {
+      bool sent = snapshot.get('sent');
+      bool delivered = snapshot.get('field');
+      bool seen = snapshot.get('field');
+
+      // Do something with the message status (e.g. update UI)
+    });
+  }
+
   setCurrentChat({
     required String username,
     required String uidUser1,
@@ -169,7 +183,7 @@ class ChatMessagesProvider extends ChangeNotifier {
 
     // Check if chat already exists in Firestore
     DocumentSnapshot chatSnapshot =
-        await FirebaseFirestore.instance.collection('chats').doc(chatId).get();
+        await firestore.collection('chats').doc(chatId).get();
 
     if (!chatSnapshot.exists) {
       // Chat doesn't exist, create new chat document
@@ -179,10 +193,9 @@ class ChatMessagesProvider extends ChangeNotifier {
         user2Id: currentChat!.uidUser2,
         messages: [],
       );
-      await FirebaseFirestore.instance
-          .collection('chats')
-          .doc(chatId)
-          .set(newChat.toJson());
+      await firestore.collection('chats').doc(chatId).set(
+            newChat.toJson(),
+          );
 
       await addNewMessageToChat(newChat, content);
     } else {

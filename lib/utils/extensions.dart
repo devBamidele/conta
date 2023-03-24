@@ -1,11 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
-extension TimeStampExtension on Timestamp {
+extension TimeStampExtensions on Timestamp {
   String customFormat() => DateFormat.jm().format(toDate());
-}
 
-extension LastSeen on Timestamp {
   String lastSeen(Timestamp currentTime) {
     final time = toDate();
     Duration difference = currentTime.toDate().difference(time);
@@ -21,9 +19,7 @@ extension LastSeen on Timestamp {
       return 'Last seen just now';
     }
   }
-}
 
-extension SameDay on Timestamp {
   bool isSameDay(Timestamp time) {
     final first = toDate();
     final second = time.toDate();

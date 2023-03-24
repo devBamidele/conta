@@ -1,8 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:conta/utils/extensions.dart';
 import 'package:flutter/material.dart';
-
-import '../color.dart';
 
 ///iMessage's chat bubble type
 ///
@@ -21,8 +17,9 @@ class MessageBubble extends StatelessWidget {
   final bool sent;
   final bool delivered;
   final bool seen;
-  final Timestamp timeSent;
+  final String timeSent;
   final TextStyle textStyle;
+  final TextStyle timeStyle;
 
   const MessageBubble({
     Key? key,
@@ -38,6 +35,10 @@ class MessageBubble extends StatelessWidget {
       color: Colors.black87,
       fontSize: 16,
     ),
+    this.timeStyle = const TextStyle(
+      fontSize: 10,
+      color: Colors.black45,
+    ),
   }) : super(key: key);
 
   ///chat bubble builder method
@@ -46,6 +47,7 @@ class MessageBubble extends StatelessWidget {
     double prefWidth = MediaQuery.of(context).size.width * .75;
     double height = 0;
     double width = 0;
+    double addedSpacing = 0;
     int lines = 0;
     bool stateTick = false;
     Icon? stateIcon;
@@ -55,6 +57,13 @@ class MessageBubble extends StatelessWidget {
         Icons.done,
         size: 18,
         color: Color(0xFF97AD8E),
+      );
+    } else {
+      stateTick = true;
+      stateIcon = Icon(
+        Icons.wifi_off_rounded,
+        size: 18,
+        color: timeStyle.color,
       );
     }
     if (delivered) {
@@ -70,7 +79,7 @@ class MessageBubble extends StatelessWidget {
       stateIcon = const Icon(
         Icons.done_all,
         size: 15,
-        color: AppColors.extraTextColor,
+        color: Colors.black45,
       );
     }
     return Align(
@@ -91,16 +100,33 @@ class MessageBubble extends StatelessWidget {
                 textDirection: TextDirection.ltr,
               );
 
+              final timePainter = TextPainter(
+                text: TextSpan(text: timeSent, style: timeStyle),
+                textAlign: TextAlign.left,
+                textDirection: TextDirection.ltr,
+              );
+
               painter.layout(maxWidth: constraints.maxWidth);
+              timePainter.layout(maxWidth: constraints.maxWidth);
 
               lines = painter.width ~/ prefWidth;
 
-              width = lines == 0 && painter.width < (prefWidth - 82)
-                  ? painter.width + 82
+              addedSpacing = timePainter.width + 42;
+
+              width = lines == 0 && painter.width < (prefWidth - addedSpacing)
+                  ? painter.width + addedSpacing
+                  : 0;
+//
+              height = width == 0
+                  ? lines == 0
+                      ? (lines + 2) * painter.height + 7
+                      : (lines + 1) * painter.height - 3
                   : 0;
 
-              height = width == 0 ? (lines + 2) * painter.height : 0;
-
+              if (height != 0 && lines == 0) {
+                double diff = (prefWidth - painter.width).clamp(0, 30);
+                width = painter.width + diff;
+              }
               return Container(
                 constraints: BoxConstraints(
                   minWidth: width,
@@ -116,11 +142,11 @@ class MessageBubble extends StatelessWidget {
                   children: <Widget>[
                     Padding(
                       padding: stateTick
-                          ? const EdgeInsets.only(left: 4, right: 20)
+                          ? const EdgeInsets.only(left: 4)
                           : const EdgeInsets.only(left: 4, right: 4),
                       child: Text(
                         text,
-                        style: textStyle,
+                        style: textStyle, //
                         textAlign: TextAlign.left,
                       ),
                     ),
@@ -134,11 +160,8 @@ class MessageBubble extends StatelessWidget {
                                   padding:
                                       EdgeInsets.only(right: isSender ? 3 : 5),
                                   child: Text(
-                                    timeSent.customFormat(),
-                                    style: const TextStyle(
-                                      fontSize: 11,
-                                      color: AppColors.extraTextColor,
-                                    ),
+                                    timeSent,
+                                    style: timeStyle,
                                   ),
                                 ),
                                 Visibility(
