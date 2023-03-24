@@ -27,7 +27,7 @@ class AuthenticationProvider extends ChangeNotifier {
 
     // Obtain the auth details from the request
     final GoogleSignInAuthentication? googleAuth =
-    await googleUser?.authentication;
+        await googleUser?.authentication;
 
     // Create a new credential
     final credential = GoogleAuthProvider.credential(
@@ -39,11 +39,20 @@ class AuthenticationProvider extends ChangeNotifier {
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
+  Future<UserCredential> signInWithGitHub() async {
+    // Create a new provider
+    GithubAuthProvider githubProvider = GithubAuthProvider();
+
+    return await FirebaseAuth.instance.signInWithProvider(githubProvider);
+  }
+
   Future<void> createNewUser(String userId, File? file) async {
     try {
       final ref = _storage.ref().child("profile_pictures").child(userId);
       String? photoUrl;
 
+      // Upload the image to firebase cloud storage
+      // And the download Url
       if (file != null) {
         await ref.putFile(file);
         photoUrl = await ref.getDownloadURL();

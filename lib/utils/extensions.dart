@@ -1,54 +1,34 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
-extension TimeOfDayExtension on TimeOfDay {
-  String timeFormat() {
-    return '$hour : $minute ${period.name}';
-  }
-}
-
 extension TimeStampExtension on Timestamp {
-  String timeFormat() => DateFormat.jm().format(toDate());
+  String customFormat() => DateFormat.jm().format(toDate());
 }
 
-extension TimestampExtension on Timestamp {
-  String lastSeen() {
-    DateTime dateTime = toDate();
-    DateTime now = DateTime.now();
-    if (dateTime.year != now.year) {
-      return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
-    } else if (dateTime.day != now.day) {
-      int hour = dateTime.hour;
-      String period = 'AM';
-      if (hour > 12) {
-        hour = hour - 12;
-        period = 'PM';
-      }
-      return 'Yesterday at $hour:${dateTime.minute} $period';
+extension LastSeen on Timestamp {
+  String lastSeen(Timestamp currentTime) {
+    final time = toDate();
+    Duration difference = currentTime.toDate().difference(time);
+    if (difference.inDays >= 2) {
+      return '${time.day}/${time.month}/${time.year}';
+    } else if (difference.inDays == 1) {
+      return 'Yesterday at ${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+    } else if (difference.inHours >= 1) {
+      return 'Last seen ${difference.inHours} hour${difference.inHours == 1 ? '' : 's'} ago';
+    } else if (difference.inMinutes >= 1) {
+      return 'Last seen ${difference.inMinutes} minute${difference.inMinutes == 1 ? '' : 's'} ago';
     } else {
-      int hour = dateTime.hour;
-      String period = 'am';
-      if (hour > 12) {
-        hour = hour - 12;
-        period = 'pm';
-      }
-      String minute = dateTime.minute.toString().padLeft(2, '0');
-      return 'Today at $hour:$minute $period';
+      return 'Last seen just now';
     }
   }
 }
 
 extension SameDay on Timestamp {
   bool isSameDay(Timestamp time) {
-    DateTime first = toDate();
-    DateTime second = time.toDate();
-    int difference = DateTime(first.year, first.month, first.day)
-        .difference(DateTime(second.year, second.month, second.day))
-        .inDays;
-    if (difference == 0) {
-      return true;
-    }
-    return false;
+    final first = toDate();
+    final second = time.toDate();
+    return (first.year == second.year &&
+        first.month == second.month &&
+        first.day == second.day);
   }
 }

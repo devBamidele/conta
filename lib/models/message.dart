@@ -1,6 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 /// The class representing a [Message] object
 /// Like an actual message when chatting
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Message {
   final String id;

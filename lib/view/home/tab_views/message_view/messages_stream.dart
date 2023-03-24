@@ -1,5 +1,5 @@
-import 'package:chat_bubbles/bubbles/bubble_special_three.dart';
 import 'package:chat_bubbles/date_chips/date_chip.dart';
+import 'package:conta/res/components/message_bubble.dart';
 import 'package:conta/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -24,6 +24,7 @@ class MessagesStream extends StatefulWidget {
 class _MessagesStreamState extends State<MessagesStream> {
   bool showTail = true;
   bool showDate = true;
+  bool showTopSpacing = false;
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +52,19 @@ class _MessagesStreamState extends State<MessagesStream> {
                 itemBuilder: (context, index) {
                   Message message = messages[index];
                   bool sameUser = message.senderId == data.currentUser!.uid;
+
+                  if (index == 0) {
+                    // For the very first chat
+                    showDate = true;
+                    showTopSpacing = false;
+                  } else {
+                    showDate = !messages[index - 1]
+                        .timestamp
+                        .isSameDay(message.timestamp);
+                    showTopSpacing = !showDate &&
+                        message.senderId != messages[index - 1].senderId;
+                  }
+
                   if (index < messages.length - 1) {
                     if (message.timestamp
                         .isSameDay(messages[index + 1].timestamp)) {
@@ -63,14 +77,6 @@ class _MessagesStreamState extends State<MessagesStream> {
                     // For the very last chat
                     showTail = true;
                   }
-                  if (index == 0) {
-                    // For the very first chat
-                    showDate = true;
-                  } else {
-                    showDate = !messages[index - 1]
-                        .timestamp
-                        .isSameDay(message.timestamp);
-                  }
                   return Column(
                     children: [
                       Visibility(
@@ -79,14 +85,20 @@ class _MessagesStreamState extends State<MessagesStream> {
                           date: message.timestamp.toDate(),
                         ),
                       ),
-                      BubbleSpecialThree(
-                        text: message.content,
-                        color: sameUser ? AppColors.primaryColor : Colors.white,
-                        tail: showTail,
-                        isSender: sameUser,
-                        textStyle: TextStyle(
-                          color: sameUser ? Colors.white : Colors.black,
-                          fontSize: 16,
+                      Padding(
+                        padding: EdgeInsets.only(top: showTopSpacing ? 10 : 0),
+                        child: MessageBubble(
+                          text: message.content,
+                          color:
+                              sameUser ? AppColors.primaryColor : Colors.white,
+                          tail: showTail,
+                          isSender: sameUser,
+                          seen: message.isUnread,
+                          timeSent: message.timestamp,
+                          textStyle: TextStyle(
+                            color: sameUser ? Colors.white : Colors.black,
+                            fontSize: 15.5,
+                          ),
                         ),
                       ),
                     ],

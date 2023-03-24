@@ -40,6 +40,7 @@ dependencies:
   # Firebase related
   firebase_core: ^2.6.1
   firebase_auth: ^4.2.8
+  google_sign_in: ^6.0.2
   cloud_firestore: ^4.4.2
   firebase_storage: ^11.0.15
   firebase_app_check: ^0.1.1+13
@@ -61,7 +62,6 @@ dependencies:
   http: ^0.13.5
   flutter_dotenv: ^5.0.2
   chat_bubbles: ^1.4.0
-  google_sign_in: ^6.0.2
 
 
 

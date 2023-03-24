@@ -21,7 +21,7 @@ class OnlineStatus extends StatelessWidget {
             }
             bool isOnline = snapshot.data!.get('online') ?? false;
             Timestamp time = snapshot.data!.get('lastSeen');
-            String lastSeen = time.lastSeen();
+            String lastSeen = time.lastSeen(Timestamp.now());
             return Text(
               isOnline ? 'Online' : lastSeen,
               style: TextStyle(
