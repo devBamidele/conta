@@ -95,6 +95,7 @@ class _MessagesStreamState extends State<MessagesStream> {
                           isSender: sameUser,
                           sent: message.sent,
                           seen: message.seen,
+                          delivered: message.delivered,
                           timeSent: message.timestamp.customFormat(),
                           textStyle: const TextStyle(
                             color: Colors.black87,

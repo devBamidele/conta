@@ -25,12 +25,12 @@ class MessageBubble extends StatelessWidget {
     Key? key,
     this.isSender = true,
     required this.text,
+    required this.sent,
+    required this.delivered,
+    required this.seen,
+    required this.timeSent,
     this.color = Colors.white70,
     this.tail = true,
-    this.sent = false,
-    this.delivered = false,
-    this.seen = false,
-    required this.timeSent,
     this.textStyle = const TextStyle(
       color: Colors.black87,
       fontSize: 16,
@@ -50,19 +50,19 @@ class MessageBubble extends StatelessWidget {
     double addedSpacing = 0;
     int lines = 0;
     bool stateTick = false;
-    Icon? stateIcon;
+    Widget? stateIcon;
     if (sent) {
       stateTick = true;
-      stateIcon = const Icon(
+      stateIcon = Icon(
         Icons.done,
-        size: 18,
-        color: Color(0xFF97AD8E),
+        size: 15,
+        color: timeStyle.color,
       );
     } else {
       stateTick = true;
       stateIcon = Icon(
         Icons.wifi_off_rounded,
-        size: 18,
+        size: 15,
         color: timeStyle.color,
       );
     }
@@ -124,8 +124,8 @@ class MessageBubble extends StatelessWidget {
                   : 0;
 
               if (height != 0 && lines == 0) {
-                double diff = (prefWidth - painter.width).clamp(0, 30);
-                width = painter.width + diff;
+                width =
+                    painter.width + (prefWidth - painter.width).clamp(0, 30);
               }
               return Container(
                 constraints: BoxConstraints(
