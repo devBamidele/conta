@@ -1,4 +1,3 @@
-import 'package:chat_bubbles/date_chips/date_chip.dart';
 import 'package:conta/res/components/message_bubble.dart';
 import 'package:conta/utils/extensions.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +5,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../models/message.dart';
+import '../../../../res/components/date_time/date_chip.dart';
 import '../../../../view_model/chat_messages_provider.dart';
 import '../../../../res/color.dart';
 
@@ -77,6 +77,7 @@ class _MessagesStreamState extends State<MessagesStream> {
                     // For the very last chat
                     showTail = true;
                   }
+
                   return Column(
                     children: [
                       Visibility(
@@ -95,7 +96,6 @@ class _MessagesStreamState extends State<MessagesStream> {
                           isSender: sameUser,
                           sent: message.sent,
                           seen: message.seen,
-                          delivered: message.delivered,
                           timeSent: message.timestamp.customFormat(),
                           textStyle: const TextStyle(
                             color: Colors.black87,

@@ -133,20 +133,6 @@ class ChatMessagesProvider extends ChangeNotifier {
             .toList());
   }
 
-  void messageStataListener() {
-    //final CollectionReference messagesRef = FirebaseFirestore.instance.collection('messages');
-    String chatId = generateChatId(currentUser!.uid, currentChat!.uidUser2);
-
-    // Listen for changes to the message document
-    firestore.collection('chats').doc(chatId).snapshots().listen((snapshot) {
-      bool sent = snapshot.get('sent');
-      bool delivered = snapshot.get('field');
-      bool seen = snapshot.get('field');
-
-      // Do something with the message status (e.g. update UI)
-    });
-  }
-
   setCurrentChat({
     required String username,
     required String uidUser1,
