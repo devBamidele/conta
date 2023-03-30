@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
+import '../../view_model/chat_messages_provider.dart';
 import '../color.dart';
 import 'bubble_painter.dart';
 
@@ -16,6 +19,7 @@ class MessageBubble extends StatefulWidget {
   final bool isSender;
   final String text;
   final bool tail;
+  final int index;
   final Color color;
   final bool sent;
   final bool seen;
@@ -25,7 +29,8 @@ class MessageBubble extends StatefulWidget {
 
   const MessageBubble({
     Key? key,
-    this.isSender = true,
+    required this.isSender,
+    required this.index,
     required this.text,
     required this.sent,
     required this.seen,
@@ -47,6 +52,9 @@ class MessageBubble extends StatefulWidget {
 }
 
 class _MessageBubbleState extends State<MessageBubble> {
+  late final chatProvider =
+      Provider.of<ChatMessagesProvider>(context, listen: false);
+
   double height = 0;
   double width = 0;
   double addedSpacing = 0;
@@ -62,19 +70,45 @@ class _MessageBubbleState extends State<MessageBubble> {
   @override
   void initState() {
     super.initState();
+
     painter = TextPainter(
       text: TextSpan(text: widget.text, style: widget.textStyle),
       textAlign: TextAlign.left,
       textDirection: TextDirection.ltr,
     );
     painter.layout(maxWidth: double.infinity);
+
     timePainter = TextPainter(
       text: TextSpan(text: widget.timeSent, style: widget.timeStyle),
       textAlign: TextAlign.left,
       textDirection: TextDirection.ltr,
     );
     timePainter.layout(maxWidth: double.infinity);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     prefWidth = MediaQuery.of(context).size.width * .75;
+  }
+
+  void onVisibilityChanged(VisibilityInfo info) {
+    if (mounted) {
+      setState(() {
+        if (!widget.seen && info.visibleFraction > 0.8 && !widget.isSender) {
+          // chatProvider.updateSeen(widget.index);
+        }
+      });
+    }
+  }
+
+  void onLongTapMessage() {
+    setState(() {
+      messageTapped = !messageTapped;
+      overlayColor = messageTapped
+          ? AppColors.bubbleColor.withOpacity(0.15)
+          : Colors.transparent;
+    });
   }
 
   ///chat bubble builder method
@@ -104,108 +138,103 @@ class _MessageBubbleState extends State<MessageBubble> {
       );
     }
 
-    onLongTapMessage() {
-      setState(() {
-        messageTapped = !messageTapped;
-
-        overlayColor = messageTapped
-            ? AppColors.bubbleColor.withOpacity(0.15)
-            : Colors.transparent;
-      });
-    }
-
     return GestureDetector(
       onTap: onLongTapMessage,
       onLongPress: onLongTapMessage,
-      child: Container(
-        color: overlayColor,
-        child: Align(
-          alignment: widget.isSender ? Alignment.topRight : Alignment.topLeft,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-            child: CustomPaint(
-              painter: BubblePainter(
-                color: widget.color,
-                alignment:
-                    widget.isSender ? Alignment.topRight : Alignment.topLeft,
-                tail: widget.tail,
-              ),
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  lines = painter.width ~/ prefWidth;
+      child: VisibilityDetector(
+        key: widget.key!,
+        onVisibilityChanged: onVisibilityChanged,
+        child: Container(
+          color: overlayColor,
+          child: Align(
+            alignment: widget.isSender ? Alignment.topRight : Alignment.topLeft,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+              child: CustomPaint(
+                painter: BubblePainter(
+                  color: widget.color,
+                  alignment:
+                      widget.isSender ? Alignment.topRight : Alignment.topLeft,
+                  tail: widget.tail,
+                ),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    lines = painter.width ~/ prefWidth;
 
-                  addedSpacing = timePainter.width + 42;
+                    addedSpacing = timePainter.width + 42;
 
-                  width =
-                      lines == 0 && painter.width < (prefWidth - addedSpacing)
-                          ? painter.width + addedSpacing
-                          : 0;
-//
-                  height = width == 0
-                      ? lines == 0
-                          ? 2 * painter.height
-                          : lines * painter.height
-                      : 0;
+                    width =
+                        lines == 0 && painter.width < (prefWidth - addedSpacing)
+                            ? painter.width + addedSpacing
+                            : 0;
 
-                  if (height != 0 && lines == 0) {
-                    width = painter.width +
-                        (prefWidth - painter.width).clamp(0, 30);
-                  }
-                  return Container(
-                    constraints: BoxConstraints(
-                      minWidth: width,
-                      minHeight: height,
-                      maxWidth: prefWidth,
-                    ),
-                    margin: widget.isSender
-                        ? stateTick
-                            ? const EdgeInsets.fromLTRB(7, 7, 14, 7)
-                            : const EdgeInsets.fromLTRB(7, 7, 17, 7)
-                        : const EdgeInsets.fromLTRB(17, 7, 7, 7),
-                    child: Stack(
-                      children: <Widget>[
-                        Padding(
-                          padding: stateTick
-                              ? const EdgeInsets.only(left: 4)
-                              : const EdgeInsets.only(left: 4, right: 4),
-                          child: Text(
-                            widget.text,
-                            style: widget.textStyle, //
-                            textAlign: TextAlign.left,
+                    height = width == 0
+                        ? lines == 0
+                            ? 2 * painter.height
+                            : lines * painter.height
+                        : 0;
+
+                    if (height != 0 && lines == 0) {
+                      width = painter.width +
+                          (prefWidth - painter.width).clamp(0, 30);
+                    }
+                    return Container(
+                      constraints: BoxConstraints(
+                        minWidth: width,
+                        minHeight: height,
+                        maxWidth: prefWidth,
+                      ),
+                      margin: widget.isSender
+                          ? stateTick
+                              ? const EdgeInsets.fromLTRB(7, 7, 14, 7)
+                              : const EdgeInsets.fromLTRB(7, 7, 17, 7)
+                          : const EdgeInsets.fromLTRB(17, 7, 7, 7),
+                      child: Stack(
+                        children: <Widget>[
+                          Padding(
+                            padding: stateTick
+                                ? const EdgeInsets.only(left: 4)
+                                : const EdgeInsets.symmetric(horizontal: 4),
+                            child: Text(
+                              widget.text,
+                              style: widget.textStyle,
+                              textAlign: TextAlign.left,
+                            ),
                           ),
-                        ),
-                        stateIcon != null
-                            ? Positioned(
-                                bottom: 0,
-                                right: 0,
-                                child: Row(
-                                  children: [
-                                    Padding(
-                                      padding: EdgeInsets.only(
-                                          right: widget.isSender ? 3 : 5),
-                                      child: Text(
-                                        widget.timeSent,
-                                        style: widget.timeStyle,
+                          stateIcon != null
+                              ? Positioned(
+                                  bottom: 0,
+                                  right: 0,
+                                  child: Row(
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                          right: widget.isSender ? 3 : 5,
+                                        ),
+                                        child: Text(
+                                          widget.timeSent,
+                                          style: widget.timeStyle,
+                                        ),
                                       ),
-                                    ),
-                                    Visibility(
-                                      visible: widget.isSender,
-                                      child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 6),
-                                        child: stateIcon,
+                                      Visibility(
+                                        visible: widget.isSender,
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(right: 6),
+                                          child: stateIcon,
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
+                                )
+                              : const SizedBox(
+                                  width: 1,
                                 ),
-                              )
-                            : const SizedBox(
-                                width: 1,
-                              ),
-                      ],
-                    ),
-                  );
-                },
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
           ),

@@ -43,4 +43,24 @@ I hope this helps! Let me know if you have any other questions or if there's any
     }
 
 
+
+ CollectionReference chatRef =
+        FirebaseFirestore.instance.collection('chats');
+    String chatId = generateChatId(currentUserUid, otherUserUid);
+
+    return chatRef.doc(chatId).snapshots().map((snapshot) {
+      if (!snapshot.exists) {
+        return [];
+      }
+
+      List<dynamic> messages = snapshot.get('messages');
+
+      return messages
+          .map(
+              (message) => Message.fromJson(Map<String, dynamic>.from(message)))
+          .toList();
+    });
+
+
+
  */

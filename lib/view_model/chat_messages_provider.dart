@@ -10,7 +10,6 @@ import '../models/message.dart';
 import '../models/search_user.dart';
 
 class ChatMessagesProvider extends ChangeNotifier {
-  final FirebaseAuth auth = FirebaseAuth.instance;
   final currentUser = FirebaseAuth.instance.currentUser;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   //late final MessagingService _messagingService = MessagingService();
@@ -45,13 +44,6 @@ class ChatMessagesProvider extends ChangeNotifier {
     // Sort the userId in ascending order to generate a consistent chat id regardless of the order in which the uids are passed
     List<String> userId = [currentUserUid, otherUserUid]..sort();
     return '${userId[0]}_${userId[1]}';
-  }
-
-  /// Get a list of all the users names
-  Stream<List<String>> getAllUserNames() {
-    return FirebaseFirestore.instance.collection('users').snapshots().map(
-        (snapshot) =>
-            snapshot.docs.map((doc) => doc['name'] as String).toList());
   }
 
   Stream<List<Person>> getSuggestionsStream(String filter) {
@@ -139,7 +131,10 @@ class ChatMessagesProvider extends ChangeNotifier {
     required String uidUser2,
     String? profilePicUrl,
   }) {
+    final chatId = generateChatId(uidUser1, uidUser2);
+
     final chat = CurrentChat(
+      chatId: chatId,
       username: username,
       uidUser1: uidUser1,
       uidUser2: uidUser2,
@@ -148,8 +143,28 @@ class ChatMessagesProvider extends ChangeNotifier {
     currentChat = chat;
   }
 
+  Future<void> updateSeen(int index) async {
+    final chatDoc =
+        FirebaseFirestore.instance.collection('chats').doc(currentChat!.chatId);
+
+    await chatDoc.update({'messages.$index.seen': true});
+  }
+
+  /*
+  Future<void> updateSeen2(int index) async {
+    final chatDoc =
+        FirebaseFirestore.instance.collection('chats').doc(currentChat!.chatId);
+
+    final messages = currentChat!.messages;
+    final updatedMessage = messages[index].toJson()..['seen'] = true;
+    messages[index] = Message.fromJson(updatedMessage);
+    await chatDoc.update(
+        {'messages': messages.map((message) => message.toJson()).toList()});
+  }
+   */
+
   Future<void> addNewMessageToChat(Chat chat, String content) async {
-    String messageId = const Uuid().v4();
+    final messageId = const Uuid().v4();
     Message newMessage = Message(
       id: messageId,
       senderId: currentUser!.uid,

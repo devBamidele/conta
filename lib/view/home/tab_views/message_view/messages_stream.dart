@@ -89,6 +89,8 @@ class _MessagesStreamState extends State<MessagesStream> {
                       Padding(
                         padding: EdgeInsets.only(top: showTopSpacing ? 10 : 0),
                         child: MessageBubble(
+                          key: Key(message.id),
+                          index: index,
                           text: message.content,
                           color:
                               sameUser ? AppColors.bubbleColor : Colors.white,
