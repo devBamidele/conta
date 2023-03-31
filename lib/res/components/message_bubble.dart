@@ -16,6 +16,7 @@ import 'bubble_painter.dart';
 ///chat bubble [TextStyle] can be customized using [textStyle]
 
 class MessageBubble extends StatefulWidget {
+  final String id;
   final bool isSender;
   final String text;
   final bool tail;
@@ -29,6 +30,7 @@ class MessageBubble extends StatefulWidget {
 
   const MessageBubble({
     Key? key,
+    required this.id,
     required this.isSender,
     required this.index,
     required this.text,
@@ -96,7 +98,7 @@ class _MessageBubbleState extends State<MessageBubble> {
     if (mounted) {
       setState(() {
         if (!widget.seen && info.visibleFraction > 0.8 && !widget.isSender) {
-          // chatProvider.updateSeen(widget.index);
+          chatProvider.updateMessageSeen(widget.id);
         }
       });
     }

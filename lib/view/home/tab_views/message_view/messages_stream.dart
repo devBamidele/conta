@@ -90,6 +90,7 @@ class _MessagesStreamState extends State<MessagesStream> {
                         padding: EdgeInsets.only(top: showTopSpacing ? 10 : 0),
                         child: MessageBubble(
                           key: Key(message.id),
+                          id: message.id,
                           index: index,
                           text: message.content,
                           color:

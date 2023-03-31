@@ -42,6 +42,10 @@ class _ChatScreenState extends State<ChatScreen> {
     messagesController.dispose();
     scrollController.dispose();
 
+    final chatProvider =
+        Provider.of<ChatMessagesProvider>(context, listen: false);
+    chatProvider.removeOnlineStatusListener();
+
     super.dispose();
   }
 

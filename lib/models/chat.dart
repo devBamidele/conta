@@ -1,13 +1,7 @@
-import 'message.dart';
-
-/// Represents a Chat between two users, containing a unique [id], the [user1Id] and [user2Id]
-/// of the users involved, a list of [messages] exchanged in the chat, the [lastSeenUserId] of
-/// the last user to see the chat, and a [muted] boolean to indicate if notifications are muted.
 class Chat {
   final String id;
   final String user1Id;
   final String user2Id;
-  final List<Message> messages;
   final String? lastSeenUserId;
   final bool muted;
 
@@ -15,7 +9,6 @@ class Chat {
     required this.id,
     required this.user1Id,
     required this.user2Id,
-    required this.messages,
     this.lastSeenUserId,
     this.muted = false,
   });
@@ -25,9 +18,6 @@ class Chat {
       : id = json['id'],
         user1Id = json['user1Id'],
         user2Id = json['user2Id'],
-        messages = (json['messages'] as List)
-            .map((messageJson) => Message.fromJson(messageJson))
-            .toList(),
         lastSeenUserId = json['lastSeenUserId'],
         muted = json['muted'];
 
@@ -36,7 +26,6 @@ class Chat {
         'id': id,
         'user1Id': user1Id,
         'user2Id': user2Id,
-        'messages': messages.map((message) => message.toJson()).toList(),
         'lastSeenUserId': lastSeenUserId,
         'muted': muted,
       };
@@ -46,12 +35,22 @@ class Chat {
     return userId == user1Id ? user2Id : user1Id;
   }
 
+  /*
   /// Returns a boolean indicating if the chat has any unread messages for [userId].
-  bool isUnread(String userId) {
-    if (messages.isEmpty) {
+  Future<bool> isSeen(String userId) async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('chats')
+        .doc(id)
+        .collection('messages')
+        .orderBy('timestamp', descending: true)
+        .limit(1)
+        .get();
+    if (querySnapshot.docs.isEmpty) {
       return false;
     }
-    final lastMessage = messages.last;
+    final lastMessage =
+        Message.fromJson(querySnapshot.docs[0].data() as Map<String, dynamic>);
     return lastMessage.senderId != userId && lastMessage.seen;
   }
+   */
 }
