@@ -7,7 +7,6 @@ class Person {
   final String email;
   final String? profilePicUrl;
   final String bio;
-  final List<String> contactUids;
   final Timestamp lastSeen;
   final bool online;
 
@@ -18,7 +17,6 @@ class Person {
     required this.email,
     this.profilePicUrl,
     this.bio = 'Hello there I\'m a new user',
-    required this.contactUids,
     required this.lastSeen,
     this.online = false,
   });
@@ -30,7 +28,6 @@ class Person {
         email = json['email'],
         profilePicUrl = json['profilePicUrl'],
         bio = json['bio'],
-        contactUids = List<String>.from(json['contactUids'] ?? []),
         lastSeen = json['lastSeen'],
         online = json['online'];
 
@@ -41,7 +38,6 @@ class Person {
         'email': email,
         'profilePicUrl': profilePicUrl,
         'bio': bio,
-        'contactUids': contactUids,
         'lastSeen': lastSeen,
         'online': online,
       };

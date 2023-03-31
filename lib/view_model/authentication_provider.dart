@@ -64,7 +64,6 @@ class AuthenticationProvider extends ChangeNotifier {
         username: username!,
         email: email!,
         profilePicUrl: photoUrl,
-        contactUids: [],
         lastSeen: Timestamp.now(),
       ).toJson();
 
