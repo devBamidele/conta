@@ -7,6 +7,7 @@ import 'package:conta/models/chat.dart';
 import 'package:uuid/uuid.dart';
 
 import '../models/Person.dart';
+import '../models/chat_tile_data.dart';
 import '../models/current_chat.dart';
 import '../models/message.dart';
 import '../models/search_user.dart';
@@ -37,9 +38,60 @@ class ChatMessagesProvider extends ChangeNotifier {
             .toList());
   }
 
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? messagesListener;
+
+  void listenToMessages(String chatId, String userId) {
+    final CollectionReference<Map<String, dynamic>> messagesRef =
+        FirebaseFirestore.instance
+            .collection('chats')
+            .doc(chatId)
+            .collection('messages');
+
+    messagesListener = messagesRef
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .listen((snapshot) {
+      if (snapshot.docs.isNotEmpty) {
+        final DocumentSnapshot<Map<String, dynamic>> latestMessage =
+            snapshot.docs.first;
+        final String latestMessageContent = latestMessage.get('content');
+        final Timestamp latestMessageTimestamp = latestMessage.get('timestamp');
+
+        final DocumentReference<Map<String, dynamic>> chatTileRef =
+            FirebaseFirestore.instance
+                .collection('chatTiles')
+                .doc(userId)
+                .collection('tiles')
+                .doc(chatId);
+
+        chatTileRef.update({
+          'lastMessage': latestMessageContent,
+          'lastMessageTimestamp': latestMessageTimestamp,
+          'hasUnreadMessages': true,
+          'unreadMessagesCount': FieldValue.increment(1),
+        });
+      }
+    });
+  }
+
+  Stream<List<ChatTileData>> getChatTilesStream(String userId) {
+    final CollectionReference<Map<String, dynamic>> tileRef = FirebaseFirestore
+        .instance
+        .collection('chatTiles')
+        .doc(userId)
+        .collection('tiles');
+
+    return tileRef.snapshots().map((snapshot) => snapshot.docs
+        .map(
+          (doc) => ChatTileData.fromJson(doc.data()),
+        )
+        .toList());
+  }
+
   /// Generate unique chat id's for each Dm
   String generateChatId(String currentUserUid, String otherUserUid) {
-    // Sort the userId in ascending order to generate a consistent chat id regardless of the order in which the uids are passed
+    // Sort the userId in ascending order to generate a consistent chat id
+    // regardless of the order in which the uids are passed
     List<String> userId = [currentUserUid, otherUserUid]..sort();
     return '${userId[0]}_${userId[1]}';
   }
@@ -205,6 +257,28 @@ class ChatMessagesProvider extends ChangeNotifier {
         user1Id: currentUser!.uid,
         user2Id: currentChat!.uidUser2,
       );
+
+      final batch = FirebaseFirestore.instance.batch();
+
+      batch.set(
+        firestore.collection('users').doc(currentUser!.uid),
+        {
+          'chats': FieldValue.arrayUnion([chatId])
+        },
+        SetOptions(merge: true),
+      );
+
+      batch.set(
+        firestore.collection('users').doc(currentChat!.uidUser2),
+        {
+          'chats': FieldValue.arrayUnion([chatId])
+        },
+        SetOptions(merge: true),
+      );
+
+      await batch.commit();
+
+      //...
       await firestore.collection('chats').doc(chatId).set(newChat.toJson());
     }
 

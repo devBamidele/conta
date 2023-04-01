@@ -65,6 +65,7 @@ class AuthenticationProvider extends ChangeNotifier {
         email: email!,
         profilePicUrl: photoUrl,
         lastSeen: Timestamp.now(),
+        chats: [],
       ).toJson();
 
       await _fireStore.collection('users').doc(userId).set(person);
