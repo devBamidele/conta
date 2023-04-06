@@ -37,17 +37,21 @@ class ChatListView extends StatelessWidget {
                 itemCount: tileData.length,
                 itemBuilder: (context, index) {
                   ChatTileData tile = tileData[index];
+                  bool sameUser = tile.senderId == data.currentUser!.uid;
                   return ChatListTile(
                     tileData: tile,
                     onTileTap: () {
                       data.setCurrentChat(
-                        username: tile.userName,
-                        uidUser1: data.currentUser!.uid,
-                        uidUser2: tile.userId,
-                        profilePicUrl: tile.profilePicUrl,
+                        username:
+                            sameUser ? tile.recipientName : tile.senderName,
+                        uidUser1: tile.senderId,
+                        uidUser2: tile.recipientId,
+                        profilePicUrl:
+                            sameUser ? tile.recipientPicUrl : tile.senderPicUrl,
                       );
                       context.router.pushNamed(ChatScreen.tag);
                     },
+                    isSameUser: sameUser,
                   );
                 },
               );

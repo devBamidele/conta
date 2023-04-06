@@ -11,12 +11,12 @@ class ChatListTile extends StatelessWidget {
   const ChatListTile({
     Key? key,
     required this.tileData,
-    this.onCancelTap,
+    required this.isSameUser,
     this.onTileTap,
   }) : super(key: key);
 
   final ChatTileData tileData;
-  final VoidCallback? onCancelTap;
+  final bool isSameUser;
   final VoidCallback? onTileTap;
 
   @override
@@ -48,32 +48,22 @@ class ChatListTile extends StatelessWidget {
                 size: 25,
               ),
       ),
-      trailing: onCancelTap != null
-          ? IconButton(
-              padding: const EdgeInsets.only(left: 20),
-              onPressed: onCancelTap,
-              icon: const Icon(
-                Icons.clear_rounded,
-                size: 28,
-                color: AppColors.opaqueTextColor,
-              ),
-            )
-          : Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  tileData.lastMessageTimestamp.customFormat(),
-                  style: const TextStyle(color: AppColors.extraTextColor),
-                ),
-                addHeight(6),
-                const Icon(
-                  Icons.done_all_rounded,
-                  color: Colors.greenAccent,
-                  size: 20,
-                )
-              ],
-            ),
+      trailing: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(
+            tileData.lastMessageTimestamp.customFormat(),
+            style: const TextStyle(color: AppColors.extraTextColor),
+          ),
+          addHeight(6),
+          const Icon(
+            Icons.done_all_rounded,
+            color: Colors.greenAccent,
+            size: 20,
+          )
+        ],
+      ),
       title: Text(
         tileData.userName,
         style: const TextStyle(
@@ -92,3 +82,22 @@ class ChatListTile extends StatelessWidget {
     );
   }
 }
+
+/*
+
+const chatTileData = {
+        senderId: messageData.senderId,
+        recipientId: messageData.recipientId,
+        senderPicUrl: sender.profilePicUrl,
+        recipientPicUrl: recipient.profilePicUrl,
+        senderName: sender.username,
+        recipientName: recipient.username,
+        lastMessageSenderId: messageData.senderId,
+        lastMessage: messageData.content,
+        lastMessageTimestamp: messageData.timestamp,
+        isMuted: false,
+        isArchived: false,
+        hasUnreadMessages: true,
+        unreadMessagesCount: 1,
+      };
+ */
