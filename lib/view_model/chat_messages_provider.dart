@@ -29,63 +29,30 @@ class ChatMessagesProvider extends ChangeNotifier {
     required String otherUserUid,
   }) {
     String chatId = generateChatId(currentUserUid, otherUserUid);
-    CollectionReference messageRef =
+    CollectionReference<Map<String, dynamic>> messageRef =
         firestore.collection('chats').doc(chatId).collection('messages');
 
     return messageRef.orderBy('timestamp', descending: false).snapshots().map(
-        (snapshot) => snapshot.docs
-            .map((doc) => Message.fromJson(doc.data() as Map<String, dynamic>))
-            .toList());
+        (snapshot) =>
+            snapshot.docs.map((doc) => Message.fromJson(doc.data())).toList());
   }
 
-  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? messagesListener;
+  Stream<List<ChatTileData>> getChatTilesStream() {
+    final userId = currentUser!.uid;
+    final CollectionReference<Map<String, dynamic>> tileRef =
+        firestore.collection('users').doc(userId).collection('chat_tile_data');
 
-  void listenToMessages(String chatId, String userId) {
-    final CollectionReference<Map<String, dynamic>> messagesRef =
-        FirebaseFirestore.instance
-            .collection('chats')
-            .doc(chatId)
-            .collection('messages');
-
-    messagesListener = messagesRef
-        .orderBy('timestamp', descending: true)
+    return tileRef
+        .orderBy('lastMessageTimestamp', descending: true)
         .snapshots()
-        .listen((snapshot) {
-      if (snapshot.docs.isNotEmpty) {
-        final DocumentSnapshot<Map<String, dynamic>> latestMessage =
-            snapshot.docs.first;
-        final String latestMessageContent = latestMessage.get('content');
-        final Timestamp latestMessageTimestamp = latestMessage.get('timestamp');
-
-        final DocumentReference<Map<String, dynamic>> chatTileRef =
-            FirebaseFirestore.instance
-                .collection('chatTiles')
-                .doc(userId)
-                .collection('tiles')
-                .doc(chatId);
-
-        chatTileRef.update({
-          'lastMessage': latestMessageContent,
-          'lastMessageTimestamp': latestMessageTimestamp,
-          'hasUnreadMessages': true,
-          'unreadMessagesCount': FieldValue.increment(1),
-        });
-      }
-    });
-  }
-
-  Stream<List<ChatTileData>> getChatTilesStream(String userId) {
-    final CollectionReference<Map<String, dynamic>> tileRef = FirebaseFirestore
-        .instance
-        .collection('chatTiles')
-        .doc(userId)
-        .collection('tiles');
-
-    return tileRef.snapshots().map((snapshot) => snapshot.docs
         .map(
-          (doc) => ChatTileData.fromJson(doc.data()),
-        )
-        .toList());
+          (snapshot) => snapshot.docs
+              .map((doc) => ChatTileData.fromJson({
+                    ...doc.data(),
+                    'chatId': doc.id, // add document ID to the data map
+                  }))
+              .toList(),
+        );
   }
 
   /// Generate unique chat id's for each Dm

@@ -5,10 +5,10 @@ class ChatTileData {
   final String userId;
   final String userName;
   final String lastMessage;
-  final String profilePictureUrl;
+  final String? profilePicUrl;
   final Timestamp lastMessageTimestamp;
   bool hasUnreadMessages;
-  int numUnreadMessages;
+  num unreadMessagesCount;
   bool isMuted;
 
   ChatTileData({
@@ -16,10 +16,10 @@ class ChatTileData {
     required this.userId,
     required this.userName,
     required this.lastMessage,
-    required this.profilePictureUrl,
+    this.profilePicUrl,
     required this.lastMessageTimestamp,
     this.hasUnreadMessages = false,
-    this.numUnreadMessages = 0,
+    this.unreadMessagesCount = 0,
     this.isMuted = false,
   });
 
@@ -28,10 +28,10 @@ class ChatTileData {
         'userId': userId,
         'userName': userName,
         'lastMessage': lastMessage,
-        'profilePictureUrl': profilePictureUrl,
+        'profilePictureUrl': profilePicUrl,
         'lastMessageTimestamp': lastMessageTimestamp,
         'hasUnreadMessages': hasUnreadMessages,
-        'numUnreadMessages': numUnreadMessages,
+        'numUnreadMessages': unreadMessagesCount,
         'isMuted': isMuted,
       };
 
@@ -40,9 +40,9 @@ class ChatTileData {
         userId = json['userId'],
         userName = json['userName'],
         lastMessage = json['lastMessage'],
-        profilePictureUrl = json['profilePictureUrl'],
+        profilePicUrl = json['profilePicUrl'],
         lastMessageTimestamp = json['lastMessageTimestamp'],
         hasUnreadMessages = json['hasUnreadMessages'] ?? false,
-        numUnreadMessages = json['numUnreadMessages'] ?? 0,
+        unreadMessagesCount = json['unreadMessagesCount'] ?? 0,
         isMuted = json['isMuted'] ?? false;
 }
