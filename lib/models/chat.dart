@@ -2,14 +2,16 @@ class Chat {
   final String id;
   final String user1Id;
   final String user2Id;
-  final String? lastSeenUserId;
+  final num user1Unread;
+  final num user2Unread;
   final bool muted;
 
   Chat({
     required this.id,
     required this.user1Id,
     required this.user2Id,
-    this.lastSeenUserId,
+    required this.user1Unread,
+    required this.user2Unread,
     this.muted = false,
   });
 
@@ -18,7 +20,8 @@ class Chat {
       : id = json['id'],
         user1Id = json['user1Id'],
         user2Id = json['user2Id'],
-        lastSeenUserId = json['lastSeenUserId'],
+        user1Unread = json['user1Unread'],
+        user2Unread = json['user2Unread'],
         muted = json['muted'];
 
   /// Convert the Chat object to a JSON representation.
@@ -26,7 +29,8 @@ class Chat {
         'id': id,
         'user1Id': user1Id,
         'user2Id': user2Id,
-        'lastSeenUserId': lastSeenUserId,
+        'user1Unread': user1Unread,
+        'user2Unread': user2Unread,
         'muted': muted,
       };
 
@@ -34,23 +38,4 @@ class Chat {
   String getOtherUserId(String userId) {
     return userId == user1Id ? user2Id : user1Id;
   }
-
-  /*
-  /// Returns a boolean indicating if the chat has any unread messages for [userId].
-  Future<bool> isSeen(String userId) async {
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('chats')
-        .doc(id)
-        .collection('messages')
-        .orderBy('timestamp', descending: true)
-        .limit(1)
-        .get();
-    if (querySnapshot.docs.isEmpty) {
-      return false;
-    }
-    final lastMessage =
-        Message.fromJson(querySnapshot.docs[0].data() as Map<String, dynamic>);
-    return lastMessage.senderId != userId && lastMessage.seen;
-  }
-   */
 }

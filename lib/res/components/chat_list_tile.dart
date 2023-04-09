@@ -3,7 +3,6 @@ import 'package:conta/models/chat_tile_data.dart';
 import 'package:conta/res/components/unread_identifier.dart';
 import 'package:conta/utils/extensions.dart';
 import 'package:flutter/material.dart';
-import 'package:iconly/iconly.dart';
 
 import '../../utils/widget_functions.dart';
 import '../color.dart';
@@ -45,11 +44,7 @@ class ChatListTile extends StatelessWidget {
                     errorWidget: (context, url, error) =>
                         const Icon(Icons.error),
                   )
-                : const Icon(
-                    IconlyBold.profile,
-                    color: Color(0xFF9E9E9E),
-                    size: 25,
-                  )
+                : noProfilePic()
             : tileData.senderPicUrl != null
                 ? CachedNetworkImage(
                     imageUrl: tileData.senderPicUrl!,
@@ -67,11 +62,7 @@ class ChatListTile extends StatelessWidget {
                     errorWidget: (context, url, error) =>
                         const Icon(Icons.error),
                   )
-                : const Icon(
-                    IconlyBold.profile,
-                    color: Color(0xFF9E9E9E),
-                    size: 25,
-                  ),
+                : noProfilePic(),
       ),
       trailing: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -82,13 +73,15 @@ class ChatListTile extends StatelessWidget {
             style: const TextStyle(color: AppColors.extraTextColor),
           ),
           addHeight(6),
-          tileData.hasUnreadMessages
-              ? UnReadIdentifier(unread: tileData.unreadMessagesCount.toInt())
-              : const Icon(
-                  Icons.done_all_rounded,
-                  color: Colors.greenAccent,
-                  size: 20,
-                )
+          isSameUser
+              ? tileData.senderUnreadMessages > 0
+                  ? UnReadIdentifier(
+                      unread: tileData.senderUnreadMessages.toInt())
+                  : doubleCheck()
+              : tileData.recipientUnreadMessages > 0
+                  ? UnReadIdentifier(
+                      unread: tileData.recipientUnreadMessages.toInt())
+                  : doubleCheck()
         ],
       ),
       title: Text(

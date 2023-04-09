@@ -207,6 +207,29 @@ class ChatMessagesProvider extends ChangeNotifier {
      */
   }
 
+  Future<void> updateUnreadCount(String chatId, String senderId) async {
+    // Fetch the Chat object from Firestore
+    final chatDoc = firestore.collection('chats').doc(chatId);
+    final chatSnap = await chatDoc.get();
+    final chatData = chatSnap.data()!;
+    final chat = Chat.fromJson(chatData);
+
+    // Determine which user sent the message
+    final otherUserId = chat.getOtherUserId(senderId);
+    final isUser1 = otherUserId == chat.user1Id;
+
+    // Update the unread count for the appropriate user
+    if (isUser1) {
+      await chatDoc.update(
+        {'user1Unread': FieldValue.increment(1)},
+      );
+    } else {
+      await chatDoc.update(
+        {'user2Unread': FieldValue.increment(1)},
+      );
+    }
+  }
+
   /// Uploads a new chat message to Firestore, creating a new chat document if
   /// necessary.
   ///
@@ -223,6 +246,8 @@ class ChatMessagesProvider extends ChangeNotifier {
       // Chat doesn't exist, create new chat document
       Chat newChat = Chat(
         id: chatId,
+        user1Unread: 0,
+        user2Unread: 0,
         user1Id: currentUser!.uid,
         user2Id: currentChat!.uidUser2,
       );
@@ -250,6 +275,9 @@ class ChatMessagesProvider extends ChangeNotifier {
       //...
       await firestore.collection('chats').doc(chatId).set(newChat.toJson());
     }
+
+    // Increment the unread message count
+    await updateUnreadCount(chatId, currentUser!.uid);
 
     // Add the new message to the 'messages' sub-collection of the chat document
     // in Firestore
