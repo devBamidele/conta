@@ -142,6 +142,8 @@ class ChatMessagesProvider extends ChangeNotifier {
             .toList());
   }
 
+  /// This function transfers the critical values useful
+  /// for displaying information on the chat screen page
   void setCurrentChat({
     required String username,
     required String uidUser1,

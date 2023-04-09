@@ -66,9 +66,8 @@ class ChatTileData {
       lastMessageTimestamp: json['lastMessageTimestamp'],
       hasUnreadMessages: json['hasUnreadMessages'],
       unreadMessagesCount: json['unreadMessagesCount'],
-      isMuted: json['isMuted'] ?? false,
-      isArchived: json['isArchived'] ?? false,
+      isMuted: json['isMuted'],
+      isArchived: json['isArchived'],
     );
   }
-
 }

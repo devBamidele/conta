@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:conta/models/chat_tile_data.dart';
+import 'package:conta/res/components/unread_identifier.dart';
 import 'package:conta/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
@@ -24,29 +25,53 @@ class ChatListTile extends StatelessWidget {
     return ListTile(
       onTap: onTileTap,
       leading: CircleAvatar(
-        radius: 30,
+        radius: 27,
         backgroundColor: Colors.white,
-        child: tileData.profilePicUrl != null
-            ? CachedNetworkImage(
-                imageUrl: tileData.profilePicUrl!,
-                imageBuilder: (context, imageProvider) => Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                      image: imageProvider,
-                      fit: BoxFit.cover,
+        child: isSameUser
+            ? tileData.recipientPicUrl != null
+                ? CachedNetworkImage(
+                    imageUrl: tileData.recipientPicUrl!,
+                    imageBuilder: (context, imageProvider) => Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                          image: imageProvider,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
+                    placeholder: (context, url) =>
+                        const CircularProgressIndicator(),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
+                  )
+                : const Icon(
+                    IconlyBold.profile,
+                    color: Color(0xFF9E9E9E),
+                    size: 25,
+                  )
+            : tileData.senderPicUrl != null
+                ? CachedNetworkImage(
+                    imageUrl: tileData.senderPicUrl!,
+                    imageBuilder: (context, imageProvider) => Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                          image: imageProvider,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    placeholder: (context, url) =>
+                        const CircularProgressIndicator(),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
+                  )
+                : const Icon(
+                    IconlyBold.profile,
+                    color: Color(0xFF9E9E9E),
+                    size: 25,
                   ),
-                ),
-                placeholder: (context, url) =>
-                    const CircularProgressIndicator(),
-                errorWidget: (context, url, error) => const Icon(Icons.error),
-              )
-            : const Icon(
-                IconlyBold.profile,
-                color: Color(0xFF9E9E9E),
-                size: 25,
-              ),
       ),
       trailing: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -57,15 +82,17 @@ class ChatListTile extends StatelessWidget {
             style: const TextStyle(color: AppColors.extraTextColor),
           ),
           addHeight(6),
-          const Icon(
-            Icons.done_all_rounded,
-            color: Colors.greenAccent,
-            size: 20,
-          )
+          tileData.hasUnreadMessages
+              ? UnReadIdentifier(unread: tileData.unreadMessagesCount.toInt())
+              : const Icon(
+                  Icons.done_all_rounded,
+                  color: Colors.greenAccent,
+                  size: 20,
+                )
         ],
       ),
       title: Text(
-        tileData.userName,
+        isSameUser ? tileData.recipientName : tileData.senderName,
         style: const TextStyle(
           fontSize: 18,
           height: 1.2,
@@ -82,22 +109,3 @@ class ChatListTile extends StatelessWidget {
     );
   }
 }
-
-/*
-
-const chatTileData = {
-        senderId: messageData.senderId,
-        recipientId: messageData.recipientId,
-        senderPicUrl: sender.profilePicUrl,
-        recipientPicUrl: recipient.profilePicUrl,
-        senderName: sender.username,
-        recipientName: recipient.username,
-        lastMessageSenderId: messageData.senderId,
-        lastMessage: messageData.content,
-        lastMessageTimestamp: messageData.timestamp,
-        isMuted: false,
-        isArchived: false,
-        hasUnreadMessages: true,
-        unreadMessagesCount: 1,
-      };
- */
