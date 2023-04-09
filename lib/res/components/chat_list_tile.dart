@@ -103,6 +103,8 @@ class ChatListTile extends StatelessWidget {
         padding: const EdgeInsets.only(top: 2),
         child: Text(
           tileData.lastMessage,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: const TextStyle(color: AppColors.extraTextColor),
         ),
       ),

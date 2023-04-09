@@ -24,28 +24,26 @@ class _ChatScreenState extends State<ChatScreen> {
   final messagesController = TextEditingController();
   final messagesFocusNode = FocusNode();
   final scrollController = ScrollController();
-
+  late ChatMessagesProvider chatProvider;
   bool typing = false;
 
   @override
   void initState() {
     super.initState();
-
+    chatProvider = Provider.of<ChatMessagesProvider>(context, listen: false);
     messagesController.addListener(_updateIcon);
-
     _scrollToBottom();
   }
 
   @override
   void dispose() {
+    // Dispose the controllers and nodes
     messagesFocusNode.dispose();
     messagesController.dispose();
     scrollController.dispose();
 
-    final chatProvider =
-        Provider.of<ChatMessagesProvider>(context, listen: false);
+    // Remove the status listeners as the page closes
     chatProvider.removeOnlineStatusListener();
-
     super.dispose();
   }
 
@@ -74,9 +72,6 @@ class _ChatScreenState extends State<ChatScreen> {
       });
 
   _onSendMessageTap() {
-    final chatProvider =
-        Provider.of<ChatMessagesProvider>(context, listen: false);
-
     chatProvider.uploadChat(messagesController.text);
 
     setState(() {

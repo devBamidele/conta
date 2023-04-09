@@ -32,7 +32,7 @@ class _MessagesStreamState extends State<MessagesStream> {
       builder: (_, data, Widget? child) {
         return StreamBuilder(
           stream: data.getChatMessagesStream(
-            currentUserUid: data.currentChat!.uidUser1,
+            currentUserUid: data.currentUser!.uid,
             otherUserUid: data.currentChat!.uidUser2,
           ),
           builder: (

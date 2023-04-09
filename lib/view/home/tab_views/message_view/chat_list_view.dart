@@ -44,8 +44,8 @@ class ChatListView extends StatelessWidget {
                       data.setCurrentChat(
                         username:
                             sameUser ? tile.recipientName : tile.senderName,
-                        uidUser1: tile.senderId,
-                        uidUser2: tile.recipientId,
+                        uidUser1: sameUser ? tile.senderId : tile.recipientId,
+                        uidUser2: sameUser ? tile.recipientId : tile.senderId,
                         profilePicUrl:
                             sameUser ? tile.recipientPicUrl : tile.senderPicUrl,
                       );
