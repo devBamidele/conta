@@ -14,6 +14,7 @@ class ChatTileData {
   final bool hasUnreadMessages;
   final num senderUnreadMessages;
   final num recipientUnreadMessages;
+  final bool lastMessageSeen;
   final bool isMuted;
   final bool isArchived;
 
@@ -26,6 +27,7 @@ class ChatTileData {
     required this.lastMessage,
     required this.lastMessageSenderId,
     required this.lastMessageTimestamp,
+    this.lastMessageSeen = false,
     this.senderPicUrl,
     this.recipientPicUrl,
     required this.hasUnreadMessages,
@@ -50,6 +52,7 @@ class ChatTileData {
       'hasUnreadMessages': hasUnreadMessages,
       'senderUnreadMessages': senderUnreadMessages,
       'recipientUnreadMessages': recipientUnreadMessages,
+      'lastMessageSeen': lastMessageSeen,
       'isMuted': isMuted,
       'isArchived': isArchived,
     };
@@ -70,6 +73,7 @@ class ChatTileData {
       hasUnreadMessages: json['hasUnreadMessages'],
       senderUnreadMessages: json['senderUnreadMessages'],
       recipientUnreadMessages: json['recipientUnreadMessages'],
+      lastMessageSeen: json['lastMessageSeen'] ?? false,
       isMuted: json['isMuted'],
       isArchived: json['isArchived'],
     );

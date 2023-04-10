@@ -77,11 +77,13 @@ class ChatListTile extends StatelessWidget {
               ? tileData.senderUnreadMessages > 0
                   ? UnReadIdentifier(
                       unread: tileData.senderUnreadMessages.toInt())
-                  : doubleCheck()
+                  : tileData.lastMessageSeen
+                      ? doubleTick()
+                      : singleTick()
               : tileData.recipientUnreadMessages > 0
                   ? UnReadIdentifier(
                       unread: tileData.recipientUnreadMessages.toInt())
-                  : doubleCheck()
+                  : addHeight(12)
         ],
       ),
       title: Text(

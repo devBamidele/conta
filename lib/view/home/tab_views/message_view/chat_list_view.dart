@@ -41,6 +41,7 @@ class ChatListView extends StatelessWidget {
                   return ChatListTile(
                     tileData: tile,
                     onTileTap: () {
+                      data.resetUnread(tile.chatId);
                       data.setCurrentChat(
                         username:
                             sameUser ? tile.recipientName : tile.senderName,

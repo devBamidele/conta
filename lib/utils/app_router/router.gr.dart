@@ -80,7 +80,7 @@ class AppRouter extends _i9.RootStackRouter {
         routeData: routeData,
         child: const _i8.ChatScreen(),
         transitionsBuilder: _i9.TransitionsBuilders.slideLeft,
-        durationInMilliseconds: 300,
+        durationInMilliseconds: 150,
         opaque: true,
         barrierDismissible: false,
       );

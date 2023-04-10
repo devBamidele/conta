@@ -26,7 +26,7 @@ import '../../view/account_setup/set_photo_page.dart';
       path: ChatScreen.tag,
       page: ChatScreen,
       transitionsBuilder: TransitionsBuilders.slideLeft,
-      durationInMilliseconds: 300,
+      durationInMilliseconds: 150,
     ),
   ],
 )

@@ -207,26 +207,26 @@ class ChatMessagesProvider extends ChangeNotifier {
      */
   }
 
-  Future<void> updateUnreadCount(String chatId, String senderId) async {
-    // Fetch the Chat object from Firestore
-    final chatDoc = firestore.collection('chats').doc(chatId);
-    final chatSnap = await chatDoc.get();
-    final chatData = chatSnap.data()!;
-    final chat = Chat.fromJson(chatData);
+  Future<void> resetUnread(String chatId) async {
+    DocumentSnapshot snapshot = await firestore
+        .collection('users')
+        .doc(currentUser!.uid)
+        .collection('chat_tile_data')
+        .doc(chatId)
+        .get();
 
-    // Determine which user sent the message
-    final otherUserId = chat.getOtherUserId(senderId);
-    final isUser1 = otherUserId == chat.user1Id;
+    final data = snapshot.data() as Map<String, dynamic>;
+    final lastMessageSenderId = data['lastMessageSenderId'] as String?;
 
-    // Update the unread count for the appropriate user
-    if (isUser1) {
-      await chatDoc.update(
-        {'user1Unread': FieldValue.increment(1)},
-      );
-    } else {
-      await chatDoc.update(
-        {'user2Unread': FieldValue.increment(1)},
-      );
+    // If the last message sender ID is not the current user's UID
+    if (lastMessageSenderId != currentUser!.uid) {
+      // Update the recipientUnreadMessages field to 0
+      await firestore
+          .collection('users')
+          .doc(currentUser!.uid)
+          .collection('chat_tile_data')
+          .doc(chatId)
+          .update({'recipientUnreadMessages': 0});
     }
   }
 
@@ -252,36 +252,46 @@ class ChatMessagesProvider extends ChangeNotifier {
         user2Id: currentChat!.uidUser2,
       );
 
-      final batch = FirebaseFirestore.instance.batch();
-
-      batch.set(
-        firestore.collection('users').doc(currentUser!.uid),
-        {
-          'chats': FieldValue.arrayUnion([chatId])
-        },
-        SetOptions(merge: true),
-      );
-
-      batch.set(
-        firestore.collection('users').doc(currentChat!.uidUser2),
-        {
-          'chats': FieldValue.arrayUnion([chatId])
-        },
-        SetOptions(merge: true),
-      );
-
-      await batch.commit();
-
+      // Todo: Remove the 'Chat' fields from the users document and the data class
       //...
       await firestore.collection('chats').doc(chatId).set(newChat.toJson());
     }
 
     // Increment the unread message count
-    await updateUnreadCount(chatId, currentUser!.uid);
+    // await updateUnreadCount(chatId, currentUser!.uid);
 
     // Add the new message to the 'messages' sub-collection of the chat document
     // in Firestore
     await addNewMessageToChat(chatId, content);
+  }
+
+  Future<void> updateUnreadCount(String chatId, String senderId) async {
+    // Fetch the Chat object from Firestore
+    final chatDoc = firestore.collection('chats').doc(chatId);
+    final chatSnap = await chatDoc.get();
+    final chatData = chatSnap.data()!;
+    final chat = Chat.fromJson(chatData);
+
+    // Determine which user sent the message
+    final otherUserId = chat.getOtherUserId(senderId);
+    final isUser1 = otherUserId == chat.user1Id;
+
+    // Update the unread count for the appropriate user
+    if (isUser1) {
+      await chatDoc.update(
+        {
+          'user1Unread': FieldValue.increment(1),
+          'user2Unread': 0,
+        },
+      );
+    } else {
+      await chatDoc.update(
+        {
+          'user1Unread': 0,
+          'user2Unread': FieldValue.increment(1),
+        },
+      );
+    }
   }
 
   Stream<DocumentSnapshot<Map<String, dynamic>>> getOnlineStatusStream() {

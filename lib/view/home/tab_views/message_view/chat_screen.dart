@@ -5,6 +5,7 @@ import 'package:conta/res/components/custom_app_bar.dart';
 import 'package:conta/utils/widget_functions.dart';
 import 'package:conta/view_model/chat_messages_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
@@ -59,15 +60,18 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  // Todo : For some reason this doesn't work !
   _scrollToBottom() =>
       // Scroll to the bottom of the list
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
         if (scrollController.hasClients) {
-          scrollController.animateTo(
-            scrollController.position.maxScrollExtent,
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeOut,
-          );
+          setState(() {
+            scrollController.animateTo(
+              scrollController.position.maxScrollExtent,
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.fastOutSlowIn,
+            );
+          });
         }
       });
 

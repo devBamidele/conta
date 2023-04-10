@@ -9,9 +9,17 @@ Widget addWidth(double width) {
   return SizedBox(width: width);
 }
 
-Widget doubleCheck({double size = 20}) {
+Widget doubleTick({double size = 20}) {
   return Icon(
     Icons.done_all_rounded,
+    color: Colors.greenAccent,
+    size: size,
+  );
+}
+
+Widget singleTick({double size = 19}) {
+  return Icon(
+    Icons.check,
     color: Colors.greenAccent,
     size: size,
   );
