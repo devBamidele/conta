@@ -208,26 +208,36 @@ class ChatMessagesProvider extends ChangeNotifier {
   }
 
   Future<void> resetUnread(String chatId) async {
-    DocumentSnapshot snapshot = await firestore
+    final batch = firestore.batch();
+
+    final chatTileDataRef = firestore
         .collection('users')
         .doc(currentUser!.uid)
         .collection('chat_tile_data')
-        .doc(chatId)
-        .get();
+        .doc(chatId);
 
-    final data = snapshot.data() as Map<String, dynamic>;
-    final lastMessageSenderId = data['lastMessageSenderId'] as String?;
+    final chatTileDataSnapshot = await chatTileDataRef.get();
+    final chatTileData = chatTileDataSnapshot.data() as Map<String, dynamic>;
+    final lastMessageSenderId = chatTileData['lastMessageSenderId'] as String?;
 
-    // If the last message sender ID is not the current user's UID
     if (lastMessageSenderId != currentUser!.uid) {
-      // Update the recipientUnreadMessages field to 0
-      await firestore
-          .collection('users')
-          .doc(currentUser!.uid)
-          .collection('chat_tile_data')
-          .doc(chatId)
-          .update({'recipientUnreadMessages': 0});
+      batch.update(chatTileDataRef, {'recipientUnreadMessages': 0});
     }
+
+    final chatRef = firestore.collection('chats').doc(chatId);
+    final chatSnapshot = await chatRef.get();
+    final chatData = chatSnapshot.data() as Map<String, dynamic>;
+
+    final user1Id = chatData['user1Id'] as String?;
+    final user2Id = chatData['user2Id'] as String?;
+
+    if (currentUser!.uid == user1Id) {
+      batch.update(chatRef, {'user1Unread': 0});
+    } else if (currentUser!.uid == user2Id) {
+      batch.update(chatRef, {'user2Unread': 0});
+    }
+
+    await batch.commit();
   }
 
   /// Uploads a new chat message to Firestore, creating a new chat document if
@@ -252,8 +262,6 @@ class ChatMessagesProvider extends ChangeNotifier {
         user2Id: currentChat!.uidUser2,
       );
 
-      // Todo: Remove the 'Chat' fields from the users document and the data class
-      //...
       await firestore.collection('chats').doc(chatId).set(newChat.toJson());
     }
 

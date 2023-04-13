@@ -10,6 +10,7 @@ import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../res/color.dart';
+import '../../../../res/components/custom_fab.dart';
 import 'messages_stream.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -22,11 +23,14 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  late ChatMessagesProvider chatProvider;
+
   final messagesController = TextEditingController();
   final messagesFocusNode = FocusNode();
   final scrollController = ScrollController();
-  late ChatMessagesProvider chatProvider;
+
   bool typing = false;
+  bool showIcon = false;
 
   @override
   void initState() {
@@ -34,6 +38,7 @@ class _ChatScreenState extends State<ChatScreen> {
     chatProvider = Provider.of<ChatMessagesProvider>(context, listen: false);
     messagesController.addListener(_updateIcon);
     _scrollToBottom();
+    _showScrollToBottomIcon();
   }
 
   @override
@@ -48,6 +53,21 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
+  _showScrollToBottomIcon() {
+    scrollController.addListener(() {
+      if (scrollController.position.maxScrollExtent - scrollController.offset >
+          30) {
+        setState(() {
+          showIcon = true;
+        });
+      } else {
+        setState(() {
+          showIcon = false;
+        });
+      }
+    });
+  }
+
   _updateIcon() {
     if (messagesController.text.isNotEmpty) {
       setState(
@@ -60,27 +80,27 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  // Todo : For some reason this doesn't work !
+  // Todo : Make the page scroll to the bottom (automatically) and add pagination
   _scrollToBottom() =>
       // Scroll to the bottom of the list
       SchedulerBinding.instance.addPostFrameCallback((_) {
         if (scrollController.hasClients) {
-          setState(() {
-            scrollController.animateTo(
-              scrollController.position.maxScrollExtent,
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.fastOutSlowIn,
-            );
-          });
-        }
+          scrollController.animateTo(
+            scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 600),
+            curve: Curves.fastOutSlowIn,
+          );
+        } //
       });
 
+  // Upload the chat
+  // Scroll to the bottom
+  // Clear the text field
   _onSendMessageTap() {
     chatProvider.uploadChat(messagesController.text);
 
-    setState(() {
-      _scrollToBottom();
-    });
+    setState(_scrollToBottom());
+
     messagesController.clear();
   }
 
@@ -89,6 +109,10 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: CustomFAB(
+        showIcon: showIcon,
+        onPressed: _scrollToBottom,
+      ),
       appBar: const CustomAppBar(),
       body: SafeArea(
         child: Column(

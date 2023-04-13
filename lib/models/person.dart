@@ -7,7 +7,6 @@ class Person {
   final String email;
   final String? profilePicUrl;
   final String bio;
-  final List<String> chats;
   final Timestamp lastSeen;
   final bool online;
 
@@ -19,7 +18,6 @@ class Person {
     this.profilePicUrl,
     this.bio = 'Hello there I\'m a new user',
     required this.lastSeen,
-    required this.chats,
     this.online = false,
   });
 
@@ -31,7 +29,6 @@ class Person {
         profilePicUrl = json['profilePicUrl'],
         bio = json['bio'],
         lastSeen = json['lastSeen'],
-        chats = List<String>.from(json['chats'] ?? []),
         online = json['online'];
 
   Map<String, dynamic> toJson() => {
@@ -42,7 +39,6 @@ class Person {
         'profilePicUrl': profilePicUrl,
         'bio': bio,
         'lastSeen': lastSeen,
-        'chats': chats,
         'online': online,
       };
 }

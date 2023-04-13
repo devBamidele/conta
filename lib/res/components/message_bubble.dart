@@ -59,7 +59,8 @@ class _MessageBubbleState extends State<MessageBubble> {
 
   double height = 0;
   double width = 0;
-  double addedSpacing = 0;
+  double addedWidth = 0;
+  double addedHeight = 0;
   int lines = 0;
   bool stateTick = false;
   bool messageTapped = false;
@@ -163,23 +164,31 @@ class _MessageBubbleState extends State<MessageBubble> {
                   builder: (context, constraints) {
                     lines = painter.width ~/ prefWidth;
 
-                    addedSpacing = timePainter.width + 42;
+                    addedWidth = timePainter.width + 42;
 
+                    addedHeight =
+                        prefWidth < (painter.width % prefWidth) + addedWidth
+                            ? 42
+                            : 0;
+
+                    // If lines == 0, then the text can by default (without the timestamp)
+                    // fit within a single line of text.
                     width =
-                        lines == 0 && painter.width < (prefWidth - addedSpacing)
-                            ? painter.width + addedSpacing
+                        lines == 0 && painter.width < (prefWidth - addedWidth)
+                            ? painter.width + addedWidth
                             : 0;
 
                     height = width == 0
                         ? lines == 0
                             ? 2 * painter.height
-                            : lines * painter.height
+                            : (lines * painter.height) + addedHeight
                         : 0;
 
-                    if (height != 0 && lines == 0) {
-                      width = painter.width +
-                          (prefWidth - painter.width).clamp(0, 30);
-                    }
+                    width = height != 0 && lines == 0
+                        ? painter.width +
+                            (prefWidth - painter.width).clamp(0, 30)
+                        : width;
+
                     return Container(
                       constraints: BoxConstraints(
                         minWidth: width,
