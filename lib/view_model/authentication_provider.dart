@@ -85,6 +85,7 @@ class AuthenticationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Todo : Check this out later
   // a method to check if the username already exists in Firestore
   Future<bool> checkIfUsernameExists(String username) async {
     // perform a query on the Firestore collection to check if the username already exists

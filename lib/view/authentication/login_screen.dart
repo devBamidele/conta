@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:conta/res/components/custom_back_button.dart';
 import 'package:conta/res/components/custom_check_box.dart';
@@ -5,12 +7,14 @@ import 'package:conta/res/components/login_options.dart';
 import 'package:conta/res/style/component_style.dart';
 import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:conta/view/authentication/forgot_password_screen.dart';
+import 'package:conta/view_model/authentication_provider.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:iconly/iconly.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:provider/provider.dart';
 
 import '../../res/color.dart';
 import '../../res/components/custom_text_field.dart';
@@ -30,6 +34,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   late final AuthService _authService = AuthService();
+  late AuthenticationProvider authProvider;
 
   final myEmailController = TextEditingController();
   final myPasswordController = TextEditingController();
@@ -67,6 +72,8 @@ class _LoginScreenState extends State<LoginScreen> {
     myEmailController.addListener(_updateEmailEmpty);
 
     emailFocusNode.addListener(_updateEmailColor);
+
+    authProvider = Provider.of<AuthenticationProvider>(context, listen: false);
   }
 
   void _updatePasswordEmpty() {
@@ -160,13 +167,81 @@ class _LoginScreenState extends State<LoginScreen> {
     } else if (!password!) {
       shakeState2.currentState?.shake();
     } else {
-      login();
+      loginWithCredentials();
       return;
     }
     Vibrate.feedback(FeedbackType.heavy);
   }
 
-  Future<void> login() async {
+  Future<void> loginWithGoogle() async {
+    try {
+      // Sign in with Google and get user credential
+      UserCredential userCredential = await authProvider.signInWithGoogle();
+      User? user = userCredential.user;
+
+      // Check if user is authenticated and email is verified
+      if (user == null || !user.emailVerified) {
+        showSnackbar('Please verify your email before logging in');
+        return;
+      }
+
+      // Set One Signal id for the User
+      //_messagingService.setExternalUserId(user.uid);
+
+      // Update user online status
+      _authService.updateUserOnlineStatus(true);
+
+      // Navigate to home screen
+      navigateToHome();
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'account-exists-with-different-credential') {
+        showSnackbar('Account exists with different credential');
+      } else if (e.code == 'invalid-credential') {
+        showSnackbar('Invalid credential');
+      } else {
+        showSnackbar('An error occurred, please try again later');
+      }
+    } on SocketException {
+      showSnackbar('No internet connection');
+    } catch (_) {
+      showSnackbar('An error occurred, please try again later');
+    }
+  }
+
+  Future<void> loginWithGitHub() async {
+    try {
+      UserCredential userCredential = await authProvider.signInWithGitHub();
+
+      User? user = userCredential.user;
+
+      // User is authenticated and email is verified
+      if (user != null && user.emailVerified) {
+        // Set One Signal id for the User
+        //_messagingService.setExternalUserId(user.uid);
+
+        // Tell Firebase the user is now online
+        _authService.updateUserOnlineStatus(true);
+        navigateToHome();
+      } else {
+        // Email is not verified
+        showSnackbar('Please verify your email before logging in');
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'account-exists-with-different-credential') {
+        showSnackbar('Account exists with different credential');
+      } else if (e.code == 'invalid-credential') {
+        showSnackbar('Invalid credential');
+      } else {
+        showSnackbar('An error occurred, please try again later');
+      }
+    } on SocketException catch (_) {
+      showSnackbar('No internet connection');
+    } catch (_) {
+      showSnackbar('An error occurred, please try again later');
+    }
+  }
+
+  Future<void> loginWithCredentials() async {
     final String email = myEmailController.text.trim();
     final String password = myPasswordController.text;
 
@@ -225,13 +300,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        FocusManager.instance.primaryFocus?.unfocus();
-        final screenWidth = MediaQuery.of(context).size.width;
-        final screenHeight = MediaQuery.of(context).size.height;
-        AppUtils.showSnackbar(
-            'Screen Width: $screenWidth\nScreen Height: $screenHeight');
-      },
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: false,
@@ -411,7 +480,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     LoginOptions(
                       scale: 0.9,
-                      onTap: () {},
+                      onTap: () => loginWithGoogle(),
                       path: 'assets/images/google.svg',
                     ),
                     LoginOptions(
@@ -421,7 +490,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     LoginOptions(
                       scale: 0.9,
-                      onTap: () {},
+                      onTap: () => loginWithGitHub(),
                       path: 'assets/images/github.svg',
                     ),
                   ],
@@ -434,3 +503,13 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+
+/*
+onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+        final screenWidth = MediaQuery.of(context).size.width;
+        final screenHeight = MediaQuery.of(context).size.height;
+        AppUtils.showSnackbar(
+            'Screen Width: $screenWidth\nScreen Height: $screenHeight');
+      },
+ */

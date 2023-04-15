@@ -99,7 +99,9 @@ class _ChatScreenState extends State<ChatScreen> {
   _onSendMessageTap() {
     chatProvider.uploadChat(messagesController.text);
 
-    setState(_scrollToBottom());
+    setState(() {
+      _scrollToBottom();
+    });
 
     messagesController.clear();
   }
