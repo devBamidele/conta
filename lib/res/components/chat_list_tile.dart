@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:conta/models/chat_tile_data.dart';
+import 'package:conta/res/components/shimmer_widget.dart';
 import 'package:conta/res/components/unread_identifier.dart';
 import 'package:conta/utils/extensions.dart';
 import 'package:flutter/material.dart';
@@ -40,7 +41,7 @@ class ChatListTile extends StatelessWidget {
                       ),
                     ),
                     placeholder: (context, url) =>
-                        const CircularProgressIndicator(),
+                        const ShimmerWidget.circular(width: 54, height: 54),
                     errorWidget: (context, url, error) =>
                         const Icon(Icons.error),
                   )
@@ -58,7 +59,7 @@ class ChatListTile extends StatelessWidget {
                       ),
                     ),
                     placeholder: (context, url) =>
-                        const CircularProgressIndicator(),
+                        const ShimmerWidget.circular(width: 54, height: 54),
                     errorWidget: (context, url, error) =>
                         const Icon(Icons.error),
                   )

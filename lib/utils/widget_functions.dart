@@ -1,3 +1,4 @@
+import 'package:conta/res/color.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 
@@ -25,10 +26,10 @@ Widget singleTick({double size = 19}) {
   );
 }
 
-Widget noProfilePic({double size = 25}) {
+Widget noProfilePic({double size = 27}) {
   return Icon(
     IconlyBold.profile,
-    color: const Color(0xFF9E9E9E),
+    color: AppColors.hintTextColor,
     size: size,
   );
 }

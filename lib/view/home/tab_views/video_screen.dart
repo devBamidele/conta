@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../res/components/shimmer_tile.dart';
+
 class VideoScreen extends StatelessWidget {
   const VideoScreen({Key? key}) : super(key: key);
 
@@ -7,12 +9,12 @@ class VideoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text(
-          tag,
-          style: TextStyle(fontSize: 25),
-        ),
+    return Scaffold(
+      body: ListView.builder(
+        itemCount: 10,
+        itemBuilder: (context, index) {
+          return const ShimmerTile();
+        },
       ),
     );
   }

@@ -4,11 +4,10 @@ import 'package:auto_route/auto_route.dart';
 import 'package:conta/res/components/chat_list_tile.dart';
 import 'package:conta/view_model/chat_messages_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../models/chat_tile_data.dart';
-import '../../../../res/color.dart';
+import '../../../../res/components/shimmer_tile.dart';
 import 'chat_screen.dart';
 
 class ChatListView extends StatelessWidget {
@@ -60,11 +59,11 @@ class ChatListView extends StatelessWidget {
               log('Error fetching chat tiles: ${snapshot.error}');
               return const Text('Sorry, try again later');
             } else {
-              return Center(
-                child: LoadingAnimationWidget.fourRotatingDots(
-                  color: AppColors.primaryShadeColor,
-                  size: 50,
-                ),
+              return ListView.builder(
+                itemCount: 10,
+                itemBuilder: (context, index) {
+                  return const ShimmerTile();
+                },
               );
             }
           },
