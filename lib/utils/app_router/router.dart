@@ -8,10 +8,16 @@ import 'package:conta/view/home/tab_views/message_view/chat_screen.dart';
 
 import '../../view/account_setup/set_name_screen.dart';
 import '../../view/account_setup/set_photo_page.dart';
+import '../../view/onboard/splash_screen.dart';
 
 @AdaptiveAutoRouter(
   routes: [
-    AutoRoute(page: LoginScreen, initial: true),
+    CustomRoute(
+      page: SplashScreen,
+      initial: true,
+      transitionsBuilder: TransitionsBuilders.fadeIn,
+      durationInMilliseconds: 150,
+    ),
     AutoRoute(page: SetNameScreen, path: SetNameScreen.tag),
     AutoRoute(page: SetPhotoScreen, path: SetPhotoScreen.tag),
     AutoRoute(page: VerifyAccountScreen, path: VerifyAccountScreen.tag),
@@ -19,7 +25,7 @@ import '../../view/account_setup/set_photo_page.dart';
     // Authentication screens
     AutoRoute(page: SignUpScreen, path: SignUpScreen.tag),
     AutoRoute(page: ForgotPasswordScreen, path: ForgotPasswordScreen.tag),
-    //AutoRoute(page: LoginScreen, path: LoginScreen.tag),
+    AutoRoute(page: LoginScreen, path: LoginScreen.tag),
 
     AutoRoute(page: PersistentTab, path: PersistentTab.tag),
     CustomRoute(
