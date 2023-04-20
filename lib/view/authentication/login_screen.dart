@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:auto_route/auto_route.dart';
@@ -15,6 +16,7 @@ import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:iconly/iconly.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:uni_links/uni_links.dart';
 
 import '../../res/color.dart';
 import '../../res/components/custom_text_field.dart';
@@ -33,6 +35,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  late StreamSubscription? deepLinkSubscription;
+
   late final AuthService _authService = AuthService();
   late AuthenticationProvider authProvider;
 
@@ -57,12 +61,19 @@ class _LoginScreenState extends State<LoginScreen> {
   late bool _passwordVisible;
   bool _isChecked = false;
 
+  late bool isRootScreen;
+
   bool _isPasswordEmpty = true;
   bool _isEmailEmpty = true;
 
   @override
   void initState() {
     super.initState();
+
+    linkStreamListen();
+
+    checkRoot();
+
     _passwordVisible = true;
 
     myPasswordController.addListener(_updatePasswordEmpty);
@@ -128,6 +139,11 @@ class _LoginScreenState extends State<LoginScreen> {
     shakeState1.currentState?.dispose();
     shakeState2.currentState?.dispose();
 
+    if (deepLinkSubscription != null) {
+      deepLinkSubscription!.cancel();
+      deepLinkSubscription = null;
+    }
+
     super.dispose();
   }
 
@@ -167,10 +183,49 @@ class _LoginScreenState extends State<LoginScreen> {
     } else if (!password!) {
       shakeState2.currentState?.shake();
     } else {
-      loginWithCredentials();
+      loginWithEmailAndPassword();
       return;
     }
     Vibrate.feedback(FeedbackType.heavy);
+  }
+
+  void linkStreamListen() {
+    deepLinkSubscription = linkStream.listen(
+      (String? link) async {
+        String code = authProvider.getCodeFromGitHubLink(link);
+
+        try {
+          UserCredential userCredential =
+              await authProvider.loginWithGitHub(code);
+          User? user = userCredential.user;
+
+          // Check if user is authenticated and email is verified
+          if (user == null || !user.emailVerified) {
+            showSnackbar('Please verify your email before logging in');
+            return;
+          }
+
+          // Update user online status
+          _authService.updateUserOnlineStatus(true);
+
+          // Navigate to home screen
+          navigateToHome();
+        } on FirebaseAuthException catch (e) {
+          if (e.code == 'account-exists-with-different-credential') {
+            showSnackbar('Account exists with different credential');
+          } else if (e.code == 'invalid-credential') {
+            showSnackbar('Invalid credential');
+          } else {
+            showSnackbar('An error occurred, please try again later');
+          }
+        } on SocketException {
+          showSnackbar('No internet connection');
+        } catch (_) {
+          showSnackbar('An error occurred, please try again later');
+        }
+      },
+      cancelOnError: true,
+    );
   }
 
   Future<void> loginWithGoogle() async {
@@ -208,40 +263,9 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Future<void> loginWithGitHub() async {
-    try {
-      UserCredential userCredential = await authProvider.signInWithGitHub();
+  Future<void> loginWithGithub() async => await authProvider.githubLogin();
 
-      User? user = userCredential.user;
-
-      // User is authenticated and email is verified
-      if (user != null && user.emailVerified) {
-        // Set One Signal id for the User
-        //_messagingService.setExternalUserId(user.uid);
-
-        // Tell Firebase the user is now online
-        _authService.updateUserOnlineStatus(true);
-        navigateToHome();
-      } else {
-        // Email is not verified
-        showSnackbar('Please verify your email before logging in');
-      }
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'account-exists-with-different-credential') {
-        showSnackbar('Account exists with different credential');
-      } else if (e.code == 'invalid-credential') {
-        showSnackbar('Invalid credential');
-      } else {
-        showSnackbar('An error occurred, please try again later');
-      }
-    } on SocketException catch (_) {
-      showSnackbar('No internet connection');
-    } catch (_) {
-      showSnackbar('An error occurred, please try again later');
-    }
-  }
-
-  Future<void> loginWithCredentials() async {
+  Future<void> loginWithEmailAndPassword() async {
     final String email = myEmailController.text.trim();
     final String password = myPasswordController.text;
 
@@ -297,6 +321,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   navigateToHome() => context.router.replaceAll([const PersistentTabRoute()]);
 
+  checkRoot() => isRootScreen = context.router.isRoot;
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -310,8 +336,12 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const CustomBackButton(
-                  padding: EdgeInsets.only(left: 0, top: 25),
+                Visibility(
+                  visible: isRootScreen,
+                  replacement: const CustomBackButton(
+                    padding: EdgeInsets.only(left: 0, top: 25),
+                  ),
+                  child: addHeight(50),
                 ),
                 addHeight(20),
                 const Text(
@@ -490,7 +520,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     LoginOptions(
                       scale: 0.9,
-                      onTap: () => loginWithGitHub(),
+                      onTap: () => loginWithGithub(),
                       path: 'assets/images/github.svg',
                     ),
                   ],

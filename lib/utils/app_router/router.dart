@@ -12,12 +12,7 @@ import '../../view/onboard/splash_screen.dart';
 
 @AdaptiveAutoRouter(
   routes: [
-    CustomRoute(
-      page: SplashScreen,
-      initial: true,
-      transitionsBuilder: TransitionsBuilders.fadeIn,
-      durationInMilliseconds: 150,
-    ),
+    AutoRoute(page: SplashScreen, initial: true),
     AutoRoute(page: SetNameScreen, path: SetNameScreen.tag),
     AutoRoute(page: SetPhotoScreen, path: SetPhotoScreen.tag),
     AutoRoute(page: VerifyAccountScreen, path: VerifyAccountScreen.tag),

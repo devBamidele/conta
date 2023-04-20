@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:conta/res/components/custom_back_button.dart';
 import 'package:conta/res/components/online_status.dart';
+import 'package:conta/res/components/shimmer_widget.dart';
 import 'package:conta/utils/widget_functions.dart';
 import 'package:conta/view_model/chat_messages_provider.dart';
 import 'package:flutter/material.dart';
@@ -71,9 +72,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                           ),
                         ),
                         placeholder: (context, url) =>
-                            const CircularProgressIndicator(),
+                            const ShimmerWidget.circular(width: 46, height: 46),
                         errorWidget: (context, url, error) =>
-                            const Icon(Icons.error),
+                            const ShimmerWidget.circular(width: 46, height: 46),
                       )
                     : const Icon(
                         IconlyBold.profile,

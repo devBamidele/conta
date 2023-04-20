@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -5,6 +7,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+import 'package:http/http.dart' as http;
+
+import 'secret_keys' as secret_key;
+import 'package:url_launcher/url_launcher.dart';
 
 import '../models/person.dart';
 
@@ -39,11 +46,39 @@ class AuthenticationProvider extends ChangeNotifier {
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
-  Future<UserCredential> signInWithGitHub() async {
-    // Create a new provider
-    GithubAuthProvider githubProvider = GithubAuthProvider();
+  String getCodeFromGitHubLink(String? link) =>
+      link == null ? "" : link.substring(link.indexOf(RegExp('code=')) + 5);
 
-    return await FirebaseAuth.instance.signInWithProvider(githubProvider);
+  Future<UserCredential> loginWithGitHub(String code) async {
+    final url = Uri.parse("https://github.com/login/oauth/access_token");
+
+    final response = await http.post(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: "{\"client_id\":\"${secret_key.GITHUB_CLIENT_ID}\""
+          ",\"client_secret\":\"${secret_key.GITHUB_CLIENT_SECRET}\""
+          ",\"code\":\"$code\"}",
+    );
+
+    final AuthCredential credential = GithubAuthProvider.credential(
+      json.decode(response.body)['access_token'],
+    );
+
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
+
+  Future<void> githubLogin() async {
+    Uri url = Uri.parse(
+        "https://github.com/login/oauth/authorize?client_id=${secret_key.GITHUB_CLIENT_ID}"
+        "&scope=public_repo%20read:user%20user:email");
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      throw Exception('Could not launch $url');
+    }
   }
 
   Future<void> createNewUser(String userId, File? file) async {

@@ -100,6 +100,8 @@ dependencies {
 
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation 'com.google.firebase:firebase-analytics-ktx'
+    
+    implementation 'com.google.firebase:firebase-auth:21.3.0'
 
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.google.android.gms:play-services-base:18.2.0'

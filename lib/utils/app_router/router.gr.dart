@@ -31,13 +31,9 @@ class AppRouter extends _i10.RootStackRouter {
   @override
   final Map<String, _i10.PageFactory> pagesMap = {
     SplashScreenRoute.name: (routeData) {
-      return _i10.CustomPage<dynamic>(
+      return _i10.AdaptivePage<dynamic>(
         routeData: routeData,
         child: const _i1.SplashScreen(),
-        transitionsBuilder: _i10.TransitionsBuilders.fadeIn,
-        durationInMilliseconds: 150,
-        opaque: true,
-        barrierDismissible: false,
       );
     },
     SetNameScreenRoute.name: (routeData) {
