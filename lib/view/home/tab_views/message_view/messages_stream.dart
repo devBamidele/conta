@@ -53,30 +53,23 @@ class _MessagesStreamState extends State<MessagesStream> {
                   Message message = messages[index];
                   bool sameUser = message.senderId == data.currentUser!.uid;
 
-                  if (index == 0) {
-                    // For the very first chat
-                    showDate = true;
-                    showTopSpacing = false;
-                  } else {
-                    showDate = !messages[index - 1]
-                        .timestamp
-                        .isSameDay(message.timestamp);
-                    showTopSpacing = !showDate &&
-                        message.senderId != messages[index - 1].senderId;
-                  }
+                  showDate = index == 0
+                      ? true
+                      : !messages[index - 1]
+                          .timestamp
+                          .isSameDay(message.timestamp);
 
-                  if (index < messages.length - 1) {
-                    if (message.timestamp
-                        .isSameDay(messages[index + 1].timestamp)) {
-                      showTail =
-                          message.senderId != messages[index + 1].senderId;
-                    } else {
-                      showTail = true;
-                    }
-                  } else {
-                    // For the very last chat
-                    showTail = true;
-                  }
+                  showTopSpacing = index == 0
+                      ? false
+                      : !showDate &&
+                          message.senderId != messages[index - 1].senderId;
+
+                  showTail = index < messages.length - 1
+                      ? message.timestamp
+                              .isSameDay(messages[index + 1].timestamp)
+                          ? message.senderId != messages[index + 1].senderId
+                          : true
+                      : true;
 
                   return Column(
                     children: [
@@ -90,15 +83,12 @@ class _MessagesStreamState extends State<MessagesStream> {
                         padding: EdgeInsets.only(top: showTopSpacing ? 10 : 0),
                         child: MessageBubble(
                           key: Key(message.id),
-                          id: message.id,
+                          message: message,
                           index: index,
-                          text: message.content,
                           color:
                               sameUser ? AppColors.bubbleColor : Colors.white,
                           tail: showTail,
                           isSender: sameUser,
-                          sent: message.sent,
-                          seen: message.seen,
                           timeSent: message.timestamp.customFormat(),
                           textStyle: const TextStyle(
                             color: Colors.black87,

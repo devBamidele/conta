@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:auto_route/auto_route.dart';
@@ -194,6 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
       (String? link) async {
         String code = authProvider.getCodeFromGitHubLink(link);
 
+        log('Gotten code from Github link');
         try {
           UserCredential userCredential =
               await authProvider.loginWithGitHub(code);

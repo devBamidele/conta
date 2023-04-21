@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../res/color.dart';
 import '../../../../res/components/custom_fab.dart';
+import '../../../../res/components/reply_message.dart';
 import 'messages_stream.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -80,6 +81,8 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  onCancelReply() => chatProvider.replyChat = false;
+
   // Todo : Make the page scroll to the bottom (automatically) and add pagination
   _scrollToBottom() =>
       // Scroll to the bottom of the list
@@ -110,6 +113,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isReplying = chatProvider.replyChat;
     return Scaffold(
       floatingActionButton: CustomFAB(
         showIcon: showIcon,
@@ -130,19 +134,29 @@ class _ChatScreenState extends State<ChatScreen> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Expanded(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(
-                        maxHeight: 5 * 16 * 1.4,
-                      ),
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.vertical,
-                        reverse: true,
-                        child: ChatTextFormField(
-                          node: messagesFocusNode,
-                          controller: messagesController,
-                          onPrefixIconTap: _onPrefixIconTap,
+                    child: Column(
+                      children: [
+                        if (isReplying)
+                          ReplyMessage(
+                            message: chatProvider.replyMessage!,
+                            senderName: chatProvider.currentChat?.username,
+                            onCancelReply: onCancelReply,
+                          ),
+                        ConstrainedBox(
+                          constraints: const BoxConstraints(
+                            maxHeight: 5 * 16 * 1.4,
+                          ),
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            reverse: true,
+                            child: ChatTextFormField(
+                              node: messagesFocusNode,
+                              controller: messagesController,
+                              onPrefixIconTap: _onPrefixIconTap,
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
                   addWidth(8),

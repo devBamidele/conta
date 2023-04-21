@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
+import '../../models/message.dart';
 import '../../view_model/chat_messages_provider.dart';
 import '../color.dart';
 import 'bubble_painter.dart';
@@ -16,27 +17,21 @@ import 'bubble_painter.dart';
 ///chat bubble [TextStyle] can be customized using [textStyle]
 
 class MessageBubble extends StatefulWidget {
-  final String id;
   final bool isSender;
-  final String text;
   final bool tail;
   final int index;
   final Color color;
-  final bool sent;
-  final bool seen;
   final String timeSent;
   final TextStyle textStyle;
   final TextStyle timeStyle;
+  final Message message;
 
   const MessageBubble({
     Key? key,
-    required this.id,
     required this.isSender,
     required this.index,
-    required this.text,
-    required this.sent,
-    required this.seen,
     required this.timeSent,
+    required this.message,
     this.color = Colors.white70,
     this.tail = true,
     this.textStyle = const TextStyle(
@@ -75,7 +70,7 @@ class _MessageBubbleState extends State<MessageBubble> {
     super.initState();
 
     painter = TextPainter(
-      text: TextSpan(text: widget.text, style: widget.textStyle),
+      text: TextSpan(text: widget.message.content, style: widget.textStyle),
       textAlign: TextAlign.left,
       textDirection: TextDirection.ltr,
     );
@@ -98,8 +93,10 @@ class _MessageBubbleState extends State<MessageBubble> {
   void onVisibilityChanged(VisibilityInfo info) {
     if (mounted) {
       setState(() {
-        if (!widget.seen && info.visibleFraction > 0.8 && !widget.isSender) {
-          chatProvider.updateMessageSeen(widget.id);
+        if (!widget.message.seen &&
+            info.visibleFraction > 0.8 &&
+            !widget.isSender) {
+          chatProvider.updateMessageSeen(widget.message.id);
         }
       });
     }
@@ -114,10 +111,15 @@ class _MessageBubbleState extends State<MessageBubble> {
     });
   }
 
+  void replyMessage() {
+    chatProvider.replyChat = true;
+    chatProvider.replyMessage = widget.message;
+  }
+
   ///chat bubble builder method
   @override
   Widget build(BuildContext context) {
-    if (widget.sent) {
+    if (widget.message.sent) {
       stateTick = true;
       stateIcon = const Icon(
         Icons.done,
@@ -132,7 +134,7 @@ class _MessageBubbleState extends State<MessageBubble> {
         color: Colors.black45,
       );
     }
-    if (widget.seen) {
+    if (widget.message.seen) {
       stateTick = true;
       stateIcon = const Icon(
         Icons.done_all,
@@ -142,8 +144,17 @@ class _MessageBubbleState extends State<MessageBubble> {
     }
 
     return GestureDetector(
-      onTap: onLongTapMessage,
-      onLongPress: onLongTapMessage,
+      onPanUpdate: (details) {
+        // Swiping in right direction.
+        if (details.delta.dx > 0 && !widget.isSender) {
+          replyMessage();
+        }
+
+        // Swiping in left direction.
+        if (details.delta.dx < 0 && widget.isSender) {
+          replyMessage();
+        }
+      },
       child: VisibilityDetector(
         key: widget.key!,
         onVisibilityChanged: onVisibilityChanged,
@@ -207,7 +218,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                                 ? const EdgeInsets.only(left: 4)
                                 : const EdgeInsets.symmetric(horizontal: 4),
                             child: Text(
-                              widget.text,
+                              widget.message.content,
                               style: widget.textStyle,
                               textAlign: TextAlign.left,
                             ),

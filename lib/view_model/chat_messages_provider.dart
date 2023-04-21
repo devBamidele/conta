@@ -24,6 +24,10 @@ class ChatMessagesProvider extends ChangeNotifier {
   /// Holds the profile information of the current selected chat
   CurrentChat? currentChat;
 
+  bool replyChat = false;
+
+  Message? replyMessage;
+
   Stream<List<Message>> getChatMessagesStream({
     required String currentUserUid,
     required String otherUserUid,
