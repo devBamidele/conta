@@ -9,16 +9,6 @@ const inputBorder = OutlineInputBorder(
   ),
 );
 
-/// The border for the input fields
-const chatInputBorder = OutlineInputBorder(
-  borderSide: BorderSide(
-    color: AppColors.backGroundColor,
-  ),
-  borderRadius: BorderRadius.all(
-    Radius.circular(25),
-  ),
-);
-
 /// The decoration for the elevated button
 final elevatedButton = ElevatedButton.styleFrom(
   backgroundColor: AppColors.primaryColor,
@@ -29,6 +19,25 @@ final elevatedButton = ElevatedButton.styleFrom(
     ),
   ),
 );
+
+
+/// The border for the input fields
+InputBorder customBorder({
+  required bool isReplying,
+  double curve = 22,
+}) {
+  return OutlineInputBorder(
+    borderSide: const BorderSide(
+      color: AppColors.backGroundColor,
+    ),
+    borderRadius: BorderRadius.only(
+      topLeft: isReplying ? Radius.zero : Radius.circular(curve),
+      topRight: isReplying ? Radius.zero : Radius.circular(curve),
+      bottomLeft: Radius.circular(curve),
+      bottomRight: Radius.circular(curve),
+    ),
+  );
+}
 
 /// The decoration for the outlined button
 final loginOptionsStyle = OutlinedButton.styleFrom(

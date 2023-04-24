@@ -1,8 +1,8 @@
+import 'package:conta/res/color.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/message.dart';
 import '../../utils/widget_functions.dart';
-
 
 class ReplyMessage extends StatelessWidget {
   final Message message;
@@ -19,53 +19,75 @@ class ReplyMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(6),
       decoration: const BoxDecoration(
-        color: Colors.green,
+        color: Colors.white,
         borderRadius: BorderRadius.only(
-          topRight: Radius.circular(12),
-          topLeft: Radius.circular(12),
+          topRight: Radius.circular(10),
+          topLeft: Radius.circular(10),
         ),
       ),
-      child: IntrinsicHeight(
-        child: Row(
+      child: ClipRRect(
+        borderRadius: const BorderRadius.all(
+          Radius.circular(8),
+        ),
+        child: Stack(
           children: [
             Container(
-              color: Colors.red,
-              width: 4,
-            ),
-            addWidth(8),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          senderName ?? 'NoName',
-                          style: const TextStyle(
-                              fontSize: 12, fontWeight: FontWeight.bold),
+              decoration: const BoxDecoration(
+                color: AppColors.replyMessageBackGround,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(5),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                senderName ?? 'NoName',
+                                style: const TextStyle(
+                                  color: AppColors.replyMessageColor,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            if (onCancelReply != null)
+                              GestureDetector(
+                                onTap: onCancelReply,
+                                child: const Icon(
+                                  Icons.close,
+                                  size: 18,
+                                ),
+                              )
+                          ],
                         ),
-                      ),
-                      if (onCancelReply != null)
-                        GestureDetector(
-                          onTap: onCancelReply,
-                          child: const Icon(
-                            Icons.close,
-                            size: 18,
+                        addHeight(3),
+                        Text(
+                          message.content,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Colors.black54,
                           ),
                         )
-                    ],
-                  ),
-                  addHeight(8),
-                  Text(
-                    message.content,
-                    style: const TextStyle(
-                      color: Colors.black54,
+                      ],
                     ),
-                  )
-                ],
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              left: 0,
+              child: Container(
+                width: 5,
+                color: AppColors.replyMessageColor,
+                height: 100,
               ),
             )
           ],

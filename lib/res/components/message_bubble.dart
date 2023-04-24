@@ -111,10 +111,7 @@ class _MessageBubbleState extends State<MessageBubble> {
     });
   }
 
-  void replyMessage() {
-    chatProvider.replyChat = true;
-    chatProvider.replyMessage = widget.message;
-  }
+  void replyMessage() => chatProvider.updateReply(widget.message);
 
   ///chat bubble builder method
   @override

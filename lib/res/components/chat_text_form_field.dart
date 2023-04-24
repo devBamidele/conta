@@ -10,11 +10,15 @@ class ChatTextFormField extends StatelessWidget {
     required this.node,
     required this.controller,
     this.onPrefixIconTap,
+    this.isReplying = false,
   }) : super(key: key);
 
   final FocusNode node;
   final TextEditingController controller;
   final VoidCallback? onPrefixIconTap;
+  final bool isReplying;
+
+  final double curve = 22;
 
   @override
   Widget build(BuildContext context) {
@@ -29,8 +33,8 @@ class ChatTextFormField extends StatelessWidget {
       focusNode: node,
       controller: controller,
       decoration: InputDecoration(
-        enabledBorder: chatInputBorder,
-        focusedBorder: chatInputBorder,
+        enabledBorder: customBorder(isReplying: isReplying),
+        focusedBorder: customBorder(isReplying: isReplying),
         fillColor: Colors.white,
         hintText: 'Message',
         isDense: true,

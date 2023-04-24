@@ -25,4 +25,8 @@ class AppColors {
   static const Color primaryShadeColor = Color(0xFFF67C69);
   static const Color unreadColor = Color(0xFFD95959);
   static const Color errorBorderColor = Color(0xFFFF0A0A);
+
+  // For the reply Message Widget
+  static const Color replyMessageColor = Color(0xFF44001a);
+  static const Color replyMessageBackGround = Color(0xFFEBEBEB);
 }

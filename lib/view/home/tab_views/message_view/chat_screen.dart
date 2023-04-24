@@ -81,7 +81,7 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  onCancelReply() => chatProvider.replyChat = false;
+  onCancelReply() => chatProvider.cancelReply();
 
   // Todo : Make the page scroll to the bottom (automatically) and add pagination
   _scrollToBottom() =>
@@ -106,6 +106,8 @@ class _ChatScreenState extends State<ChatScreen> {
       _scrollToBottom();
     });
 
+    onCancelReply();
+
     messagesController.clear();
   }
 
@@ -113,7 +115,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isReplying = chatProvider.replyChat;
     return Scaffold(
       floatingActionButton: CustomFAB(
         showIcon: showIcon,
@@ -134,29 +135,39 @@ class _ChatScreenState extends State<ChatScreen> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Expanded(
-                    child: Column(
-                      children: [
-                        if (isReplying)
-                          ReplyMessage(
-                            message: chatProvider.replyMessage!,
-                            senderName: chatProvider.currentChat?.username,
-                            onCancelReply: onCancelReply,
-                          ),
-                        ConstrainedBox(
-                          constraints: const BoxConstraints(
-                            maxHeight: 5 * 16 * 1.4,
-                          ),
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.vertical,
-                            reverse: true,
-                            child: ChatTextFormField(
-                              node: messagesFocusNode,
-                              controller: messagesController,
-                              onPrefixIconTap: _onPrefixIconTap,
-                            ),
-                          ),
-                        ),
-                      ],
+                    child: Consumer<ChatMessagesProvider>(
+                      builder: (_, data, Widget? child) {
+                        bool isReplying = data.replyChat;
+                        return Column(
+                          children: [
+                            if (isReplying && data.replyMessage != null)
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 1, right: 1),
+                                child: ReplyMessage(
+                                  message: data.replyMessage!,
+                                  senderName: data.currentChat?.username,
+                                  onCancelReply: onCancelReply,
+                                ),
+                              ),
+                            ConstrainedBox(
+                              constraints: const BoxConstraints(
+                                maxHeight: 5 * 16 * 1.4,
+                              ),
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.vertical,
+                                reverse: true,
+                                child: ChatTextFormField(
+                                  node: messagesFocusNode,
+                                  controller: messagesController,
+                                  onPrefixIconTap: _onPrefixIconTap,
+                                  isReplying: isReplying,
+                                ),
+                              ),
+                            ), //
+                          ],
+                        );
+                      },
                     ),
                   ),
                   addWidth(8),

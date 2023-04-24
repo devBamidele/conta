@@ -28,6 +28,18 @@ class ChatMessagesProvider extends ChangeNotifier {
 
   Message? replyMessage;
 
+  void updateReply(Message message) {
+    replyChat = true;
+    replyMessage = message;
+    notifyListeners();
+  }
+
+  void cancelReply() {
+    replyChat = false;
+    replyMessage = null;
+    notifyListeners();
+  }
+
   Stream<List<Message>> getChatMessagesStream({
     required String currentUserUid,
     required String otherUserUid,
