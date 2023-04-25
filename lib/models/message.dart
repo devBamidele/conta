@@ -11,6 +11,9 @@ class Message {
   final Timestamp timestamp;
   final bool seen;
   final bool sent;
+  final bool reply;
+  final String? sender;
+  final String? message;
 
   Message({
     required this.id,
@@ -20,6 +23,9 @@ class Message {
     required this.timestamp,
     this.seen = false,
     this.sent = false,
+    this.reply = false,
+    this.sender,
+    this.message,
   });
 
   // Deserialize the JSON data received from Firestore into a Message object.
@@ -30,7 +36,10 @@ class Message {
         content = json['content'],
         timestamp = json['timestamp'],
         seen = json['seen'],
-        sent = json['sent'];
+        sent = json['sent'],
+        reply = json['reply'] ?? false,
+        sender = json['sender'],
+        message = json['message'];
 
   // Serialize the Message object into a JSON object for storage in Firestore.
   Map<String, dynamic> toJson() => {
@@ -41,5 +50,8 @@ class Message {
         'timestamp': timestamp,
         'seen': seen,
         'sent': sent,
+        'reply': reply,
+        'sender': sender,
+        'message': message,
       };
 }

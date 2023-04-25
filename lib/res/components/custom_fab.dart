@@ -23,14 +23,14 @@ class CustomFAB extends StatelessWidget {
           height: 35,
           child: FittedBox(
             child: FloatingActionButton(
-              elevation: 3,
-              backgroundColor: AppColors.appBarColor,
+              elevation: 2,
+              backgroundColor: Colors.white,
               onPressed: onPressed,
               shape: const CircleBorder(),
               child: const Icon(
                 Icons.keyboard_arrow_down_outlined,
                 size: 45,
-                color: Colors.white,
+                color: AppColors.extraTextColor,
               ),
             ),
           ),

@@ -25,13 +25,24 @@ class ChatMessagesProvider extends ChangeNotifier {
   CurrentChat? currentChat;
 
   bool replyChat = false;
+  bool cacheReplyChat = false;
 
   Message? replyMessage;
+  Message? cacheReplyMessage;
 
   void updateReply(Message message) {
     replyChat = true;
     replyMessage = message;
+
+    cacheReplyChat = replyChat;
+    cacheReplyMessage = replyMessage;
+
     notifyListeners();
+  }
+
+  void removeCache() {
+    cacheReplyChat = false;
+    cacheReplyMessage = null;
   }
 
   void cancelReply() {
@@ -196,6 +207,10 @@ class ChatMessagesProvider extends ChangeNotifier {
     // Generate a unique ID for the new message
     String messageId = const Uuid().v4();
 
+    String? senderName = replyMessage?.senderId == currentUser?.uid
+        ? 'You'
+        : currentChat?.username;
+
     // Create a new Message object with the specified properties
     Message newMessage = Message(
       id: messageId,
@@ -203,7 +218,13 @@ class ChatMessagesProvider extends ChangeNotifier {
       recipientId: currentChat!.uidUser2,
       content: content,
       timestamp: Timestamp.now(),
+      reply: cacheReplyChat,
+      message: cacheReplyMessage?.content,
+      sender: senderName,
     );
+
+    // Clear the cache
+    removeCache();
 
     // Add the new message to the 'messages' sub-collection of the specified chat
     // document in Firestore

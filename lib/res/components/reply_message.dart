@@ -8,10 +8,12 @@ class ReplyMessage extends StatelessWidget {
   final Message message;
   final String? senderName;
   final VoidCallback? onCancelReply;
+  final bool isYou;
 
   const ReplyMessage({
     Key? key,
     required this.message,
+    required this.isYou,
     this.senderName,
     this.onCancelReply,
   }) : super(key: key);
@@ -49,7 +51,7 @@ class ReplyMessage extends StatelessWidget {
                           children: [
                             Expanded(
                               child: Text(
-                                senderName ?? 'NoName',
+                                isYou ? 'You' : senderName ?? 'NoName',
                                 style: const TextStyle(
                                   color: AppColors.replyMessageColor,
                                   fontSize: 14,
@@ -70,7 +72,7 @@ class ReplyMessage extends StatelessWidget {
                         addHeight(3),
                         Text(
                           message.content,
-                          maxLines: 2,
+                          maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             color: Colors.black54,

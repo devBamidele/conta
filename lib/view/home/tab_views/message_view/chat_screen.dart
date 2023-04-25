@@ -93,7 +93,7 @@ class _ChatScreenState extends State<ChatScreen> {
             duration: const Duration(milliseconds: 600),
             curve: Curves.fastOutSlowIn,
           );
-        } //
+        }
       });
 
   // Upload the chat
@@ -116,10 +116,6 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: CustomFAB(
-        showIcon: showIcon,
-        onPressed: _scrollToBottom,
-      ),
       appBar: const CustomAppBar(),
       body: SafeArea(
         child: Column(
@@ -131,66 +127,83 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(8, 5, 8, 5),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
+              child: Stack(
+                clipBehavior: Clip.none,
                 children: [
-                  Expanded(
-                    child: Consumer<ChatMessagesProvider>(
-                      builder: (_, data, Widget? child) {
-                        bool isReplying = data.replyChat;
-                        return Column(
-                          children: [
-                            if (isReplying && data.replyMessage != null)
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 1, right: 1),
-                                child: ReplyMessage(
-                                  message: data.replyMessage!,
-                                  senderName: data.currentChat?.username,
-                                  onCancelReply: onCancelReply,
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Expanded(
+                        child: Consumer<ChatMessagesProvider>(
+                          builder: (_, data, Widget? child) {
+                            bool isReplying = data.replyChat;
+                            return Column(
+                              children: [
+                                if (isReplying && data.replyMessage != null)
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      left: 1,
+                                      right: 1,
+                                    ),
+                                    child: ReplyMessage(
+                                      isYou: data.currentUser!.uid ==
+                                          data.replyMessage!.senderId,
+                                      message: data.replyMessage!,
+                                      senderName: data.currentChat?.username,
+                                      onCancelReply: onCancelReply,
+                                    ),
+                                  ),
+                                ConstrainedBox(
+                                  constraints: const BoxConstraints(
+                                    maxHeight: 5 * 16 * 1.4,
+                                  ),
+                                  child: SingleChildScrollView(
+                                    scrollDirection: Axis.vertical,
+                                    reverse: true,
+                                    child: ChatTextFormField(
+                                      node: messagesFocusNode,
+                                      controller: messagesController,
+                                      onPrefixIconTap: _onPrefixIconTap,
+                                      isReplying: isReplying,
+                                    ),
+                                  ),
+                                ), //
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                      addWidth(8),
+                      CircleAvatar(
+                        radius: 25,
+                        backgroundColor: AppColors.primaryColor,
+                        child: typing
+                            ? GestureDetector(
+                                onTap: _onSendMessageTap,
+                                child: Transform.rotate(
+                                  angle: math.pi / 4,
+                                  child: const Icon(
+                                    IconlyBold.send,
+                                    size: 23,
+                                    color: Colors.white,
+                                  ),
                                 ),
-                              ),
-                            ConstrainedBox(
-                              constraints: const BoxConstraints(
-                                maxHeight: 5 * 16 * 1.4,
-                              ),
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.vertical,
-                                reverse: true,
-                                child: ChatTextFormField(
-                                  node: messagesFocusNode,
-                                  controller: messagesController,
-                                  onPrefixIconTap: _onPrefixIconTap,
-                                  isReplying: isReplying,
-                                ),
-                              ),
-                            ), //
-                          ],
-                        );
-                      },
-                    ),
-                  ),
-                  addWidth(8),
-                  CircleAvatar(
-                    radius: 25,
-                    backgroundColor: AppColors.primaryColor,
-                    child: typing
-                        ? GestureDetector(
-                            onTap: _onSendMessageTap,
-                            child: Transform.rotate(
-                              angle: math.pi / 4,
-                              child: const Icon(
-                                IconlyBold.send,
+                              )
+                            : const Icon(
+                                IconlyBold.voice,
                                 size: 23,
                                 color: Colors.white,
                               ),
-                            ),
-                          )
-                        : const Icon(
-                            IconlyBold.voice,
-                            size: 23,
-                            color: Colors.white,
-                          ),
+                      )
+                    ],
+                  ),
+                  Positioned(
+                    right: 0,
+                    top: -50,
+                    child: CustomFAB(
+                      showIcon: showIcon,
+                      onPressed: _scrollToBottom,
+                    ),
                   )
                 ],
               ),

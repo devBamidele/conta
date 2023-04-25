@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+import 'package:swipe_to/swipe_to.dart';
 
 import '../../models/message.dart';
 import '../../view_model/chat_messages_provider.dart';
@@ -140,18 +141,17 @@ class _MessageBubbleState extends State<MessageBubble> {
       );
     }
 
-    return GestureDetector(
-      onPanUpdate: (details) {
-        // Swiping in right direction.
-        if (details.delta.dx > 0 && !widget.isSender) {
-          replyMessage();
-        }
-
-        // Swiping in left direction.
-        if (details.delta.dx < 0 && widget.isSender) {
-          replyMessage();
-        }
-      },
+    return SwipeTo(
+      offsetDx: 0.2,
+      onRightSwipe: () => replyMessage(),
+      rightSwipeWidget: const Padding(
+        padding: EdgeInsets.only(left: 25),
+        child: Icon(
+          Icons.reply,
+          size: 30,
+          color: AppColors.primaryColor,
+        ),
+      ),
       child: VisibilityDetector(
         key: widget.key!,
         onVisibilityChanged: onVisibilityChanged,
