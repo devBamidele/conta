@@ -1,3 +1,4 @@
+import 'package:conta/res/components/reply_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -214,10 +215,24 @@ class _MessageBubbleState extends State<MessageBubble> {
                             padding: stateTick
                                 ? const EdgeInsets.only(left: 4)
                                 : const EdgeInsets.symmetric(horizontal: 4),
-                            child: Text(
-                              widget.message.content,
-                              style: widget.textStyle,
-                              textAlign: TextAlign.left,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.max,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (widget.message.reply &&
+                                    widget.message.replyMessage != null &&
+                                    widget.message.sender != null)
+                                  ReplyBubble(
+                                    replyMessage: widget.message.replyMessage!,
+                                    isSender: widget.isSender,
+                                    username: widget.message.sender!,
+                                  ),
+                                Text(
+                                  widget.message.content,
+                                  style: widget.textStyle,
+                                  textAlign: TextAlign.left,
+                                ),
+                              ],
                             ),
                           ),
                           stateIcon != null

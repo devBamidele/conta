@@ -219,7 +219,7 @@ class ChatMessagesProvider extends ChangeNotifier {
       content: content,
       timestamp: Timestamp.now(),
       reply: cacheReplyChat,
-      message: cacheReplyMessage?.content,
+      replyMessage: cacheReplyMessage?.content,
       sender: senderName,
     );
 

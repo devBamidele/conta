@@ -13,7 +13,7 @@ class Message {
   final bool sent;
   final bool reply;
   final String? sender;
-  final String? message;
+  final String? replyMessage;
 
   Message({
     required this.id,
@@ -25,7 +25,7 @@ class Message {
     this.sent = false,
     this.reply = false,
     this.sender,
-    this.message,
+    this.replyMessage,
   });
 
   // Deserialize the JSON data received from Firestore into a Message object.
@@ -39,7 +39,7 @@ class Message {
         sent = json['sent'],
         reply = json['reply'] ?? false,
         sender = json['sender'],
-        message = json['message'];
+        replyMessage = json['message'];
 
   // Serialize the Message object into a JSON object for storage in Firestore.
   Map<String, dynamic> toJson() => {
@@ -52,6 +52,6 @@ class Message {
         'sent': sent,
         'reply': reply,
         'sender': sender,
-        'message': message,
+        'message': replyMessage,
       };
 }
