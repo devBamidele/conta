@@ -304,3 +304,5 @@ class UsersSearch extends SearchDelegate {
     );
   }
 }
+
+// Todo : Get lottie animation for 'Empty' state

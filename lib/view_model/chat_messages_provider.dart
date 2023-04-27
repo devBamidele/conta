@@ -48,6 +48,7 @@ class ChatMessagesProvider extends ChangeNotifier {
   void cancelReply() {
     replyChat = false;
     replyMessage = null;
+
     notifyListeners();
   }
 

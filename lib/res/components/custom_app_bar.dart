@@ -24,7 +24,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       builder: (_, data, Widget? child) {
         final currentChat = data.currentChat!;
         return AppBar(
-          surfaceTintColor: AppColors.appBarColor,
+          scrolledUnderElevation: 2,
+          shadowColor: AppColors.inactiveColor,
+          surfaceTintColor: Colors.white,
           titleSpacing: 5,
           leading: CustomBackButton(
             padding: const EdgeInsets.only(left: 15),

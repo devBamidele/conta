@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:conta/res/components/shimmer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 
@@ -21,7 +22,7 @@ class SearchTile extends StatelessWidget {
     return ListTile(
       onTap: onTileTap,
       leading: CircleAvatar(
-        radius: 30,
+        radius: 27,
         backgroundColor: Colors.white,
         child: user.profilePicUrl != null
             ? CachedNetworkImage(
@@ -36,7 +37,7 @@ class SearchTile extends StatelessWidget {
                   ),
                 ),
                 placeholder: (context, url) =>
-                    const CircularProgressIndicator(),
+                    const ShimmerWidget.circular(width: 54, height: 54),
                 errorWidget: (context, url, error) => const Icon(Icons.error),
               )
             : const Icon(

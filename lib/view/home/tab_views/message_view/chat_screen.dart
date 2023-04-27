@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:math' as math;
 
 import 'package:conta/res/components/chat_text_form_field.dart';
@@ -84,17 +85,19 @@ class _ChatScreenState extends State<ChatScreen> {
   onCancelReply() => chatProvider.cancelReply();
 
   // Todo : Make the page scroll to the bottom (automatically) and add pagination
-  _scrollToBottom() =>
-      // Scroll to the bottom of the list
-      SchedulerBinding.instance.addPostFrameCallback((_) {
-        if (scrollController.hasClients) {
-          scrollController.animateTo(
-            scrollController.position.maxScrollExtent,
-            duration: const Duration(milliseconds: 600),
-            curve: Curves.fastOutSlowIn,
-          );
-        }
-      });
+  _scrollToBottom() {
+    // Scroll to the bottom of the list
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      log('Well I got executed');
+      if (scrollController.hasClients) {
+        scrollController.animateTo(
+          scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 600),
+          curve: Curves.fastOutSlowIn,
+        );
+      }
+    });
+  }
 
   // Upload the chat
   // Scroll to the bottom
@@ -214,3 +217,6 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 }
+
+// Todo : Incorrect Use of Parent Data Widget -- Reply Message in Message Bubble
+// Todo : FAB Scroll to bottom isn't working

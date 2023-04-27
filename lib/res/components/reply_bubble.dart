@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../utils/widget_functions.dart';
 import '../color.dart';
 
 class ReplyBubble extends StatelessWidget {
@@ -19,47 +18,43 @@ class ReplyBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: const BorderRadius.all(
-        Radius.circular(8),
+        Radius.circular(11.5),
       ),
       child: Stack(
         children: [
           Container(
-            decoration: const BoxDecoration(
-              color: AppColors.replyMessageBackGround,
+            decoration: BoxDecoration(
+              color: Colors.transparent.withAlpha(20),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(5),
-              child: Padding(
-                padding: const EdgeInsets.only(left: 8),
-                child: Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              isSender ? 'You' : username,
-                              style: const TextStyle(
-                                color: AppColors.replyMessageColor,
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                              ),
+              padding: const EdgeInsets.fromLTRB(15, 7, 7, 7),
+              child: Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            isSender ? 'You' : username,
+                            style: const TextStyle(
+                              color: AppColors.replyMessageColor,
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                        ],
-                      ),
-                      addHeight(3),
-                      Text(
-                        replyMessage,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: Colors.black54,
                         ),
-                      )
-                    ],
-                  ),
+                      ],
+                    ),
+                    Text(
+                      replyMessage,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Colors.black.withAlpha(210),
+                      ),
+                    )
+                  ],
                 ),
               ),
             ),
@@ -67,7 +62,7 @@ class ReplyBubble extends StatelessWidget {
           Positioned(
             left: 0,
             child: Container(
-              width: 5,
+              width: 4,
               color: AppColors.replyMessageColor,
               height: 100,
             ),

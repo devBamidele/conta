@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:conta/res/components/reply_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -37,7 +39,7 @@ class MessageBubble extends StatefulWidget {
     this.color = Colors.white70,
     this.tail = true,
     this.textStyle = const TextStyle(
-      color: Colors.black87,
+      color: Colors.black,
       fontSize: 16,
     ),
     this.timeStyle = const TextStyle(
@@ -53,6 +55,8 @@ class MessageBubble extends StatefulWidget {
 class _MessageBubbleState extends State<MessageBubble> {
   late final chatProvider =
       Provider.of<ChatMessagesProvider>(context, listen: false);
+
+  late String? replyMessage;
 
   double height = 0;
   double width = 0;
@@ -70,6 +74,8 @@ class _MessageBubbleState extends State<MessageBubble> {
   @override
   void initState() {
     super.initState();
+
+    replyMessage = widget.message.replyMessage;
 
     painter = TextPainter(
       text: TextSpan(text: widget.message.content, style: widget.textStyle),
@@ -113,7 +119,7 @@ class _MessageBubbleState extends State<MessageBubble> {
     });
   }
 
-  void replyMessage() => chatProvider.updateReply(widget.message);
+  void updateReply() => chatProvider.updateReply(widget.message);
 
   ///chat bubble builder method
   @override
@@ -144,7 +150,7 @@ class _MessageBubbleState extends State<MessageBubble> {
 
     return SwipeTo(
       offsetDx: 0.2,
-      onRightSwipe: () => replyMessage(),
+      onRightSwipe: () => updateReply(),
       rightSwipeWidget: const Padding(
         padding: EdgeInsets.only(left: 25),
         child: Icon(
@@ -197,6 +203,12 @@ class _MessageBubbleState extends State<MessageBubble> {
                         ? painter.width +
                             (prefWidth - painter.width).clamp(0, 30)
                         : width;
+/*
+ if (widget.message.content ==
+                        'I said it before and I don\'t mind saying it again') {
+                      log('The Height for ${widget.message.content} is $height');
+                    }
+ */
 
                     return Container(
                       constraints: BoxConstraints(
@@ -206,31 +218,34 @@ class _MessageBubbleState extends State<MessageBubble> {
                       ),
                       margin: widget.isSender
                           ? stateTick
-                              ? const EdgeInsets.fromLTRB(7, 7, 14, 7)
+                              ? replyMessage != null
+                                  ? const EdgeInsets.fromLTRB(3.5, 3, 13, 7)
+                                  : const EdgeInsets.fromLTRB(7, 7, 14, 7)
                               : const EdgeInsets.fromLTRB(7, 7, 17, 7)
-                          : const EdgeInsets.fromLTRB(17, 7, 7, 7),
+                          : replyMessage != null
+                              ? const EdgeInsets.fromLTRB(14, 3, 3, 7)
+                              : const EdgeInsets.fromLTRB(14, 7, 3, 7),
                       child: Stack(
                         children: <Widget>[
                           Padding(
                             padding: stateTick
-                                ? const EdgeInsets.only(left: 4)
+                                ? replyMessage != null
+                                    ? const EdgeInsets.only(left: 0)
+                                    : const EdgeInsets.only(left: 4)
                                 : const EdgeInsets.symmetric(horizontal: 4),
                             child: Column(
                               mainAxisSize: MainAxisSize.max,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                if (widget.message.reply &&
-                                    widget.message.replyMessage != null &&
-                                    widget.message.sender != null)
-                                  ReplyBubble(
-                                    replyMessage: widget.message.replyMessage!,
-                                    isSender: widget.isSender,
-                                    username: widget.message.sender!,
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                    left: replyMessage != null ? 8 : 0,
                                   ),
-                                Text(
-                                  widget.message.content,
-                                  style: widget.textStyle,
-                                  textAlign: TextAlign.left,
+                                  child: Text(
+                                    widget.message.content,
+                                    style: widget.textStyle,
+                                    textAlign: TextAlign.left,
+                                  ),
                                 ),
                               ],
                             ),
@@ -238,7 +253,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                           stateIcon != null
                               ? Positioned(
                                   bottom: 0,
-                                  right: 0,
+                                  right: 4,
                                   child: Row(
                                     children: [
                                       Padding(
