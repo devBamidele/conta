@@ -24,7 +24,9 @@ class ChatScreen extends StatefulWidget {
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ChatScreenState extends State<ChatScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
   late ChatMessagesProvider chatProvider;
 
   final messagesController = TextEditingController();
@@ -37,6 +39,12 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+
     chatProvider = Provider.of<ChatMessagesProvider>(context, listen: false);
     messagesController.addListener(_updateIcon);
     _scrollToBottom();
@@ -52,6 +60,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
     // Remove the status listeners as the page closes
     chatProvider.removeOnlineStatusListener();
+
+    _controller.dispose();
     super.dispose();
   }
 
@@ -140,20 +150,31 @@ class _ChatScreenState extends State<ChatScreen> {
                         child: Consumer<ChatMessagesProvider>(
                           builder: (_, data, Widget? child) {
                             bool isReplying = data.replyChat;
+                            if (isReplying) {
+                              _controller.forward();
+                            } else {
+                              _controller.reverse();
+                            }
                             return Column(
                               children: [
                                 if (isReplying && data.replyMessage != null)
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                      left: 1,
-                                      right: 1,
-                                    ),
-                                    child: ReplyMessage(
-                                      isYou: data.currentUser!.uid ==
-                                          data.replyMessage!.senderId,
-                                      message: data.replyMessage!,
-                                      senderName: data.currentChat?.username,
-                                      onCancelReply: onCancelReply,
+                                  SlideTransition(
+                                    position: Tween<Offset>(
+                                      begin: const Offset(0, 1),
+                                      end: Offset.zero,
+                                    ).animate(_controller),
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                        left: 1,
+                                        right: 1,
+                                      ),
+                                      child: ReplyMessage(
+                                        isYou: data.currentUser!.uid ==
+                                            data.replyMessage!.senderId,
+                                        message: data.replyMessage!,
+                                        senderName: data.currentChat?.username,
+                                        onCancelReply: onCancelReply,
+                                      ),
                                     ),
                                   ),
                                 ConstrainedBox(
