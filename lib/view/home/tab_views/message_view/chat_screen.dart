@@ -42,7 +42,7 @@ class _ChatScreenState extends State<ChatScreen>
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 300),
     );
 
     chatProvider = Provider.of<ChatMessagesProvider>(context, listen: false);
@@ -239,5 +239,4 @@ class _ChatScreenState extends State<ChatScreen>
   }
 }
 
-// Todo : Incorrect Use of Parent Data Widget -- Reply Message in Message Bubble
 // Todo : FAB Scroll to bottom isn't working

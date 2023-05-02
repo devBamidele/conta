@@ -10,13 +10,21 @@ import 'package:provider/provider.dart';
 
 import '../../../../res/color.dart';
 
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const CustomAppBar({Key? key}) : super(key: key);
+class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
 
-  final double customSize = 27;
+  final VoidCallback? onCancelPressed;
+
+  const CustomAppBar({Key? key, this.onCancelPressed,}): super(key: key);
+
+  @override
+  State<CustomAppBar> createState() => _CustomAppBarState();
 
   @override
   Size get preferredSize => const Size.fromHeight(58);
+}
+
+class _CustomAppBarState extends State<CustomAppBar> {
+  final double customSize = 27;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +36,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           shadowColor: AppColors.inactiveColor,
           surfaceTintColor: Colors.white,
           titleSpacing: 5,
-          leading: CustomBackButton(
+          leading: data.isMessageLongPressed ? GestureDetector(
+            onTap: widget.onCancelPressed,
+            child: const Icon(
+              Icons.close,
+              size: 26,
+            ),
+          ) :
+          CustomBackButton(
             padding: const EdgeInsets.only(left: 15),
             color: AppColors.extraTextColor,
             onPressed: () => data.cancelReply(),
@@ -36,7 +51,30 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           actions: [
             Padding(
               padding: const EdgeInsets.only(right: 20),
-              child: Row(
+              child: data.isMessageLongPressed ? Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Icon(
+                    Icons.copy_outlined,
+                    color: AppColors.extraTextColor,
+                    size: customSize,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: Icon(
+                      Icons.reply_rounded,
+                      color: AppColors.extraTextColor,
+                      size: customSize,
+                    ),
+                  ),
+                  addWidth(20),
+                  Icon(
+                   IconlyLight.delete,
+                    color: AppColors.extraTextColor,
+                    size: customSize,
+                  ),
+                ],
+              ) : Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Padding(
@@ -57,7 +95,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
           ],
-          title: Row(
+          title: data.isMessageLongPressed ? null :
+          Row(
             children: [
               CircleAvatar(
                 radius: 23,

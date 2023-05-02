@@ -64,9 +64,9 @@ class _MessageBubbleState extends State<MessageBubble> {
   double addedHeight = 0;
   int lines = 0;
   bool stateTick = false;
-  bool messageTapped = false;
   Icon? stateIcon;
   Color overlayColor = Colors.transparent;
+  bool longPressed = false;
   late TextPainter painter;
   late TextPainter timePainter;
   late double prefWidth;
@@ -74,6 +74,8 @@ class _MessageBubbleState extends State<MessageBubble> {
   @override
   void initState() {
     super.initState();
+
+    longPressed = chatProvider.isMessageLongPressed;
 
     replyMessage = widget.message.replyMessage;
 
@@ -112,11 +114,21 @@ class _MessageBubbleState extends State<MessageBubble> {
 
   void onLongTapMessage() {
     setState(() {
-      messageTapped = !messageTapped;
-      overlayColor = messageTapped
-          ? AppColors.bubbleColor.withOpacity(0.15)
-          : Colors.transparent;
+      longPressed = !longPressed;
+      overlayColor =
+      longPressed ? AppColors.bubbleColor.withOpacity(0.15) : Colors.transparent;
     });
+    chatProvider.updateMLPValue(!chatProvider.isMessageLongPressed);
+  }
+
+  void onTapMessage(){
+    if(chatProvider.isMessageLongPressed){
+      setState(() {
+        longPressed = !longPressed;
+        overlayColor =
+        longPressed ? AppColors.bubbleColor.withOpacity(0.15) : Colors.transparent;
+      });
+    }
   }
 
   void updateReply() => chatProvider.updateReply(widget.message);
@@ -148,141 +160,153 @@ class _MessageBubbleState extends State<MessageBubble> {
       );
     }
 
-    return SwipeTo(
-      offsetDx: 0.2,
-      onRightSwipe: () => updateReply(),
-      rightSwipeWidget: const Padding(
-        padding: EdgeInsets.only(left: 25),
-        child: Icon(
-          Icons.reply,
-          size: 30,
-          color: AppColors.primaryColor,
+    return GestureDetector(
+      onTap: onTapMessage,
+      onDoubleTap: onLongTapMessage,
+      child: SwipeTo(
+        offsetDx: 0.2,
+        onRightSwipe: () => updateReply(),
+        rightSwipeWidget: const Padding(
+          padding: EdgeInsets.only(left: 25),
+          child: Icon(
+            Icons.reply_rounded,
+            size: 30,
+            color: AppColors.primaryColor,
+          ),
         ),
-      ),
-      child: VisibilityDetector(
-        key: widget.key!,
-        onVisibilityChanged: onVisibilityChanged,
-        child: Container(
-          color: overlayColor,
-          child: Align(
-            alignment: widget.isSender ? Alignment.topRight : Alignment.topLeft,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-              child: CustomPaint(
-                painter: BubblePainter(
-                  color: widget.color,
-                  alignment:
-                      widget.isSender ? Alignment.topRight : Alignment.topLeft,
-                  tail: widget.tail,
-                ),
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    lines = painter.width ~/ prefWidth;
+        child: VisibilityDetector(
+          key: widget.key!,
+          onVisibilityChanged: onVisibilityChanged,
+          child: Container(
+            color: overlayColor,
+            child: Align(
+              alignment: widget.isSender ? Alignment.topRight : Alignment.topLeft,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                child: CustomPaint(
+                  painter: BubblePainter(
+                    color: widget.color,
+                    alignment:
+                        widget.isSender ? Alignment.topRight : Alignment.topLeft,
+                    tail: widget.tail,
+                  ),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      lines = painter.width ~/ prefWidth;
 
-                    addedWidth = timePainter.width + 42;
+                      addedWidth = timePainter.width + 40;
 
-                    addedHeight =
-                        prefWidth < (painter.width % prefWidth) + addedWidth
-                            ? 42
-                            : 0;
+                      addedHeight =
+                          prefWidth < (painter.width % prefWidth) + addedWidth
+                              ? 42
+                              : 0;
 
-                    // If lines == 0, then the text can by default (without the timestamp)
-                    // fit within a single line of text.
-                    width =
-                        lines == 0 && painter.width < (prefWidth - addedWidth)
-                            ? painter.width + addedWidth
-                            : 0;
+                      // If lines == 0, then the text can by default (without the timestamp)
+                      // fit within a single line of text.
+                      width =
+                          lines == 0 && painter.width < (prefWidth - addedWidth)
+                              ? painter.width + addedWidth
+                              : 0;
 
-                    height = width == 0
-                        ? lines == 0
-                            ? 2 * painter.height
-                            : (lines * painter.height) + addedHeight
-                        : 0;
+                      height = width == 0
+                          ? lines == 0
+                              ? 2 * painter.height
+                              : (lines * painter.height) + addedHeight
+                          : 0;
 
-                    width = height != 0 && lines == 0
-                        ? painter.width +
-                            (prefWidth - painter.width).clamp(0, 30)
-                        : width;
+                      width = height != 0 && lines == 0
+                          ? painter.width +
+                              (prefWidth - painter.width).clamp(0, 30)
+                          : width;
 /*
  if (widget.message.content ==
-                        'I said it before and I don\'t mind saying it again') {
-                      log('The Height for ${widget.message.content} is $height');
-                    }
+                          'I said it before and I don\'t mind saying it again') {
+                        log('The Height for ${widget.message.content} is $height');
+                      }
  */
 
-                    return Container(
-                      constraints: BoxConstraints(
-                        minWidth: width,
-                        minHeight: height,
-                        maxWidth: prefWidth,
-                      ),
-                      margin: widget.isSender
-                          ? stateTick
-                              ? replyMessage != null
-                                  ? const EdgeInsets.fromLTRB(3.5, 3, 13, 7)
-                                  : const EdgeInsets.fromLTRB(7, 7, 14, 7)
-                              : const EdgeInsets.fromLTRB(7, 7, 17, 7)
-                          : replyMessage != null
-                              ? const EdgeInsets.fromLTRB(14, 3, 3, 7)
-                              : const EdgeInsets.fromLTRB(14, 7, 3, 7),
-                      child: Stack(
-                        children: <Widget>[
-                          Padding(
-                            padding: stateTick
+                      return Container(
+                        constraints: BoxConstraints(
+                          minWidth: width,
+                          minHeight: height,
+                          maxWidth: prefWidth,
+                        ),
+                        margin: widget.isSender
+                            ? stateTick
                                 ? replyMessage != null
-                                    ? const EdgeInsets.only(left: 0)
-                                    : const EdgeInsets.only(left: 4)
-                                : const EdgeInsets.symmetric(horizontal: 4),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.max,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                    left: replyMessage != null ? 8 : 0,
+                                    ? const EdgeInsets.fromLTRB(3.5, 3, 13, 7)
+                                    : const EdgeInsets.fromLTRB(7, 7, 14, 7)
+                                : const EdgeInsets.fromLTRB(7, 7, 17, 7)
+                            : replyMessage != null
+                                ? const EdgeInsets.fromLTRB(14, 3, 3, 7)
+                                : const EdgeInsets.fromLTRB(14, 7, 3, 7),
+                        child: Stack(
+                          children: <Widget>[
+                            Padding(
+                              padding: stateTick
+                                  ? replyMessage != null
+                                      ? const EdgeInsets.only(left: 0)
+                                      : const EdgeInsets.only(left: 4)
+                                  : const EdgeInsets.symmetric(horizontal: 4),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (widget.message.reply &&
+                                      widget.message.replyMessage != null &&
+                                      widget.message.sender != null)
+                                    ReplyBubble(
+                                      replyMessage: widget.message.replyMessage!,
+                                      isSender: widget.isSender,
+                                      username: widget.message.sender!,
+                                    ),
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                      left: replyMessage != null ? 8 : 0,
+                                    ),
+                                    child: Text(
+                                      widget.message.content,
+                                      style: widget.textStyle,
+                                      textAlign: TextAlign.left,
+                                    ),
                                   ),
-                                  child: Text(
-                                    widget.message.content,
-                                    style: widget.textStyle,
-                                    textAlign: TextAlign.left,
-                                  ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                          stateIcon != null
-                              ? Positioned(
-                                  bottom: 0,
-                                  right: 4,
-                                  child: Row(
-                                    children: [
-                                      Padding(
-                                        padding: EdgeInsets.only(
-                                          right: widget.isSender ? 3 : 5,
+                            stateIcon != null
+                                ? Positioned(
+                                    bottom: 0,
+                                    right: 4,
+                                    child: Row(
+                                      children: [
+                                        Padding(
+                                          padding: EdgeInsets.only(
+                                            right: widget.isSender ? 3 : 5,
+                                          ),
+                                          child: Text(
+                                            widget.timeSent,
+                                            style: widget.timeStyle,
+                                          ),
                                         ),
-                                        child: Text(
-                                          widget.timeSent,
-                                          style: widget.timeStyle,
+                                        Visibility(
+                                          visible: widget.isSender,
+                                          child: Padding(
+                                            padding:
+                                                const EdgeInsets.only(right: 6),
+                                            child: stateIcon,
+                                          ),
                                         ),
-                                      ),
-                                      Visibility(
-                                        visible: widget.isSender,
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(right: 6),
-                                          child: stateIcon,
-                                        ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
+                                  )
+                                : const SizedBox(
+                                    width: 1,
                                   ),
-                                )
-                              : const SizedBox(
-                                  width: 1,
-                                ),
-                        ],
-                      ),
-                    );
-                  },
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
@@ -292,3 +316,5 @@ class _MessageBubbleState extends State<MessageBubble> {
     );
   }
 }
+
+// Todo: Fix layout issues with message bubble

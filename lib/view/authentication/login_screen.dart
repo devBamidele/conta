@@ -163,6 +163,11 @@ class _LoginScreenState extends State<LoginScreen> {
     myPasswordController.text = 'dele004';
   }
 
+  useFourthLogin() {
+    myEmailController.text = 'bickerstethdemilade@gmail.com';
+    myPasswordController.text = 'demilade';
+  }
+
   void showSnackbar(String message) {
     if (mounted) {
       AppUtils.showSnackbar(message);
@@ -172,7 +177,8 @@ class _LoginScreenState extends State<LoginScreen> {
   void onContinuePressed() {
     // useFirstLogin();
     //  useSecondLogin();
-    useThirdLogin();
+    // useThirdLogin();
+    useFourthLogin();
 
     final email = formKey1.currentState?.validate();
     final password = formKey2.currentState?.validate();

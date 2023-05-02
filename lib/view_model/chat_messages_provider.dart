@@ -21,6 +21,14 @@ class ChatMessagesProvider extends ChangeNotifier {
 
   //late final MessagingService _messagingService = MessagingService();
 
+
+  bool isMessageLongPressed = false;
+
+  void updateMLPValue(bool newValue){
+    isMessageLongPressed = newValue;
+    notifyListeners();
+  }
+
   /// Holds the profile information of the current selected chat
   CurrentChat? currentChat;
 
@@ -313,7 +321,7 @@ class ChatMessagesProvider extends ChangeNotifier {
 
   Future<void> updateUnreadCount(String chatId, String senderId) async {
     // Fetch the Chat object from Firestore
-    final chatDoc = firestore.collection('chats').doc(chatId);
+    DocumentReference<Map<String, dynamic>> chatDoc = firestore.collection('chats').doc(chatId);
     final chatSnap = await chatDoc.get();
     final chatData = chatSnap.data()!;
     final chat = Chat.fromJson(chatData);

@@ -36,51 +36,46 @@ class ReplyMessage extends StatelessWidget {
         child: Stack(
           children: [
             Container(
-              decoration: const BoxDecoration(
-                color: AppColors.replyMessageBackGround,
+              decoration: BoxDecoration(
+                color: AppColors.transparentBackground,
               ),
               child: Padding(
-                padding: const EdgeInsets.all(5),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 8),
-                  child: Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                padding: const EdgeInsets.fromLTRB(13, 5, 5, 5),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
                       children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                isYou ? 'You' : senderName ?? 'NoName',
-                                style: const TextStyle(
-                                  color: AppColors.replyMessageColor,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                        Expanded(
+                          child: Text(
+                            isYou ? 'You' : senderName ?? 'NoName',
+                            style: const TextStyle(
+                              color: AppColors.replyMessageColor,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
                             ),
-                            if (onCancelReply != null)
-                              GestureDetector(
-                                onTap: onCancelReply,
-                                child: const Icon(
-                                  Icons.close,
-                                  size: 18,
-                                ),
-                              )
-                          ],
-                        ),
-                        addHeight(3),
-                        Text(
-                          message.content,
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: Colors.black54,
                           ),
-                        )
+                        ),
+                        if (onCancelReply != null)
+                          GestureDetector(
+                            onTap: onCancelReply,
+                            child: const Icon(
+                              Icons.close,
+                              size: 18,
+                            ),
+                          )
                       ],
                     ),
-                  ),
+                    addHeight(3),
+                    Text(
+                      message.content,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: AppColors.transparentText,
+                      ),
+                    )
+                  ],
                 ),
               ),
             ),

@@ -7,6 +7,8 @@ class AppColors {
   static const Color inputBackGround = Color(0xFFFAFAFA);
   static const Color hintTextColor = Color(0xFF9E9E9E);
   static const Color darkIconColor = Color(0xFF858585);
+  static Color transparentBackground = Colors.transparent.withAlpha(20);
+  static Color transparentText = Colors.transparent.withAlpha(210);
 
   // For text
   static const Color opaqueTextColor = Color(0xFF969696);

@@ -24,38 +24,36 @@ class ReplyBubble extends StatelessWidget {
         children: [
           Container(
             decoration: BoxDecoration(
-              color: Colors.transparent.withAlpha(20),
+              color: AppColors.transparentBackground,
             ),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(15, 7, 7, 7),
-              child: Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            isSender ? 'You' : username,
-                            style: const TextStyle(
-                              color: AppColors.replyMessageColor,
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                            ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          isSender ? 'You' : username,
+                          style: const TextStyle(
+                            color: AppColors.replyMessageColor,
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                      ],
-                    ),
-                    Text(
-                      replyMessage,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: Colors.black.withAlpha(210),
                       ),
-                    )
-                  ],
-                ),
+                    ],
+                  ),
+                  Text(
+                    replyMessage,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: AppColors.transparentText,
+                    ),
+                  )
+                ],
               ),
             ),
           ),
