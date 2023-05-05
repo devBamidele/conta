@@ -3,8 +3,8 @@ import 'dart:developer';
 import 'package:conta/res/components/reply_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:visibility_detector/visibility_detector.dart';
 import 'package:swipe_to/swipe_to.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 import '../../models/message.dart';
 import '../../view_model/chat_messages_provider.dart';
@@ -113,25 +113,36 @@ class _MessageBubbleState extends State<MessageBubble> {
   }
 
   void onLongTapMessage() {
+    bool? selected = widget.message.selected;
+    log(selected.toString());
+    if (selected == false) {
+      widget.message.updateSelected(true);
+      chatProvider.addToSelectedMessages(widget.message);
+    } else {
+      widget.message.updateSelected(false);
+      chatProvider.removeFromSelectedMessages(widget.message);
+    }
     setState(() {
       longPressed = !longPressed;
-      overlayColor =
-      longPressed ? AppColors.bubbleColor.withOpacity(0.15) : Colors.transparent;
+      overlayColor = longPressed
+          ? AppColors.bubbleColor.withOpacity(0.15)
+          : Colors.transparent;
     });
     chatProvider.updateMLPValue(!chatProvider.isMessageLongPressed);
   }
 
-  void onTapMessage(){
-    if(chatProvider.isMessageLongPressed){
+  void onTapMessage() {
+    if (chatProvider.isMessageLongPressed) {
       setState(() {
         longPressed = !longPressed;
-        overlayColor =
-        longPressed ? AppColors.bubbleColor.withOpacity(0.15) : Colors.transparent;
+        overlayColor = longPressed
+            ? AppColors.bubbleColor.withOpacity(0.15)
+            : Colors.transparent;
       });
     }
   }
 
-  void updateReply() => chatProvider.updateReply(widget.message);
+  void updateReply() => chatProvider.updateReplyBySwipe(widget.message);
 
   ///chat bubble builder method
   @override
@@ -180,14 +191,16 @@ class _MessageBubbleState extends State<MessageBubble> {
           child: Container(
             color: overlayColor,
             child: Align(
-              alignment: widget.isSender ? Alignment.topRight : Alignment.topLeft,
+              alignment:
+                  widget.isSender ? Alignment.topRight : Alignment.topLeft,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                 child: CustomPaint(
                   painter: BubblePainter(
                     color: widget.color,
-                    alignment:
-                        widget.isSender ? Alignment.topRight : Alignment.topLeft,
+                    alignment: widget.isSender
+                        ? Alignment.topRight
+                        : Alignment.topLeft,
                     tail: widget.tail,
                   ),
                   child: LayoutBuilder(
@@ -256,7 +269,8 @@ class _MessageBubbleState extends State<MessageBubble> {
                                       widget.message.replyMessage != null &&
                                       widget.message.sender != null)
                                     ReplyBubble(
-                                      replyMessage: widget.message.replyMessage!,
+                                      replyMessage:
+                                          widget.message.replyMessage!,
                                       isSender: widget.isSender,
                                       username: widget.message.sender!,
                                     ),

@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:conta/models/chat.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:conta/models/chat.dart';
 import 'package:uuid/uuid.dart';
 
 import '../models/Person.dart';
@@ -13,6 +13,8 @@ import '../models/message.dart';
 import '../models/search_user.dart';
 
 class ChatMessagesProvider extends ChangeNotifier {
+  List<Message> selectedMessages = [];
+
   final currentUser = FirebaseAuth.instance.currentUser;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -21,10 +23,10 @@ class ChatMessagesProvider extends ChangeNotifier {
 
   //late final MessagingService _messagingService = MessagingService();
 
-
+  // Check if any message is currently long pressed
   bool isMessageLongPressed = false;
 
-  void updateMLPValue(bool newValue){
+  void updateMLPValue(bool newValue) {
     isMessageLongPressed = newValue;
     notifyListeners();
   }
@@ -38,7 +40,7 @@ class ChatMessagesProvider extends ChangeNotifier {
   Message? replyMessage;
   Message? cacheReplyMessage;
 
-  void updateReply(Message message) {
+  void updateReplyBySwipe(Message message) {
     replyChat = true;
     replyMessage = message;
 
@@ -47,6 +49,16 @@ class ChatMessagesProvider extends ChangeNotifier {
 
     notifyListeners();
   }
+
+  void addToSelectedMessages(Message message) {
+    selectedMessages.add(message);
+  }
+
+  void removeFromSelectedMessages(Message message) {
+    selectedMessages.remove(message);
+  }
+
+  void updateReplyByAppBar() {}
 
   void removeCache() {
     cacheReplyChat = false;
@@ -241,7 +253,7 @@ class ChatMessagesProvider extends ChangeNotifier {
         .collection('chats')
         .doc(chatId)
         .collection('messages')
-        .doc(newMessage.id)
+        .doc(messageId)
         .set(newMessage.toJson());
 
     /*
@@ -321,7 +333,8 @@ class ChatMessagesProvider extends ChangeNotifier {
 
   Future<void> updateUnreadCount(String chatId, String senderId) async {
     // Fetch the Chat object from Firestore
-    DocumentReference<Map<String, dynamic>> chatDoc = firestore.collection('chats').doc(chatId);
+    DocumentReference<Map<String, dynamic>> chatDoc =
+        firestore.collection('chats').doc(chatId);
     final chatSnap = await chatDoc.get();
     final chatData = chatSnap.data()!;
     final chat = Chat.fromJson(chatData);

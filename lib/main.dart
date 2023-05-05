@@ -1,3 +1,4 @@
+import 'package:conta/utils/services/heartbeat_service.dart';
 import 'package:conta/view_model/authentication_provider.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -11,6 +12,9 @@ import 'app/my_app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Instantiate and start the heartbeat service
+  HeartbeatService().start(); 
 
   await Firebase.initializeApp();
   await dotenv.load();

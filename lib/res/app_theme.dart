@@ -7,6 +7,12 @@ class AppTheme {
     return ThemeData(
       scaffoldBackgroundColor: AppColors.backGroundColor,
       useMaterial3: true,
+      appBarTheme: const AppBarTheme(
+        shadowColor: AppColors.inactiveColor,
+        surfaceTintColor: Colors.white,
+        scrolledUnderElevation: 2,
+        titleSpacing: 5,
+      ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         hintStyle: const TextStyle(
