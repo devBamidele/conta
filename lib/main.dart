@@ -1,20 +1,16 @@
 import 'package:conta/utils/services/heartbeat_service.dart';
 import 'package:conta/view_model/authentication_provider.dart';
+import 'package:conta/view_model/chat_messages_provider.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
-import 'package:conta/view_model/chat_messages_provider.dart';
 
 import 'app/my_app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Instantiate and start the heartbeat service
-  HeartbeatService().start(); 
 
   await Firebase.initializeApp();
   await dotenv.load();
@@ -22,6 +18,9 @@ void main() async {
   // Activate app check
   await FirebaseAppCheck.instance
       .activate(androidProvider: AndroidProvider.debug);
+      
+  // Instantiate and start the heartbeat service
+  HeartbeatService().start();
 
   /*
   OneSignal.shared.setAppId(dotenv.env['APP_ID']!);

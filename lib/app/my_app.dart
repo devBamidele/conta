@@ -4,7 +4,6 @@ import '../res/app_theme.dart';
 import '../utils/app_router/router.gr.dart';
 import '../utils/app_utils.dart';
 import '../utils/services/auth_service.dart';
-import '../utils/services/heartbeat_service.dart';
 
 /// The main application widget.
 class MyApp extends StatefulWidget {
@@ -21,9 +20,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   /// An instance of the [AuthService].
   late AuthService _authService;
 
-  /// An instance of the [HeartbeatService].
-  late HeartbeatService _heartbeatService;
-
   @override
   void initState() {
     super.initState();
@@ -31,19 +27,12 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     // Initialize the [AuthService].
     _authService = AuthService();
 
-    // Initialize and start the [HeartbeatService].
-    _heartbeatService = HeartbeatService();
-    _heartbeatService.start();
-
     // Register this object as an observer of the WidgetsBinding instance.
     WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
-    // Stop the [HeartbeatService].
-    _heartbeatService.stop();
-
     // Unregister this object as an observer of the WidgetsBinding instance.
     WidgetsBinding.instance.removeObserver(this);
 

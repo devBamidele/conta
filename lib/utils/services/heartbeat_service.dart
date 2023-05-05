@@ -5,9 +5,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:uuid/uuid.dart';
 
 class HeartbeatService with WidgetsBindingObserver {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   // Make the constructor private to prevent creating instances from outside
   HeartbeatService._privateConstructor();
 
@@ -16,12 +18,7 @@ class HeartbeatService with WidgetsBindingObserver {
       HeartbeatService._privateConstructor();
 
   // Create a factory constructor to return the single instance of the service
-  factory HeartbeatService() {
-    return _instance;
-  }
-
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  factory HeartbeatService() => _instance;
 
   Timer? _heartbeatTimer;
 
@@ -54,23 +51,21 @@ class HeartbeatService with WidgetsBindingObserver {
   /// that the user is still online. It checks if the user is authenticated and
   /// if there is an internet connection before sending the signal.
   Future<void> sendHeartbeat() async {
-    final user = _auth.currentUser;
+    User? user = _auth.currentUser;
     if (user == null) {
       return;
     }
 
-    final connectivityResult = await Connectivity().checkConnectivity();
+    ConnectivityResult connectivityResult =
+        await Connectivity().checkConnectivity();
     if (connectivityResult == ConnectivityResult.none) {
       return; // No internet connection, exit early
     }
 
-    // Generate an id
-    String heartBeatId = const Uuid().v4();
-
-    final docRef = _firestore.doc('users/${user.uid}/heartbeat/$heartBeatId');
+    final docRef = _firestore.doc('users/${user.uid}');
     try {
-      await docRef.set({
-        'timestamp': FieldValue.serverTimestamp(),
+      await docRef.update({
+        'lastSeen': FieldValue.serverTimestamp(),
       });
     } catch (e) {
       // Handle any exceptions that might occur

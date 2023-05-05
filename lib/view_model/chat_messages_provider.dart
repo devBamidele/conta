@@ -69,6 +69,8 @@ class ChatMessagesProvider extends ChangeNotifier {
     replyChat = false;
     replyMessage = null;
 
+    // Cancel reply and clear cache
+    removeCache();
     notifyListeners();
   }
 
