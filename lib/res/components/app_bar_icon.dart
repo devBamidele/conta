@@ -5,7 +5,7 @@ import '../color.dart';
 class AppBarIcon extends StatelessWidget {
   final IconData icon;
   final double size;
-  final Function? onTap;
+  final VoidCallback? onTap;
   final Matrix4? transform;
 
   const AppBarIcon({
@@ -19,7 +19,7 @@ class AppBarIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => onTap,
+      onTap: onTap,
       child: Transform(
         alignment: Alignment.center,
         transform: transform ?? Matrix4.identity(),

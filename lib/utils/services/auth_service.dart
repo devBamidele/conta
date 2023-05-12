@@ -23,15 +23,8 @@ class AuthService {
         ConnectivityResult connectivityResult =
             await Connectivity().checkConnectivity();
 
-        if (connectivityResult == ConnectivityResult.none) {
-          // If the device is offline, save the status update locally.
-          // This ensures that the user's online status is still updated even if the device is offline.
-          await docRef.set({
-            'online': isOnline,
-            'lastSeen': DateTime.now(),
-          }, SetOptions(merge: true));
-        } else {
-          // If the device is online, update the status in Firestore.
+        // If the device is online, update the status in Firestore.
+        if (connectivityResult != ConnectivityResult.none) {
           await docRef.update({
             'online': isOnline,
             'lastSeen': DateTime.now(),

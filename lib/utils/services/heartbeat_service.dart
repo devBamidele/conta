@@ -35,9 +35,9 @@ class HeartbeatService with WidgetsBindingObserver {
   }
 
   void _startHeartbeatTimer() {
-    _heartbeatTimer = Timer.periodic(const Duration(minutes: 3), (timer) async {
-      await sendHeartbeat();
-    });
+    _heartbeatTimer = Timer.periodic(const Duration(minutes: 3), (timer) async => 
+      await sendHeartbeat()
+    );
   }
 
   void _stopHeartbeatTimer() {

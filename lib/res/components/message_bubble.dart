@@ -75,7 +75,7 @@ class _MessageBubbleState extends State<MessageBubble> {
   void initState() {
     super.initState();
 
-    longPressed = chatProvider.isMessageLongPressed;
+    chatProvider.setResetOverlayColorCallback(resetOverlayColor);
 
     replyMessage = widget.message.replyMessage;
 
@@ -97,6 +97,8 @@ class _MessageBubbleState extends State<MessageBubble> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+
+    // The preferred width of the message bubble
     prefWidth = MediaQuery.of(context).size.width * .75;
   }
 
@@ -112,34 +114,35 @@ class _MessageBubbleState extends State<MessageBubble> {
     }
   }
 
-  void onLongTapMessage() {
-    bool? selected = widget.message.selected;
-    log(selected.toString());
-    if (selected == false) {
-      widget.message.updateSelected(true);
-      chatProvider.addToSelectedMessages(widget.message);
-    } else {
-      widget.message.updateSelected(false);
-      chatProvider.removeFromSelectedMessages(widget.message);
-    }
-    setState(() {
-      longPressed = !longPressed;
-      overlayColor = longPressed
-          ? AppColors.bubbleColor.withOpacity(0.15)
-          : Colors.transparent;
-    });
-    chatProvider.updateMLPValue(!chatProvider.isMessageLongPressed);
-  }
-
-  void onTapMessage() {
-    if (chatProvider.isMessageLongPressed) {
-      setState(() {
+  /// Updates the overlayColor value and
+  /// switches the longPressed value
+  void update() => setState(() {
         longPressed = !longPressed;
         overlayColor = longPressed
             ? AppColors.bubbleColor.withOpacity(0.15)
             : Colors.transparent;
       });
+
+  void resetOverlayColor() {
+    log(widget.key.toString());
+    setState(() {
+      overlayColor = Colors.transparent;
+      longPressed = false;
+    });
+  }
+
+  void onLongTapMessage() {
+    update();
+    chatProvider.onLongTapMessage(widget.message);
+    chatProvider.updateMLPValue();
+  }
+
+  void onTapMessage() {
+    if (chatProvider.isMessageLongPressed) {
+      update();
+      chatProvider.onLongTapMessage(widget.message);
     }
+    chatProvider.updateMLPValue();
   }
 
   void updateReply() => chatProvider.updateReplyBySwipe(widget.message);
@@ -175,7 +178,7 @@ class _MessageBubbleState extends State<MessageBubble> {
       onTap: onTapMessage,
       onDoubleTap: onLongTapMessage,
       child: SwipeTo(
-        offsetDx: 0.2,
+        offsetDx: 0.25,
         onRightSwipe: () => updateReply(),
         rightSwipeWidget: const Padding(
           padding: EdgeInsets.only(left: 25),

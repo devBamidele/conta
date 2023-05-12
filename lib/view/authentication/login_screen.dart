@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:auto_route/auto_route.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:conta/res/components/custom_back_button.dart';
 import 'package:conta/res/components/custom_check_box.dart';
 import 'package:conta/res/components/login_options.dart';
@@ -288,6 +289,26 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
 
+    // Check if the device is currently offline.
+    ConnectivityResult connectivityResult =
+        await Connectivity().checkConnectivity();
+
+    if (connectivityResult == ConnectivityResult.none) {
+      // User's device is not connected to the internet,
+      showSnackbar('No internet connection');
+
+      /*
+       if (mounted) {
+        context.router.pop();
+      }
+       */
+
+      // Todo : Apply fix when I uncomment this code
+
+      // Exit the function
+      return;
+    }
+
     try {
       UserCredential userCredential =
           await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -319,8 +340,8 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       // Handle other errors
-      showSnackbar(
-          'An error occurred while checking email and password. Please try again later.');
+      showSnackbar('An error occurred while checking email and password.'
+          ' Please try again later.');
     } finally {
       if (mounted) {
         context.router.pop();
@@ -414,8 +435,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         customFillColor: fillPasswordColor,
                         action: TextInputAction.done,
                         hintText: 'Password',
-                        obscureText:
-                            _passwordVisible, //This will obscure text dynamically
+                        obscureText: _passwordVisible,
+                        //This will obscure text dynamically
                         validation: (value) => value != null && value.length < 6
                             ? 'Enter a minimum of 6 characters'
                             : null,

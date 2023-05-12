@@ -41,11 +41,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
               ? AppBarIcon(
                   icon: Icons.close,
                   size: customSize + 2,
-                  onTap: () {
-                    setState(() {
-                      data.updateMLPValue(false);
-                    });
-                  },
+                  onTap: () => setState(() => data.resetSelectedMessages()),
                 )
               : CustomBackButton(
                   padding: const EdgeInsets.only(left: 15),
@@ -70,22 +66,24 @@ class _CustomAppBarState extends State<CustomAppBar> {
                             AppBarIcon(
                               icon: Icons.reply_rounded,
                               size: customSize,
-                              onTap: () {
-                                data.updateReplyByAppBar();
-                              },
+                              onTap: () => data.updateReplyByAppBar(),
                             ),
                           addWidth(20),
                           AppBarIcon(
-                              icon: Icons.content_copy_outlined,
-                              size: customSize - 2),
+                            icon: Icons.content_copy_outlined,
+                            size: customSize - 2,
+                          ),
                           addWidth(20),
                           AppBarIcon(
-                              icon: Icons.reply_rounded,
-                              size: customSize,
-                              transform: Matrix4.rotationY(math.pi)),
+                            icon: Icons.reply_rounded,
+                            size: customSize,
+                            transform: Matrix4.rotationY(math.pi),
+                          ),
                           addWidth(20),
                           AppBarIcon(
-                              icon: IconlyLight.delete, size: customSize),
+                            icon: IconlyLight.delete,
+                            size: customSize,
+                          ),
                         ],
                       )
                     : Row(
@@ -102,7 +100,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
             ),
           ],
           title: data.isMessageLongPressed
-              ? null
+              ? const SizedBox.shrink()
               : Row(
                   children: [
                     CircleAvatar(

@@ -14,7 +14,7 @@ class Message {
   final bool reply;
   final String? sender;
   final String? replyMessage;
-  bool? selected;
+  bool selected = false;
 
   Message({
     required this.id,
@@ -27,7 +27,6 @@ class Message {
     this.reply = false,
     this.sender,
     this.replyMessage,
-    this.selected = false,
   });
 
   // Deserialize the JSON data received from Firestore into a Message object.

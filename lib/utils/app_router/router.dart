@@ -8,7 +8,6 @@ import 'package:conta/view/home/tab_views/message_view/chat_screen.dart';
 
 import '../../view/account_setup/set_name_screen.dart';
 import '../../view/account_setup/set_photo_page.dart';
-import '../../view/onboard/splash_screen.dart';
 
 @AdaptiveAutoRouter(
   routes: [

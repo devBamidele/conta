@@ -12,8 +12,11 @@ import '../models/current_chat.dart';
 import '../models/message.dart';
 import '../models/search_user.dart';
 
+typedef ResetOverlayColorCallback = void Function();
+
 class ChatMessagesProvider extends ChangeNotifier {
-  List<Message> selectedMessages = [];
+  Map<String, Message> selectedMessages = {};
+  ResetOverlayColorCallback? _resetOverlayColorCallback;
 
   final currentUser = FirebaseAuth.instance.currentUser;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -21,13 +24,21 @@ class ChatMessagesProvider extends ChangeNotifier {
   // Declare a variable to store the subscription
   late StreamSubscription<DocumentSnapshot<Map<String, dynamic>>> subscription;
 
+  void setResetOverlayColorCallback(ResetOverlayColorCallback callback) {
+    _resetOverlayColorCallback = callback;
+  }
+
   //late final MessagingService _messagingService = MessagingService();
 
   // Check if any message is currently long pressed
   bool isMessageLongPressed = false;
 
-  void updateMLPValue(bool newValue) {
-    isMessageLongPressed = newValue;
+  void updateMLPValue() {
+    if (selectedMessages.isEmpty) {
+      isMessageLongPressed = false;
+    } else {
+      isMessageLongPressed = true;
+    }
     notifyListeners();
   }
 
@@ -51,14 +62,45 @@ class ChatMessagesProvider extends ChangeNotifier {
   }
 
   void addToSelectedMessages(Message message) {
-    selectedMessages.add(message);
+    selectedMessages[message.id] = message;
   }
 
   void removeFromSelectedMessages(Message message) {
-    selectedMessages.remove(message);
+    selectedMessages.remove(message.id);
   }
 
-  void updateReplyByAppBar() {}
+  void resetSelectedMessages() {
+    for (var message in selectedMessages.values) {
+      message.updateSelected(false);
+    }
+
+    if (_resetOverlayColorCallback != null) {
+      _resetOverlayColorCallback!();
+    }
+
+    selectedMessages.clear();
+    isMessageLongPressed = false;
+    notifyListeners();
+  }
+
+  void updateReplyByAppBar() {
+    if (selectedMessages.isNotEmpty) {
+      updateReplyBySwipe(selectedMessages.values.first);
+    }
+  }
+
+  void onLongTapMessage(Message message) {
+    if (selectedMessages.containsKey(message.id)) {
+      // Message is already selected, so unselect it
+      selectedMessages.remove(message.id);
+      message.updateSelected(false);
+    } else {
+      // Message is not selected yet, so select it
+      message.updateSelected(true);
+      selectedMessages[message.id] = message;
+    }
+    notifyListeners();
+  }
 
   void removeCache() {
     cacheReplyChat = false;
@@ -267,6 +309,7 @@ class ChatMessagesProvider extends ChangeNotifier {
      */
   }
 
+  // Todo : Look at the efficiency of this function
   Future<void> resetUnread(String chatId) async {
     final batch = firestore.batch();
 
@@ -331,36 +374,6 @@ class ChatMessagesProvider extends ChangeNotifier {
     // Add the new message to the 'messages' sub-collection of the chat document
     // in Firestore
     await addNewMessageToChat(chatId, content);
-  }
-
-  Future<void> updateUnreadCount(String chatId, String senderId) async {
-    // Fetch the Chat object from Firestore
-    DocumentReference<Map<String, dynamic>> chatDoc =
-        firestore.collection('chats').doc(chatId);
-    final chatSnap = await chatDoc.get();
-    final chatData = chatSnap.data()!;
-    final chat = Chat.fromJson(chatData);
-
-    // Determine which user sent the message
-    final otherUserId = chat.getOtherUserId(senderId);
-    final isUser1 = otherUserId == chat.user1Id;
-
-    // Update the unread count for the appropriate user
-    if (isUser1) {
-      await chatDoc.update(
-        {
-          'user1Unread': FieldValue.increment(1),
-          'user2Unread': 0,
-        },
-      );
-    } else {
-      await chatDoc.update(
-        {
-          'user1Unread': 0,
-          'user2Unread': FieldValue.increment(1),
-        },
-      );
-    }
   }
 
   Stream<DocumentSnapshot<Map<String, dynamic>>> getOnlineStatusStream() {

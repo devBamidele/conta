@@ -1,4 +1,3 @@
-import 'package:conta/utils/services/heartbeat_service.dart';
 import 'package:conta/view_model/authentication_provider.dart';
 import 'package:conta/view_model/chat_messages_provider.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
@@ -20,7 +19,7 @@ void main() async {
       .activate(androidProvider: AndroidProvider.debug);
       
   // Instantiate and start the heartbeat service
-  HeartbeatService().start();
+  // HeartbeatService().start();
 
   /*
   OneSignal.shared.setAppId(dotenv.env['APP_ID']!);

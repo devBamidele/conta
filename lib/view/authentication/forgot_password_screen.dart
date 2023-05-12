@@ -1,4 +1,3 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:conta/res/components/shake_error.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
