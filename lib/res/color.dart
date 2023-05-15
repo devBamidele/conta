@@ -30,5 +30,4 @@ class AppColors {
 
   // For the reply Message Widget
   static const Color replyMessageColor = Color(0xFF44001a);
-  static const Color replyMessageBackGround = Color(0xFFEBEBEB);
 }

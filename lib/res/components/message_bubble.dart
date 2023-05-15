@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:conta/res/components/reply_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -124,7 +122,7 @@ class _MessageBubbleState extends State<MessageBubble> {
       });
 
   void resetOverlayColor() {
-    log(widget.key.toString());
+    // Todo : There is an error with this
     setState(() {
       overlayColor = Colors.transparent;
       longPressed = false;

@@ -83,6 +83,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                           AppBarIcon(
                             icon: IconlyLight.delete,
                             size: customSize,
+                            onTap: () => confirmDelete(context, data),
                           ),
                         ],
                       )
@@ -157,4 +158,44 @@ class _CustomAppBarState extends State<CustomAppBar> {
       },
     );
   }
+}
+
+void confirmDelete(BuildContext context, ChatMessagesProvider data) {
+  final length = data.selectedMessages.length;
+  final isSingleMessage = length == 1;
+  final contentText = isSingleMessage
+      ? 'Are you sure you want to delete this message?'
+      : 'Are you sure you want to delete these messages?';
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(
+          isSingleMessage ? 'Delete message' : 'Delete $length messages',
+        ),
+        content: Text(contentText),
+        actions: [
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () => Navigator.of(context).pop(), // Close the dialog
+          ),
+          TextButton(
+            child: Text(
+              'Delete',
+              style: TextStyle(
+                color: AppColors.errorBorderColor.withOpacity(0.7),
+              ),
+            ),
+            onPressed: () {
+              data.deleteMessage();
+              Navigator.of(context).pop(); // Close the dialog
+            },
+          ),
+        ],
+        contentPadding: const EdgeInsets.fromLTRB(24, 10, 24, 0),
+        actionsPadding: const EdgeInsets.fromLTRB(0, 5, 10, 10),
+      );
+    },
+  );
 }

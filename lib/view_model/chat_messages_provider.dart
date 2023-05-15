@@ -129,6 +129,24 @@ class ChatMessagesProvider extends ChangeNotifier {
             snapshot.docs.map((doc) => Message.fromJson(doc.data())).toList());
   }
 
+  Future<void> deleteMessage() async {
+    // Get the chat ID and message IDs of the selected messages
+    final chatId = currentChat!.chatId;
+    final messageIds = selectedMessages.keys;
+
+    // Get the reference to the messages collection for the current chat
+    CollectionReference<Map<String, dynamic>> messageRef =
+        firestore.collection('chats').doc(chatId).collection('messages');
+
+    // Delete each selected message from Firestore
+    for (var id in messageIds) {
+      await messageRef.doc(id).delete();
+    }
+
+    // Clear the selected messages and reset the UI state
+    resetSelectedMessages();
+  }
+
   Stream<List<ChatTileData>> getChatTilesStream() {
     final userId = currentUser!.uid;
     final CollectionReference<Map<String, dynamic>> tileRef =
@@ -404,3 +422,70 @@ class ChatMessagesProvider extends ChangeNotifier {
     subscription.cancel();
   }
 }
+
+/*
+
+
+ loading(String email) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        int timer = 50; // Set the timer duration here
+        Duration timerDuration = Duration(seconds: timer);
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              title: const Text(
+                'Verify your Email',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 24,
+                  height: 1.2,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primaryShadeColor,
+                ),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CountdownTimer(
+                    durationInSeconds: timer,
+                    onTimerTick: (duration) {
+                      setState(() {
+                        timerDuration = duration;
+                      });
+                    },
+                  ),
+                  addHeight(32),
+                  Container(
+                    decoration: BoxDecoration(
+                      boxShadow: [shadow],
+                    ),
+                    child: ElevatedButton(
+                      style: elevatedButton,
+                      onPressed: () {},
+                      child: const Text(
+                        'Proceed to Login',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(20),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+ */

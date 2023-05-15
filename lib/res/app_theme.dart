@@ -7,6 +7,13 @@ class AppTheme {
     return ThemeData(
       scaffoldBackgroundColor: AppColors.backGroundColor,
       useMaterial3: true,
+      dialogTheme: const DialogTheme(
+        titleTextStyle: TextStyle(
+          fontSize: 20,
+          color: Colors.black,
+        ),
+        shape: dialogShape,
+      ),
       appBarTheme: const AppBarTheme(
         shadowColor: AppColors.inactiveColor,
         surfaceTintColor: Colors.white,

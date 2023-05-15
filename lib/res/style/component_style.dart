@@ -20,6 +20,12 @@ final elevatedButton = ElevatedButton.styleFrom(
   ),
 );
 
+/// The
+const dialogShape = RoundedRectangleBorder(
+  borderRadius: BorderRadius.all(
+    Radius.circular(10),
+  ),
+);
 
 /// The border for the input fields
 InputBorder customBorder({
