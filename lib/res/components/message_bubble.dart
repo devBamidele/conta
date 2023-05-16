@@ -73,7 +73,7 @@ class _MessageBubbleState extends State<MessageBubble> {
   void initState() {
     super.initState();
 
-    chatProvider.setResetOverlayColorCallback(resetOverlayColor);
+    //chatProvider.setResetOverlayColorCallback(resetOverlayColor);
 
     replyMessage = widget.message.replyMessage;
 
@@ -121,13 +121,16 @@ class _MessageBubbleState extends State<MessageBubble> {
             : Colors.transparent;
       });
 
-  void resetOverlayColor() {
+/*
+void resetOverlayColor() {
     // Todo : There is an error with this
     setState(() {
       overlayColor = Colors.transparent;
       longPressed = false;
     });
   }
+
+ */
 
   void onLongTapMessage() {
     update();

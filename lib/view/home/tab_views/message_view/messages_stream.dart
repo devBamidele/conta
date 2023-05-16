@@ -5,9 +5,9 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../models/message.dart';
+import '../../../../res/color.dart';
 import '../../../../res/components/date_time/date_chip.dart';
 import '../../../../view_model/chat_messages_provider.dart';
-import '../../../../res/color.dart';
 
 class MessagesStream extends StatefulWidget {
   const MessagesStream({

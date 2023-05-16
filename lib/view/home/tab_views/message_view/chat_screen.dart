@@ -113,7 +113,7 @@ class _ChatScreenState extends State<ChatScreen>
   // Scroll to the bottom
   // Clear the text field
   _onSendMessageTap() {
-    chatProvider.uploadChat(messagesController.text);
+    chatProvider.uploadChat(messagesController.text.trim());
 
     setState(() {
       _scrollToBottom();

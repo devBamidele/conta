@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conta/models/chat.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:uuid/uuid.dart';
 
 import '../models/Person.dart';
@@ -107,6 +108,18 @@ class ChatMessagesProvider extends ChangeNotifier {
     cacheReplyMessage = null;
   }
 
+  void copyMessageContent() {
+    final StringBuffer clipTextBuffer = StringBuffer();
+
+    for (var message in selectedMessages.values) {
+      clipTextBuffer.write('${message.content}\n');
+    }
+
+    final clipText = clipTextBuffer.toString().trim();
+
+    Clipboard.setData(ClipboardData(text: clipText));
+  }
+
   void cancelReply() {
     replyChat = false;
     replyMessage = null;
@@ -130,21 +143,30 @@ class ChatMessagesProvider extends ChangeNotifier {
   }
 
   Future<void> deleteMessage() async {
-    // Get the chat ID and message IDs of the selected messages
-    final chatId = currentChat!.chatId;
-    final messageIds = selectedMessages.keys;
+    if (selectedMessages.isNotEmpty) {
+      // Get the chat ID and message IDs of the selected messages
+      final chatId = currentChat!.chatId;
 
-    // Get the reference to the messages collection for the current chat
-    CollectionReference<Map<String, dynamic>> messageRef =
-        firestore.collection('chats').doc(chatId).collection('messages');
+      // Create a copy of the messageIds
+      List<String> messageIds = List.from(selectedMessages.keys);
 
-    // Delete each selected message from Firestore
-    for (var id in messageIds) {
-      await messageRef.doc(id).delete();
+      // Clear the selected messages and reset the UI state
+      resetSelectedMessages();
+
+      // Get the reference to the messages collection for the current chat
+      CollectionReference<Map<String, dynamic>> messageRef =
+          firestore.collection('chats').doc(chatId).collection('messages');
+
+      WriteBatch batch = firestore.batch();
+
+      // Add delete operations to the batch
+      for (var id in messageIds) {
+        batch.delete(messageRef.doc(id));
+      }
+
+      // Commit the batch operation
+      await batch.commit();
     }
-
-    // Clear the selected messages and reset the UI state
-    resetSelectedMessages();
   }
 
   Stream<List<ChatTileData>> getChatTilesStream() {

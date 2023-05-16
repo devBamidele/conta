@@ -3,20 +3,28 @@ import 'package:flutter/material.dart';
 
 class AppUtils {
   static final messengerKey = GlobalKey<ScaffoldMessengerState>();
+
   static showSnackbar(
     String? text, {
-    Duration delay = const Duration(milliseconds: 2000),
+    Duration delay = const Duration(seconds: 2),
+    Widget? label,
   }) {
     if (text == null) return;
 
     final snackBar = SnackBar(
       duration: delay,
-      content: Text(
-        text,
-        textAlign: TextAlign.center,
-        style: const TextStyle(color: Colors.black, fontSize: 15),
+      content: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            text,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.black87, fontSize: 15),
+          ),
+          label ?? const SizedBox.shrink(),
+        ],
       ),
-      backgroundColor: AppColors.selectedBackgroundColor,
+      backgroundColor: AppColors.dividerColor,
     );
 
     messengerKey.currentState!
