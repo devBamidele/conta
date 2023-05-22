@@ -17,6 +17,8 @@ typedef ResetOverlayColorCallback = void Function();
 
 class ChatMessagesProvider extends ChangeNotifier {
   Map<String, Message> selectedMessages = {};
+  List<Message> deletedMessages = [];
+
   ResetOverlayColorCallback? _resetOverlayColorCallback;
 
   final currentUser = FirebaseAuth.instance.currentUser;
@@ -140,33 +142,6 @@ class ChatMessagesProvider extends ChangeNotifier {
     return messageRef.orderBy('timestamp', descending: false).snapshots().map(
         (snapshot) =>
             snapshot.docs.map((doc) => Message.fromJson(doc.data())).toList());
-  }
-
-  Future<void> deleteMessage() async {
-    if (selectedMessages.isNotEmpty) {
-      // Get the chat ID and message IDs of the selected messages
-      final chatId = currentChat!.chatId;
-
-      // Create a copy of the messageIds
-      List<String> messageIds = List.from(selectedMessages.keys);
-
-      // Clear the selected messages and reset the UI state
-      resetSelectedMessages();
-
-      // Get the reference to the messages collection for the current chat
-      CollectionReference<Map<String, dynamic>> messageRef =
-          firestore.collection('chats').doc(chatId).collection('messages');
-
-      WriteBatch batch = firestore.batch();
-
-      // Add delete operations to the batch
-      for (var id in messageIds) {
-        batch.delete(messageRef.doc(id));
-      }
-
-      // Commit the batch operation
-      await batch.commit();
-    }
   }
 
   Stream<List<ChatTileData>> getChatTilesStream() {
@@ -302,6 +277,71 @@ class ChatMessagesProvider extends ChangeNotifier {
         .collection('messages')
         .doc(messageId)
         .update({'seen': true});
+  }
+
+  Future<void> deleteMessage() async {
+    if (selectedMessages.isNotEmpty) {
+      // Get the chat ID and message IDs of the selected messages
+      final chatId = currentChat!.chatId;
+
+      // Create a copy of the messageIds
+      List<String> messageIds = List.from(selectedMessages.keys);
+
+      // Add all the selected messages to the deleted messages list
+      deletedMessages.addAll(selectedMessages.values);
+
+      // Clear the selected messages and reset the UI state
+      resetSelectedMessages();
+
+      // Get the reference to the messages collection for the current chat
+      CollectionReference<Map<String, dynamic>> messageRef =
+          firestore.collection('chats').doc(chatId).collection('messages');
+
+      // Create a batch, so we don't perform multiple operations
+      WriteBatch batch = firestore.batch();
+
+      // Add delete operations to the batch
+      for (var id in messageIds) {
+        batch.delete(messageRef.doc(id));
+      }
+
+      // Commit the batch operation
+      await batch.commit();
+    }
+  }
+
+  Future<void> undoDelete() async {
+    // Get the chat ID
+    final chatId = currentChat!.chatId;
+
+    // Get the reference to the messages collection for the current chat
+    CollectionReference<Map<String, dynamic>> messageRef =
+        firestore.collection('chats').doc(chatId).collection('messages');
+
+    // Iterate over the deleted messages and re-insert them into Firestore
+    for (var deletedMessage in deletedMessages) {
+      final messageId = deletedMessage.id;
+
+      // Create a new document reference for the message
+      final messageDocRef = messageRef.doc(messageId);
+
+      // Check if the message already exists in Firestore
+      final messageDocSnapshot = await messageDocRef.get();
+      if (messageDocSnapshot.exists) {
+        // The message already exists, update it with the deleted message data
+        await messageDocRef.set(deletedMessage.toJson());
+      } else {
+        // The message doesn't exist, create a new document with the deleted message data
+        await messageDocRef.set(deletedMessage.toJson());
+      }
+    }
+
+    // Clear the deletedMessages list
+    deletedMessages.clear();
+  }
+
+  void clearDeletedMessages() {
+    deletedMessages.clear();
   }
 
   /// Uploads a new chat message to Firestore, adding it to the 'messages'
@@ -444,70 +484,3 @@ class ChatMessagesProvider extends ChangeNotifier {
     subscription.cancel();
   }
 }
-
-/*
-
-
- loading(String email) async {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        int timer = 50; // Set the timer duration here
-        Duration timerDuration = Duration(seconds: timer);
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return AlertDialog(
-              backgroundColor: Colors.white,
-              title: const Text(
-                'Verify your Email',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 24,
-                  height: 1.2,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.primaryShadeColor,
-                ),
-              ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CountdownTimer(
-                    durationInSeconds: timer,
-                    onTimerTick: (duration) {
-                      setState(() {
-                        timerDuration = duration;
-                      });
-                    },
-                  ),
-                  addHeight(32),
-                  Container(
-                    decoration: BoxDecoration(
-                      boxShadow: [shadow],
-                    ),
-                    child: ElevatedButton(
-                      style: elevatedButton,
-                      onPressed: () {},
-                      child: const Text(
-                        'Proceed to Login',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(20),
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
- */

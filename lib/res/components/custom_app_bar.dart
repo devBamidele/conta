@@ -16,6 +16,7 @@ import '../../../../res/color.dart';
 import '../../utils/widget_functions.dart';
 import '../../view_model/chat_messages_provider.dart';
 import 'confirmation_dialog.dart';
+import 'message_counter.dart';
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback? onCancelPressed;
@@ -41,15 +42,23 @@ class _CustomAppBarState extends State<CustomAppBar> {
       builder: (_, data, Widget? child) {
         final currentChat = data.currentChat!;
         return GestureDetector(
-          onTap: () {
-            confirmDelete(context, data);
-          },
+          onTap: () => confirmDelete(context, data),
           child: AppBar(
             leading: data.isMessageLongPressed
-                ? AppBarIcon(
-                    icon: Icons.close,
-                    size: customSize + 2,
-                    onTap: () => setState(() => data.resetSelectedMessages()),
+                ? Row(
+                    children: [
+                      AppBarIcon(
+                        icon: Icons.close,
+                        size: customSize + 2,
+                        onTap: () => setState(
+                          () => data.resetSelectedMessages(),
+                        ),
+                      ),
+                      addWidth(10),
+                      MessageCounter(
+                        count: data.selectedMessages.length,
+                      )
+                    ],
                   )
                 : CustomBackButton(
                     padding: const EdgeInsets.only(left: 15),
@@ -82,7 +91,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                                 size: customSize - 2,
                                 onTap: () {
                                   data.copyMessageContent();
-                                  showToast();
+                                  showToast("Message Copied");
                                 }),
                             addWidth(20),
                             AppBarIcon(
@@ -174,8 +183,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
   }
 }
 
-void showToast() => Fluttertoast.showToast(
-      msg: "Message Copied",
+void showToast(String message) => Fluttertoast.showToast(
+      msg: message,
       toastLength: Toast.LENGTH_SHORT,
       gravity: ToastGravity.BOTTOM,
       fontSize: 16.0,
@@ -200,7 +209,10 @@ void confirmDelete(BuildContext context, ChatMessagesProvider data) {
           AppUtils.showSnackbar(
             'Successfully deleted message',
             delay: const Duration(seconds: 3),
-            label: SnackBarLabel(onTap: () {}),
+            label: SnackBarLabel(
+              onTap: () => data.undoDelete(),
+            ),
+            onClosed: () => data.clearDeletedMessages(),
           );
         },
       );

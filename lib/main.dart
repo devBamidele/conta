@@ -17,7 +17,7 @@ void main() async {
   // Activate app check
   await FirebaseAppCheck.instance
       .activate(androidProvider: AndroidProvider.debug);
-      
+
   // Instantiate and start the heartbeat service
   // HeartbeatService().start();
 

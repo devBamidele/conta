@@ -3,16 +3,19 @@ import 'dart:math' as math;
 
 import 'package:conta/res/components/chat_text_form_field.dart';
 import 'package:conta/res/components/custom_app_bar.dart';
+import 'package:conta/utils/services/file_picker_service.dart';
 import 'package:conta/utils/widget_functions.dart';
 import 'package:conta/view_model/chat_messages_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../res/color.dart';
 import '../../../../res/components/custom_fab.dart';
 import '../../../../res/components/reply_message.dart';
+import '../../../../utils/app_utils.dart';
 import 'messages_stream.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -28,6 +31,8 @@ class _ChatScreenState extends State<ChatScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late ChatMessagesProvider chatProvider;
+
+  late final FilePickerService _filePickerService = FilePickerService();
 
   final messagesController = TextEditingController();
   final messagesFocusNode = FocusNode();
@@ -65,22 +70,18 @@ class _ChatScreenState extends State<ChatScreen>
     super.dispose();
   }
 
-  _showScrollToBottomIcon() {
+  void _showScrollToBottomIcon() {
     scrollController.addListener(() {
       if (scrollController.position.maxScrollExtent - scrollController.offset >
           30) {
-        setState(() {
-          showIcon = true;
-        });
+        setState(() => showIcon = true);
       } else {
-        setState(() {
-          showIcon = false;
-        });
+        setState(() => showIcon = false);
       }
     });
   }
 
-  _updateIcon() {
+  void _updateIcon() {
     if (messagesController.text.isNotEmpty) {
       setState(
         () => typing = true,
@@ -89,6 +90,12 @@ class _ChatScreenState extends State<ChatScreen>
       setState(
         () => typing = false,
       );
+    }
+  }
+
+  void showSnackbar(String message) {
+    if (mounted) {
+      AppUtils.showSnackbar(message);
     }
   }
 
@@ -115,16 +122,21 @@ class _ChatScreenState extends State<ChatScreen>
   _onSendMessageTap() {
     chatProvider.uploadChat(messagesController.text.trim());
 
-    setState(() {
-      _scrollToBottom();
-    });
+    setState(() => _scrollToBottom());
 
     onCancelReply();
 
     messagesController.clear();
   }
 
-  _onPrefixIconTap() {}
+  void _onPrefixIconTap() async {
+    final chatId = chatProvider.currentChat!.chatId!;
+    try {
+      await _filePickerService.checkPermissionAndPickFile(chatId);
+    } catch (e) {
+      showToast(e.toString());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -213,10 +225,13 @@ class _ChatScreenState extends State<ChatScreen>
                                   ),
                                 ),
                               )
-                            : const Icon(
-                                IconlyBold.voice,
-                                size: 23,
-                                color: Colors.white,
+                            : GestureDetector(
+                                onTap: () {},
+                                child: const Icon(
+                                  IconlyBold.voice,
+                                  size: 23,
+                                  color: Colors.white,
+                                ),
                               ),
                       )
                     ],
@@ -238,5 +253,12 @@ class _ChatScreenState extends State<ChatScreen>
     );
   }
 }
+
+void showToast(String message) => Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      fontSize: 16.0,
+    );
 
 // Todo : FAB Scroll to bottom isn't working
