@@ -44,7 +44,7 @@ class Message {
         reply = json['reply'] ?? false,
         sender = json['sender'],
         replyMessage = json['message'],
-        messageType = json['messageType'] ?? MessageType.text.toString();
+        messageType = json['messageType'] ?? MessageType.text.name;
 
   // Serialize the Message object into a JSON object for storage in Firestore.
   Map<String, dynamic> toJson() => {

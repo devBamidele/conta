@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conta/models/chat.dart';
 import 'package:conta/utils/enums.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,23 +16,17 @@ import '../models/current_chat.dart';
 import '../models/message.dart';
 import '../models/search_user.dart';
 
-typedef ResetOverlayColorCallback = void Function();
-
 class ChatMessagesProvider extends ChangeNotifier {
   Map<String, Message> selectedMessages = {};
   List<Message> deletedMessages = [];
 
-  ResetOverlayColorCallback? _resetOverlayColorCallback;
+  FilePickerResult? pickerResult;
 
   final currentUser = FirebaseAuth.instance.currentUser;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   // Declare a variable to store the subscription
   late StreamSubscription<DocumentSnapshot<Map<String, dynamic>>> subscription;
-
-  void setResetOverlayColorCallback(ResetOverlayColorCallback callback) {
-    _resetOverlayColorCallback = callback;
-  }
 
   //late final MessagingService _messagingService = MessagingService();
 
@@ -44,6 +40,19 @@ class ChatMessagesProvider extends ChangeNotifier {
       isMessageLongPressed = true;
     }
     notifyListeners();
+  }
+
+  void clearPickerResult() async {
+    pickerResult = null;
+    final success = await FilePicker.platform.clearTemporaryFiles();
+    String message = '';
+
+    if (success != null && success == true) {
+      message = 'Successfully able to clear cache';
+    } else {
+      message = 'Unable to clear cache';
+    }
+    log(message);
   }
 
   /// Holds the profile information of the current selected chat
@@ -76,10 +85,6 @@ class ChatMessagesProvider extends ChangeNotifier {
   void resetSelectedMessages() {
     for (var message in selectedMessages.values) {
       message.updateSelected(false);
-    }
-
-    if (_resetOverlayColorCallback != null) {
-      _resetOverlayColorCallback!();
     }
 
     selectedMessages.clear();

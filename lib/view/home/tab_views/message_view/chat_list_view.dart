@@ -2,18 +2,25 @@ import 'dart:developer';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:conta/res/components/chat_list_tile.dart';
+import 'package:conta/view/home/tab_views/message_view/chat_screen.dart';
 import 'package:conta/view_model/chat_messages_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../models/chat_tile_data.dart';
 import '../../../../res/components/shimmer_tile.dart';
-import 'chat_screen.dart';
 
-class ChatListView extends StatelessWidget {
+class ChatListView extends StatefulWidget {
   const ChatListView({Key? key}) : super(key: key);
 
   static const tag = '/chat_list_view';
+
+  @override
+  State<ChatListView> createState() => _ChatListViewState();
+}
+
+class _ChatListViewState extends State<ChatListView> {
+  bool isNavigating = false;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +33,7 @@ class ChatListView extends StatelessWidget {
             AsyncSnapshot<List<ChatTileData>> snapshot,
           ) {
             if (snapshot.hasData) {
-              List<ChatTileData> tileData = snapshot.data!;
+              final tileData = snapshot.data!;
               if (tileData.isEmpty) {
                 return const Center(
                   child: Text('Empty'),
@@ -39,18 +46,7 @@ class ChatListView extends StatelessWidget {
                   bool sameUser = tile.senderId == data.currentUser!.uid;
                   return ChatListTile(
                     tileData: tile,
-                    onTileTap: () {
-                      data.resetUnread(tile.chatId);
-                      data.setCurrentChat(
-                        username:
-                            sameUser ? tile.recipientName : tile.senderName,
-                        uidUser1: sameUser ? tile.senderId : tile.recipientId,
-                        uidUser2: sameUser ? tile.recipientId : tile.senderId,
-                        profilePicUrl:
-                            sameUser ? tile.recipientPicUrl : tile.senderPicUrl,
-                      );
-                      context.router.pushNamed(ChatScreen.tag);
-                    },
+                    onTileTap: () => onTileTap(data, tile, sameUser),
                     isSameUser: sameUser,
                   );
                 },
@@ -70,5 +66,26 @@ class ChatListView extends StatelessWidget {
         );
       },
     );
+  }
+
+  void navigateToNextScreen(BuildContext context) {
+    if (!isNavigating) {
+      isNavigating = true;
+      context.router.pushNamed(ChatScreen.tag).then((_) {
+        // Reset the flag when the navigation is complete
+        isNavigating = false;
+      });
+    }
+  }
+
+  void onTileTap(ChatMessagesProvider data, ChatTileData tile, bool sameUser) {
+    data.resetUnread(tile.chatId);
+    data.setCurrentChat(
+      username: sameUser ? tile.recipientName : tile.senderName,
+      uidUser1: sameUser ? tile.senderId : tile.recipientId,
+      uidUser2: sameUser ? tile.recipientId : tile.senderId,
+      profilePicUrl: sameUser ? tile.recipientPicUrl : tile.senderPicUrl,
+    );
+    navigateToNextScreen(context);
   }
 }

@@ -10,16 +10,18 @@ import 'package:uuid/uuid.dart';
 class FilePickerService {
   final _storage = FirebaseStorage.instance;
 
-  Future<void> pickFile(String chatId) async {
+  Future<FilePickerResult?> pickFile(String chatId) async {
     try {
-      final result = await FilePicker.platform.pickFiles();
+      final result = await FilePicker.platform.pickFiles(
+        allowMultiple: true,
+      );
 
       if (result != null && result.files.isNotEmpty) {
         // Process or send the selected file
-        _sendFiles(result.files, chatId);
+        return result;
+        // _sendFiles(result.files, chatId);
       }
     } on PlatformException catch (e) {
-      log('The exception is ${e.code}');
       if (e.code == 'read_external_storage_denied') {
         throw 'Storage access denied.\n Please grant storage permissions.';
       } else {
@@ -28,23 +30,24 @@ class FilePickerService {
     } catch (_) {
       throw 'An error occurred while picking the file. Please try again later.';
     }
+    return null;
   }
 
-  Future<void> checkPermissionAndPickFile(String chatId) async {
+  Future<FilePickerResult?> checkPermissionAndPickFile(String chatId) async {
     final PermissionStatus status = await Permission.storage.status;
+    FilePickerResult? result;
 
-    log('Access request 1st: ${status.isGranted}');
     if (status.isGranted) {
-      await pickFile(chatId);
+      result = await pickFile(chatId);
     } else {
       final PermissionStatus requestStatus = await Permission.storage.request();
-      log('Access request 2nd: ${status.isGranted}');
       if (requestStatus.isGranted) {
-        await pickFile(chatId);
+        result = await pickFile(chatId);
       } else {
         throw 'Storage access denied. Please grant storage permissions.';
       }
     }
+    return result;
   }
 
   Future<List<String>?> _uploadFilesToStorage({

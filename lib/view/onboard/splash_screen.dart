@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
-import '../authentication/login_screen.dart';
+import '../../utils/app_router/router.gr.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -24,10 +27,28 @@ class _SplashScreenState extends State<SplashScreen>
       if (status == AnimationStatus.completed) {
         _controller.reset();
         _controller.forward();
-        context.router.pushNamed(LoginScreen.tag);
       }
     });
+
+    startTimer();
   }
+
+  void startTimer() => Timer(const Duration(seconds: 3), navigateToNextScreen);
+
+  Future<void> navigateToNextScreen() async {
+    // Check the authentication state
+    if (FirebaseAuth.instance.currentUser != null) {
+      // User is authenticated, navigate to the home screen
+      navigateToHome();
+    } else {
+      // User is not authenticated, navigate to the login screen
+      navigateToLogin();
+    }
+  }
+
+  void navigateToHome() => context.router.replace(const PersistentTabRoute());
+
+  void navigateToLogin() => context.router.replace(const LoginScreenRoute());
 
   @override
   void dispose() {

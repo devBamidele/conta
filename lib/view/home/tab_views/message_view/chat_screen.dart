@@ -1,11 +1,13 @@
 import 'dart:developer';
 import 'dart:math' as math;
 
+import 'package:auto_route/auto_route.dart';
 import 'package:conta/res/components/chat_text_form_field.dart';
 import 'package:conta/res/components/custom_app_bar.dart';
 import 'package:conta/utils/services/file_picker_service.dart';
 import 'package:conta/utils/widget_functions.dart';
 import 'package:conta/view_model/chat_messages_provider.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -15,6 +17,7 @@ import 'package:provider/provider.dart';
 import '../../../../res/color.dart';
 import '../../../../res/components/custom_fab.dart';
 import '../../../../res/components/reply_message.dart';
+import '../../../../utils/app_router/router.gr.dart';
 import '../../../../utils/app_utils.dart';
 import 'messages_stream.dart';
 
@@ -131,12 +134,21 @@ class _ChatScreenState extends State<ChatScreen>
 
   void _onPrefixIconTap() async {
     final chatId = chatProvider.currentChat!.chatId!;
+
     try {
-      await _filePickerService.checkPermissionAndPickFile(chatId);
+      FilePickerResult? result =
+          await _filePickerService.checkPermissionAndPickFile(chatId);
+
+      if (result != null && result.files.isNotEmpty) {
+        chatProvider.pickerResult = result;
+        navigateToPreview();
+      }
     } catch (e) {
       showToast(e.toString());
     }
   }
+
+  void navigateToPreview() => context.router.push(const PreviewScreenRoute());
 
   @override
   Widget build(BuildContext context) {

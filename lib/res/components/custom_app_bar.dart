@@ -19,11 +19,8 @@ import 'confirmation_dialog.dart';
 import 'message_counter.dart';
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
-  final VoidCallback? onCancelPressed;
-
   const CustomAppBar({
     Key? key,
-    this.onCancelPressed,
   }) : super(key: key);
 
   @override
