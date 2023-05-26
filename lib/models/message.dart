@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:conta/utils/enums.dart';
 
 /// The class representing a [Message] object
 /// Like an actual message when chatting
@@ -12,6 +13,7 @@ class Message {
   final bool seen;
   final bool sent;
   final bool reply;
+  final String messageType;
   final String? sender;
   final String? replyMessage;
   bool selected = false;
@@ -22,6 +24,7 @@ class Message {
     required this.recipientId,
     required this.content,
     required this.timestamp,
+    required this.messageType,
     this.seen = false,
     this.sent = false,
     this.reply = false,
@@ -40,7 +43,8 @@ class Message {
         sent = json['sent'],
         reply = json['reply'] ?? false,
         sender = json['sender'],
-        replyMessage = json['message'];
+        replyMessage = json['message'],
+        messageType = json['messageType'] ?? MessageType.text.toString();
 
   // Serialize the Message object into a JSON object for storage in Firestore.
   Map<String, dynamic> toJson() => {
@@ -54,6 +58,7 @@ class Message {
         'reply': reply,
         'sender': sender,
         'message': replyMessage,
+        'messageType': messageType,
       };
 
   // Update the value of 'Selected'

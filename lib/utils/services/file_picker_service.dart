@@ -87,7 +87,7 @@ class FilePickerService {
       log('The file urls $fileUrls');
 
       // Send a message with the file URL to the chat
-      // chatProvider.sendMessage(fileUrl);
+      //chatProvider.sendMessage(fileUrl);
     } catch (e) {
       rethrow;
     }

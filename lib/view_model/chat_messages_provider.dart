@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conta/models/chat.dart';
+import 'package:conta/utils/enums.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -318,8 +319,11 @@ class ChatMessagesProvider extends ChangeNotifier {
     CollectionReference<Map<String, dynamic>> messageRef =
         firestore.collection('chats').doc(chatId).collection('messages');
 
+    // Create a copy of the deleted messages list
+    final deletedMessagesCopy = List.from(deletedMessages);
+
     // Iterate over the deleted messages and re-insert them into Firestore
-    for (var deletedMessage in deletedMessages) {
+    for (var deletedMessage in deletedMessagesCopy) {
       final messageId = deletedMessage.id;
 
       // Create a new document reference for the message
@@ -342,22 +346,28 @@ class ChatMessagesProvider extends ChangeNotifier {
 
   void clearDeletedMessages() {
     deletedMessages.clear();
+
+    notifyListeners();
   }
 
   /// Uploads a new chat message to Firestore, adding it to the 'messages'
   /// sub-collection of the specified chat document.
   ///
   /// The [content] parameter is the text of the message to add.
-  Future<void> addNewMessageToChat(String chatId, String content) async {
+  Future<void> addNewMessageToChat(
+    String chatId,
+    String content, {
+    MessageType type = MessageType.text,
+  }) async {
     // Generate a unique ID for the new message
-    String messageId = const Uuid().v4();
+    final messageId = const Uuid().v4();
 
-    String? senderName = replyMessage?.senderId == currentUser?.uid
+    final senderName = replyMessage?.senderId == currentUser?.uid
         ? 'You'
         : currentChat?.username;
 
     // Create a new Message object with the specified properties
-    Message newMessage = Message(
+    final newMessage = Message(
       id: messageId,
       senderId: currentUser!.uid,
       recipientId: currentChat!.uidUser2,
@@ -366,6 +376,7 @@ class ChatMessagesProvider extends ChangeNotifier {
       reply: cacheReplyChat,
       replyMessage: cacheReplyMessage?.content,
       sender: senderName,
+      messageType: type.name,
     );
 
     // Clear the cache
@@ -427,13 +438,16 @@ class ChatMessagesProvider extends ChangeNotifier {
   /// necessary.
   ///
   /// The [content] parameter is the text of the message to add.
-  Future<void> uploadChat(String content) async {
-    // Generate a unique ID for the new chat document
-    String chatId = generateChatId(currentUser!.uid, currentChat!.uidUser2);
+  Future<void> uploadChat(
+    String content, {
+    MessageType type = MessageType.text,
+  }) async {
+    final chatId = currentChat?.chatId == null
+        ? generateChatId(currentUser!.uid, currentChat!.uidUser2)
+        : currentChat!.chatId!;
 
     // Check if the chat already exists in Firestore
-    DocumentSnapshot chatSnapshot =
-        await firestore.collection('chats').doc(chatId).get();
+    final chatSnapshot = await firestore.collection('chats').doc(chatId).get();
 
     if (!chatSnapshot.exists) {
       // Chat doesn't exist, create new chat document
@@ -453,7 +467,7 @@ class ChatMessagesProvider extends ChangeNotifier {
 
     // Add the new message to the 'messages' sub-collection of the chat document
     // in Firestore
-    await addNewMessageToChat(chatId, content);
+    await addNewMessageToChat(chatId, content, type: type);
   }
 
   Stream<DocumentSnapshot<Map<String, dynamic>>> getOnlineStatusStream() {

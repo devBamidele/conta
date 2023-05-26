@@ -41,90 +41,36 @@ class _CustomAppBarState extends State<CustomAppBar> {
     return Consumer<ChatMessagesProvider>(
       builder: (_, data, Widget? child) {
         final currentChat = data.currentChat!;
-        return GestureDetector(
-          onTap: () => confirmDelete(context, data),
-          child: AppBar(
-            leading: data.isMessageLongPressed
-                ? Row(
-                    children: [
-                      AppBarIcon(
-                        icon: Icons.close,
-                        size: customSize + 2,
-                        onTap: () => setState(
-                          () => data.resetSelectedMessages(),
-                        ),
-                      ),
-                      addWidth(10),
-                      MessageCounter(
-                        count: data.selectedMessages.length,
-                      )
-                    ],
-                  )
-                : CustomBackButton(
+        return AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          transitionBuilder: (child, animation) => FadeTransition(
+            opacity: animation,
+            child: child,
+          ),
+          child: !data.isMessageLongPressed
+              ? AppBar(
+                  key: const Key('not-longPressed'),
+                  leading: CustomBackButton(
                     padding: const EdgeInsets.only(left: 15),
                     color: AppColors.extraTextColor,
                     onPressed: () => data.cancelReply(),
                   ),
-            actions: [
-              Padding(
-                padding: const EdgeInsets.only(right: 20),
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 500),
-                  transitionBuilder: (child, animation) => FadeTransition(
-                    opacity: animation,
-                    child: child,
-                  ),
-                  child: data.isMessageLongPressed
-                      ? Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (data.selectedMessages.length == 1)
-                              AppBarIcon(
-                                icon: Icons.reply_rounded,
-                                size: customSize,
-                                onTap: () => data.updateReplyByAppBar(),
-                              ),
-                            addWidth(20),
-                            AppBarIcon(
-                                icon: Icons.content_copy_outlined,
-                                size: customSize - 2,
-                                onTap: () {
-                                  data.copyMessageContent();
-                                  showToast("Message Copied");
-                                }),
-                            addWidth(20),
-                            AppBarIcon(
-                              icon: Icons.reply_rounded,
-                              size: customSize,
-                              transform: Matrix4.rotationY(math.pi),
-                            ),
-                            addWidth(20),
-                            AppBarIcon(
-                              icon: IconlyLight.delete,
-                              size: customSize,
-                              onTap: () => confirmDelete(context, data),
-                            ),
-                          ],
-                        )
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            addWidth(10),
-                            AppBarIcon(
-                                icon: IconlyLight.video, size: customSize),
-                            addWidth(20),
-                            AppBarIcon(
-                                icon: IconlyLight.call, size: customSize),
-                          ],
-                        ),
-                ),
-              ),
-            ],
-            title: data.isMessageLongPressed
-                ? const SizedBox.shrink()
-                : Row(
+                  actions: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          addWidth(10),
+                          AppBarIcon(icon: IconlyLight.video, size: customSize),
+                          addWidth(20),
+                          AppBarIcon(icon: IconlyLight.call, size: customSize),
+                        ],
+                      ),
+                    ),
+                  ],
+                  title: Row(
                     children: [
                       CircleAvatar(
                         radius: 23,
@@ -176,7 +122,60 @@ class _CustomAppBarState extends State<CustomAppBar> {
                       ),
                     ],
                   ),
-          ),
+                )
+              : AppBar(
+                  key: const Key('longPressed'),
+                  leading: Padding(
+                    padding: const EdgeInsets.only(left: 20),
+                    child: AppBarIcon(
+                      icon: Icons.close,
+                      size: customSize + 2,
+                      onTap: () => setState(
+                        () => data.resetSelectedMessages(),
+                      ),
+                    ),
+                  ),
+                  actions: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (data.selectedMessages.length == 1)
+                            AppBarIcon(
+                              icon: Icons.reply_rounded,
+                              size: customSize,
+                              onTap: () => data.updateReplyByAppBar(),
+                            ),
+                          addWidth(20),
+                          AppBarIcon(
+                              icon: Icons.content_copy_outlined,
+                              size: customSize - 2,
+                              onTap: () {
+                                data.copyMessageContent();
+                                showToast("Message Copied");
+                              }),
+                          addWidth(20),
+                          AppBarIcon(
+                            icon: Icons.reply_rounded,
+                            size: customSize,
+                            transform: Matrix4.rotationY(math.pi),
+                          ),
+                          addWidth(20),
+                          AppBarIcon(
+                            icon: IconlyLight.delete,
+                            size: customSize,
+                            onTap: () => confirmDelete(context, data),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  title: MessageCounter(
+                    count: data.selectedMessages.length,
+                  ),
+                ),
         );
       },
     );
@@ -206,16 +205,26 @@ void confirmDelete(BuildContext context, ChatMessagesProvider data) {
         onConfirmPressed: () {
           data.deleteMessage();
           Navigator.of(context).pop();
-          AppUtils.showSnackbar(
-            'Successfully deleted message',
-            delay: const Duration(seconds: 3),
-            label: SnackBarLabel(
-              onTap: () => data.undoDelete(),
-            ),
-            onClosed: () => data.clearDeletedMessages(),
-          );
+          _showSnackbar(data);
         },
       );
+    },
+  );
+}
+
+void _showSnackbar(ChatMessagesProvider data) {
+  AppUtils.showSnackbar(
+    'Successfully deleted message',
+    delay: const Duration(seconds: 3),
+    label: SnackBarLabel(
+      onTap: () {
+        data.undoDelete();
+        showToast('Undid selected messages');
+      },
+    ),
+    onClosed: () {
+      data.clearDeletedMessages();
+      showToast('cleared selected messages');
     },
   );
 }
