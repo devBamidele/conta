@@ -136,10 +136,10 @@ class _ChatScreenState extends State<ChatScreen>
     final chatId = chatProvider.currentChat!.chatId!;
 
     try {
-      FilePickerResult? result =
+      List<PlatformFile>? result =
           await _filePickerService.checkPermissionAndPickFile(chatId);
 
-      if (result != null && result.files.isNotEmpty) {
+      if (result != null && result.isNotEmpty) {
         chatProvider.pickerResult = result;
         navigateToPreview();
       }
@@ -163,7 +163,7 @@ class _ChatScreenState extends State<ChatScreen>
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(8, 5, 8, 5),
+              padding: const EdgeInsets.fromLTRB(10, 5, 10, 18),
               child: Stack(
                 clipBehavior: Clip.none,
                 children: [

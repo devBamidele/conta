@@ -151,12 +151,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
   useFirstLogin() {
     myEmailController.text = 'bamideledavid.ajewole@gmail.com';
-    myPasswordController.text = 'Bamidele1234';
+    myPasswordController.text = 'Bamidele12345';
   }
 
   useSecondLogin() {
     myEmailController.text = 'bamideledavid.femi@gmail.com';
-    myPasswordController.text = 'Olorunfemi004';
+    myPasswordController.text = 'Olorunfemi005';
   }
 
   useThirdLogin() {

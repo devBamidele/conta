@@ -66,7 +66,7 @@ class _SetNameScreenState extends State<SetNameScreen> {
         Provider.of<AuthenticationProvider>(context, listen: false);
 
     // check if the username already exists in the Firestore database
-    bool exists =
+    final exists =
         await authProvider.checkIfUsernameExists(myUserNameController.text);
 
     if (exists) {

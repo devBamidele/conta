@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:agora_uikit/agora_uikit.dart';
+import 'package:conta/utils/app_utils.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/services.dart';
@@ -10,15 +11,33 @@ import 'package:uuid/uuid.dart';
 class FilePickerService {
   final _storage = FirebaseStorage.instance;
 
-  Future<FilePickerResult?> pickFile(String chatId) async {
+  Future<List<PlatformFile>?> pickFile(String chatId) async {
     try {
       final result = await FilePicker.platform.pickFiles(
         allowMultiple: true,
+        type: FileType.media, // Only allow media files (videos and pictures)
       );
 
       if (result != null && result.files.isNotEmpty) {
+        List<PlatformFile> validFiles = [];
+        int maxSizeInBytes = 100 * 1024 * 1024; // 100MB limit
+        int filesExceedingSizeLimit = 0;
+
+        for (PlatformFile file in result.files) {
+          if (file.size <= maxSizeInBytes) {
+            validFiles.add(file);
+          } else {
+            filesExceedingSizeLimit++;
+          }
+        }
+
+        if (filesExceedingSizeLimit > 0) {
+          AppUtils.showSnackbar(
+              '$filesExceedingSizeLimit file(s) exceeded the size limit.');
+        }
+
         // Process or send the selected file
-        return result;
+        return validFiles;
         // _sendFiles(result.files, chatId);
       }
     } on PlatformException catch (e) {
@@ -33,9 +52,9 @@ class FilePickerService {
     return null;
   }
 
-  Future<FilePickerResult?> checkPermissionAndPickFile(String chatId) async {
+  Future<List<PlatformFile>?> checkPermissionAndPickFile(String chatId) async {
     final PermissionStatus status = await Permission.storage.status;
-    FilePickerResult? result;
+    List<PlatformFile>? result;
 
     if (status.isGranted) {
       result = await pickFile(chatId);

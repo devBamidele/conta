@@ -1,13 +1,20 @@
+import 'dart:developer';
+
+import 'package:auto_route/auto_route.dart';
 import 'package:conta/res/components/shake_error.dart';
+import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:iconly/iconly.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import '../../res/color.dart';
 import '../../res/components/custom_back_button.dart';
 import '../../res/components/custom_text_field.dart';
 import '../../res/style/component_style.dart';
+import '../../utils/app_utils.dart';
 import '../../utils/widget_functions.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
@@ -72,11 +79,65 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   void onContinuePressed() {
     if (formKey.currentState!.validate()) {
-      //context.router.pushNamed('path');
+      sendPasswordResetEmail();
     } else {
       shakeState.currentState?.shake();
       Vibrate.feedback(FeedbackType.heavy);
       return;
+    }
+  }
+
+  void showSnackbar(String message) {
+    if (mounted) {
+      AppUtils.showSnackbar(message);
+    }
+  }
+
+  navigateToLogin(String email) => context.router.replaceAll(
+        [ResendResetEmailRoute(email: email)],
+      );
+
+  Future<void> sendPasswordResetEmail() async {
+    String email = myEmailController.text.trim();
+
+    showDialog(
+      context: context,
+      builder: (context) => Center(
+        child: LoadingAnimationWidget.staggeredDotsWave(
+          color: AppColors.primaryShadeColor,
+          size: 60,
+        ),
+      ),
+    );
+
+    try {
+      // Check if the email is registered with the app
+      final auth = FirebaseAuth.instance;
+      final List<String> methods = await auth.fetchSignInMethodsForEmail(email);
+
+      if (methods.isNotEmpty) {
+        // Send password reset email
+        await auth.sendPasswordResetEmail(email: email).then(
+              (value) => log('Sent verification email'),
+            );
+
+        // Navigate to the password reset page
+        navigateToLogin(email);
+      } else {
+        // Email is not registered with the app
+        showSnackbar('Email is not registered with the app');
+      }
+    } catch (e) {
+      if (e is FirebaseAuthException && e.code == 'network-request-failed') {
+        // Handle network error specifically
+        showSnackbar(
+            'A network error has occurred. Please check your internet connection.');
+      } else {
+        // Handle other exceptions
+        showSnackbar('Error sending password reset email');
+      }
+    } finally {
+      context.router.pop();
     }
   }
 

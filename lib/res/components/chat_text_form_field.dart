@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'dart:math' as math;
+
+import 'package:flutter/material.dart';
 
 import '../color.dart';
 import '../style/component_style.dart';
@@ -11,12 +12,20 @@ class ChatTextFormField extends StatelessWidget {
     required this.controller,
     this.onPrefixIconTap,
     this.isReplying = false,
+    this.prefixIcon = Icons.attach_file_rounded,
+    this.prefixIconSize = 28,
+    this.rotationalAngle = -math.pi / 1.3,
+    this.hintText = 'Message',
   }) : super(key: key);
 
   final FocusNode node;
   final TextEditingController controller;
   final VoidCallback? onPrefixIconTap;
+  final IconData prefixIcon;
+  final double prefixIconSize;
+  final double rotationalAngle;
   final bool isReplying;
+  final String hintText;
 
   final double curve = 22;
 
@@ -36,15 +45,15 @@ class ChatTextFormField extends StatelessWidget {
         enabledBorder: customBorder(isReplying: isReplying),
         focusedBorder: customBorder(isReplying: isReplying),
         fillColor: Colors.white,
-        hintText: 'Message',
+        hintText: hintText,
         isDense: true,
         prefixIcon: GestureDetector(
           onTap: onPrefixIconTap,
           child: Transform.rotate(
-            angle: -math.pi / 1.3,
-            child: const Icon(
-              Icons.attach_file_rounded,
-              size: 28,
+            angle: rotationalAngle,
+            child: Icon(
+              prefixIcon,
+              size: prefixIconSize,
               color: AppColors.hintTextColor,
             ),
           ),

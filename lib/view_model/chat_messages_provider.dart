@@ -20,7 +20,7 @@ class ChatMessagesProvider extends ChangeNotifier {
   Map<String, Message> selectedMessages = {};
   List<Message> deletedMessages = [];
 
-  FilePickerResult? pickerResult;
+  List<PlatformFile> pickerResult = [];
 
   final currentUser = FirebaseAuth.instance.currentUser;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -43,7 +43,7 @@ class ChatMessagesProvider extends ChangeNotifier {
   }
 
   void clearPickerResult() async {
-    pickerResult = null;
+    pickerResult.clear();
     final success = await FilePicker.platform.clearTemporaryFiles();
     String message = '';
 
