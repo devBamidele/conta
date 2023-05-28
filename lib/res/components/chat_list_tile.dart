@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:conta/models/chat_tile_data.dart';
-import 'package:conta/res/components/shimmer_widget.dart';
+import 'package:conta/res/components/shimmer/shimmer_widget.dart';
 import 'package:conta/res/components/unread_identifier.dart';
 import 'package:conta/utils/extensions.dart';
 import 'package:flutter/material.dart';

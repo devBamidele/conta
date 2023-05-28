@@ -11,8 +11,8 @@ import 'package:iconly/iconly.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import '../../res/color.dart';
-import '../../res/components/custom_back_button.dart';
-import '../../res/components/custom_text_field.dart';
+import '../../res/components/custom/custom_back_button.dart';
+import '../../res/components/login_text_field.dart';
 import '../../res/style/component_style.dart';
 import '../../utils/app_utils.dart';
 import '../../utils/widget_functions.dart';

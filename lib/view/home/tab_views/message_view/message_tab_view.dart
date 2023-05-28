@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 
 import '../../../../res/color.dart';
-import '../../../../res/components/custom_icon_button.dart';
+import '../../../../res/components/custom/custom_icon_button.dart';
 import '../../../../utils/widget_functions.dart';
 
 class MessageTabView extends StatefulWidget {

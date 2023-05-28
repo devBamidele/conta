@@ -3,7 +3,7 @@ import 'package:conta/utils/extensions.dart';
 import 'package:conta/view_model/chat_messages_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:conta/res/components/shimmer_widget.dart';
+import 'package:conta/res/components/shimmer/shimmer_widget.dart';
 
 import '../color.dart';
 

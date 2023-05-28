@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../models/chat_tile_data.dart';
-import '../../../../res/components/shimmer_tile.dart';
+import '../../../../res/components/shimmer/shimmer_tile.dart';
 
 class ChatListView extends StatefulWidget {
   const ChatListView({Key? key}) : super(key: key);

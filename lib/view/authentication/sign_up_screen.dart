@@ -15,9 +15,9 @@ import 'package:iconly/iconly.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
-import '../../res/components/custom_back_button.dart';
-import '../../res/components/custom_check_box.dart';
-import '../../res/components/custom_text_field.dart';
+import '../../res/components/custom/custom_back_button.dart';
+import '../../res/components/custom/custom_check_box.dart';
+import '../../res/components/login_text_field.dart';
 import '../../utils/app_utils.dart';
 
 class SignUpScreen extends StatefulWidget {

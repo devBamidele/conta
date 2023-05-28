@@ -10,7 +10,7 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../../../../res/color.dart';
 import '../../../../res/components/app_bar_icon.dart';
 import '../../../../res/components/chat_text_form_field.dart';
-import '../../../../res/components/custom_back_button.dart';
+import '../../../../res/components/custom/custom_back_button.dart';
 import '../../../../res/components/media_preview.dart';
 import '../../../../utils/widget_functions.dart';
 
@@ -55,7 +55,12 @@ class _PreviewScreenState extends State<PreviewScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     addWidth(20),
-                    AppBarIcon(icon: IconlyLight.delete, size: customSize),
+                    AppBarIcon(
+                      icon: IconlyLight.delete,
+                      size: customSize,
+                      onTap: () =>
+                          data.removeFileFromPicker(_controller.page!.round()),
+                    ),
                   ],
                 ),
               ),
@@ -120,7 +125,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                                         Icons.add_photo_alternate_outlined,
                                     rotationalAngle: 0,
                                     prefixIconSize: 26,
-                                    onPrefixIconTap: () {},
+                                    onPrefixIconTap: _onPrefixIconTap,
                                     hintText: 'Add a caption',
                                   ),
                                 ),
@@ -157,4 +162,8 @@ class _PreviewScreenState extends State<PreviewScreen> {
   }
 
   void _onSendMessageTap() {}
+
+
+
+  void _onPrefixIconTap() {}
 }

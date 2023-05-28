@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../res/color.dart';
+import '../../color.dart';
 
 class CustomCheckbox extends StatelessWidget {
   final bool value;

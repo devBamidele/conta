@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conta/utils/enums.dart';
 
-/// The class representing a [Message] object
-/// Like an actual message when chatting
-
+/// The class representing a [Message] object in the chat.
+///
+/// A message contains information such as sender ID, recipient ID, content,
+/// timestamp, and other metadata.
 class Message {
   final String id;
   final String senderId;
@@ -18,6 +19,16 @@ class Message {
   final String? replyMessage;
   bool selected = false;
 
+  /// Constructs a [Message] object.
+  ///
+  /// The [id] is the unique identifier of the message.
+  /// The [senderId] is the ID of the sender who sent the message.
+  /// The [recipientId] is the ID of the recipient who received the message.
+  /// The [content] is the text content of the message.
+  /// The [timestamp] is the timestamp when the message was sent.
+  /// The [messageType] indicates the type of message, such as text, image, etc.
+  /// The [seen], [sent], and [reply] are optional flags for message status.
+  /// The [sender] and [replyMessage] are optional fields for additional information.
   Message({
     required this.id,
     required this.senderId,
@@ -32,7 +43,9 @@ class Message {
     this.replyMessage,
   });
 
-  // Deserialize the JSON data received from Firestore into a Message object.
+  /// Deserialize the JSON data received from Firestore into a [Message] object.
+  ///
+  /// The [json] is a JSON object representing the message data.
   Message.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         senderId = json['senderId'],
@@ -46,7 +59,7 @@ class Message {
         replyMessage = json['message'],
         messageType = json['messageType'] ?? MessageType.text.name;
 
-  // Serialize the Message object into a JSON object for storage in Firestore.
+  /// Serialize the [Message] object into a JSON object for storage in Firestore.
   Map<String, dynamic> toJson() => {
         'id': id,
         'senderId': senderId,
@@ -61,7 +74,9 @@ class Message {
         'messageType': messageType,
       };
 
-  // Update the value of 'Selected'
+  /// Update the value of the `selected` flag.
+  ///
+  /// The [newValue] indicates the new value for the `selected` flag.
   void updateSelected(bool newValue) {
     selected = newValue;
   }

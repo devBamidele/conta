@@ -1,3 +1,4 @@
+/// Represents a chat conversation between two users.
 class Chat {
   final String id;
   final String user1Id;
@@ -6,6 +7,7 @@ class Chat {
   final num user2Unread;
   final bool muted;
 
+  /// Creates a new instance of the [Chat] class.
   Chat({
     required this.id,
     required this.user1Id,
@@ -15,7 +17,7 @@ class Chat {
     this.muted = false,
   });
 
-  /// Create a Chat object from a JSON representation.
+  /// Creates a [Chat] object from a JSON representation.
   Chat.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         user1Id = json['user1Id'],
@@ -24,7 +26,7 @@ class Chat {
         user2Unread = json['user2Unread'],
         muted = json['muted'];
 
-  /// Convert the Chat object to a JSON representation.
+  /// Converts the [Chat] object to a JSON representation.
   Map<String, dynamic> toJson() => {
         'id': id,
         'user1Id': user1Id,
@@ -34,7 +36,7 @@ class Chat {
         'muted': muted,
       };
 
-  /// Returns the id of the user in the chat that is not [userId].
+  /// Returns the ID of the user in the chat that is not [userId].
   String getOtherUserId(String userId) {
     return userId == user1Id ? user2Id : user1Id;
   }

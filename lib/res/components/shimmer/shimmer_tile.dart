@@ -1,7 +1,7 @@
-import 'package:conta/res/components/shimmer_widget.dart';
+import 'package:conta/res/components/shimmer/shimmer_widget.dart';
 import 'package:flutter/material.dart';
 
-import '../../utils/widget_functions.dart';
+import '../../../utils/widget_functions.dart';
 
 class ShimmerTile extends StatelessWidget {
   const ShimmerTile({

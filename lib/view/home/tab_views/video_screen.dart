@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../res/components/shimmer_tile.dart';
+import '../../../res/components/shimmer/shimmer_tile.dart';
 
 class VideoScreen extends StatelessWidget {
   const VideoScreen({Key? key}) : super(key: key);

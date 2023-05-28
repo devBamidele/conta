@@ -9,12 +9,17 @@ import '../../../../res/color.dart';
 import '../../../../res/components/date_time/date_chip.dart';
 import '../../../../view_model/chat_messages_provider.dart';
 
+/// A widget that displays a stream of chat messages.
 class MessagesStream extends StatefulWidget {
+  /// Creates a [MessagesStream] widget.
+  ///
+  /// The [scrollController] is used to control the scrolling behavior of the messages stream.
   const MessagesStream({
     Key? key,
     required this.scrollController,
   }) : super(key: key);
 
+  /// The scroll controller for the messages stream.
   final ScrollController scrollController;
 
   @override
@@ -29,16 +34,13 @@ class _MessagesStreamState extends State<MessagesStream> {
   @override
   Widget build(BuildContext context) {
     return Consumer<ChatMessagesProvider>(
-      builder: (_, data, Widget? child) {
+      builder: (_, data, __) {
         return StreamBuilder(
           stream: data.getChatMessagesStream(
             currentUserUid: data.currentUser!.uid,
             otherUserUid: data.currentChat!.uidUser2,
           ),
-          builder: (
-            context,
-            AsyncSnapshot<List<Message>> snapshot,
-          ) {
+          builder: (_, AsyncSnapshot<List<Message>> snapshot) {
             if (snapshot.hasData) {
               List<Message> messages = snapshot.data!;
               if (messages.isEmpty) {

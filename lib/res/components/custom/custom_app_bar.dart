@@ -2,9 +2,9 @@ import 'dart:math' as math;
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:conta/res/components/app_bar_icon.dart';
-import 'package:conta/res/components/custom_back_button.dart';
+import 'package:conta/res/components/custom/custom_back_button.dart';
 import 'package:conta/res/components/online_status.dart';
-import 'package:conta/res/components/shimmer_widget.dart';
+import 'package:conta/res/components/shimmer/shimmer_widget.dart';
 import 'package:conta/res/components/snackbar_label.dart';
 import 'package:conta/utils/app_utils.dart';
 import 'package:flutter/material.dart';
@@ -12,11 +12,11 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../res/color.dart';
-import '../../utils/widget_functions.dart';
-import '../../view_model/chat_messages_provider.dart';
-import 'confirmation_dialog.dart';
-import 'message_counter.dart';
+import '../../../../../res/color.dart';
+import '../../../utils/widget_functions.dart';
+import '../../../view_model/chat_messages_provider.dart';
+import '../confirmation_dialog.dart';
+import '../message_counter.dart';
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   const CustomAppBar({

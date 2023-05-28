@@ -4,8 +4,8 @@ import 'dart:io';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:conta/res/components/custom_back_button.dart';
-import 'package:conta/res/components/custom_check_box.dart';
+import 'package:conta/res/components/custom/custom_back_button.dart';
+import 'package:conta/res/components/custom/custom_check_box.dart';
 import 'package:conta/res/components/login_options.dart';
 import 'package:conta/res/style/component_style.dart';
 import 'package:conta/utils/app_router/router.gr.dart';
@@ -21,7 +21,7 @@ import 'package:provider/provider.dart';
 import 'package:uni_links/uni_links.dart';
 
 import '../../res/color.dart';
-import '../../res/components/custom_text_field.dart';
+import '../../res/components/login_text_field.dart';
 import '../../res/components/shake_error.dart';
 import '../../utils/app_utils.dart';
 import '../../utils/services/auth_service.dart';

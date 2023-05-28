@@ -7,8 +7,8 @@ import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
 import '../../res/color.dart';
-import '../../res/components/custom_back_button.dart';
-import '../../res/components/custom_text_field.dart';
+import '../../res/components/custom/custom_back_button.dart';
+import '../../res/components/login_text_field.dart';
 import '../../res/components/shake_error.dart';
 import '../../utils/widget_functions.dart';
 import '../../view_model/authentication_provider.dart';

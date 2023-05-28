@@ -42,6 +42,12 @@ class ChatMessagesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void removeFileFromPicker(int index) {
+    pickerResult.removeAt(index);
+
+    notifyListeners();
+  }
+
   void clearPickerResult() async {
     pickerResult.clear();
     final success = await FilePicker.platform.clearTemporaryFiles();

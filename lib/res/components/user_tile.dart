@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:conta/res/components/shimmer_widget.dart';
+import 'package:conta/res/components/shimmer/shimmer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 
