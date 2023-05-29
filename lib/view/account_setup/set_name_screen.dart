@@ -190,7 +190,7 @@ class _SetNameScreenState extends State<SetNameScreen> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      onTap: () => FocusScope.of(context).unfocus,
       child: Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: false,

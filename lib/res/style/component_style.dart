@@ -112,9 +112,10 @@ const photoContainerDecoration = BoxDecoration(
 const pagePadding = EdgeInsets.symmetric(horizontal: 20);
 
 const scrollingDotsEffect = ScrollingDotsEffect(
-  dotHeight: 13,
-  dotWidth: 13,
-  activeDotScale: 1.5,
+  dotHeight: 11,
+  dotWidth: 11,
+  activeDotScale: 1.4,
   spacing: 10,
+  activeDotColor: AppColors.replyMessageColor,
   dotColor: AppColors.extraTextColor,
 );

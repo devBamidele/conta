@@ -6,8 +6,8 @@ enum MessageType {
   /// Audio message.
   audio,
 
-  /// Video message.
-  video,
+  /// Video and Picture message.
+  media,
 
   /// File message.
   file,

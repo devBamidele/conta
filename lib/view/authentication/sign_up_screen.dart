@@ -193,7 +193,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      onTap: () => FocusScope.of(context).unfocus,
       child: Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: false,
@@ -268,8 +268,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         customFillColor: fillPasswordColor,
                         action: TextInputAction.done,
                         hintText: 'Password',
-                        obscureText:
-                            _passwordVisible, //This will obscure text dynamically
+                        obscureText: _passwordVisible,
+                        //This will obscure text dynamically
                         validation: (value) => value != null && value.length < 6
                             ? 'Enter a minimum of 6 characters'
                             : null,

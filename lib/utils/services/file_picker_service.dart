@@ -105,8 +105,8 @@ class FilePickerService {
 
         // Depending on the file type, the file will be sent to a specified bucket
         final bucketName = isPhoto
-            ? 'gs://conta---instant-messaging-app-appimages/' // Bucket for photo files
-            : 'gs://conta---instant-messaging-app.appspot.com/'; // Default bucket for other files
+            ? 'gs://conta---instant-messaging-app-appimages' // Bucket for photo files
+            : null; // Default bucket for other files
 
         final baseName = path.basenameWithoutExtension(filePath);
 
@@ -122,6 +122,9 @@ class FilePickerService {
 
         // Handle the upload and get the download URL
         await storageInstance.ref(refPath).putFile(file);
+
+        // I need to place the delay here
+        await Future.delayed(const Duration(milliseconds: 1200));
 
         final resizedDownloadUrl =
             await storageInstance.ref(resizedPath).getDownloadURL();
@@ -144,7 +147,6 @@ class FilePickerService {
     // Implement your file type check logic here
     // Example implementation:
     final extension = file.path.split('.').last.toLowerCase();
-    log(extension);
     return ['jpg', 'jpeg', 'png'].contains(extension);
   }
 
@@ -157,7 +159,6 @@ class FilePickerService {
       if (filePaths.any((path) => path == null)) {
         throw 'One or more file paths are null.';
       }
-
       // Upload the files to storage (e.g., Firebase Storage) and return the file URLs
       return _uploadFilesToStorage(
           filePaths: filePaths.cast<String>(), chatId: chatId);

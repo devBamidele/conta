@@ -94,7 +94,7 @@ class _ChatScreenState extends State<ChatScreen>
     }
   }
 
-  onCancelReply() => chatProvider.cancelReply();
+  onCancelReply() => chatProvider.clearReplyAndCache();
 
   // Todo : Make the page scroll to the bottom (automatically) and add pagination
   _scrollToBottom() {
@@ -255,4 +255,5 @@ class _ChatScreenState extends State<ChatScreen>
   }
 }
 
-// Todo : FAB Scroll to bottom isn't working
+// Todo : FAB Scroll to bottom isn't working, I don't think the
+// CustomFAB is receiving callbacks

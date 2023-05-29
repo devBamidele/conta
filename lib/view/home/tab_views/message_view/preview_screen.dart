@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:math' as math;
 
 import 'package:auto_route/auto_route.dart';
@@ -7,6 +6,7 @@ import 'package:conta/view_model/chat_messages_provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -163,17 +163,27 @@ class _PreviewScreenState extends State<PreviewScreen> {
 
   void _onSendMessageTap(ChatMessagesProvider chatProvider) async {
     final caption = messagesController.value.text;
+
+    showDialog(
+      context: context,
+      builder: (context) => Center(
+        child: LoadingAnimationWidget.waveDots(
+          color: AppColors.primaryShadeColor,
+          size: 55,
+        ),
+      ),
+    );
+
     try {
-      log('Before');
       await chatProvider.uploadFilesAndCaption(caption);
-      log('After upload');
-      pop();
     } catch (e) {
       AppUtils.showToast(e.toString());
+    } finally {
+      // Clear the result and pop 2 stacks back
+      chatProvider.clearPickerResult();
+      context.router.popUntilRouteWithName('ChatScreenRoute');
     }
   }
-
-  void pop() => context.router.pop();
 
   void _onPrefixIconTap() {}
 }

@@ -107,7 +107,7 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
     return Consumer<AuthenticationProvider>(
       builder: (_, authProvider, Widget? child) {
         return GestureDetector(
-          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+          onTap: () => FocusScope.of(context).unfocus(),
           child: Scaffold(
             backgroundColor: Colors.white,
             resizeToAvoidBottomInset: false,

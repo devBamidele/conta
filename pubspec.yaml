@@ -71,7 +71,7 @@ dependencies:
   flutter_sound: ^9.2.13
   fluttertoast: ^8.2.1
   audioplayers: ^4.0.1
-  file_picker: ^5.3.0
+  file_picker: ^5.3.023333333333333333333333333
   smooth_page_indicator: ^1.1.0
   path: ^1.8.2
 

@@ -115,17 +115,22 @@ class ChatMessagesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> uploadFilesAndCaption(String caption) async {
+  Future<bool> uploadFilesAndCaption(String caption) async {
     final filePickerService = FilePickerService();
     try {
       final results = await filePickerService.sendFiles(
         pickerResult,
         currentChat!.chatId!,
       );
-      uploadChat(caption);
+      uploadChat(caption, type: MessageType.media);
+
+      if (results != null) {
+        return true;
+      }
     } catch (e) {
       rethrow;
     }
+    return false;
   }
 
   Future<bool> chooseFiles() async {
@@ -145,7 +150,7 @@ class ChatMessagesProvider extends ChangeNotifier {
     return false;
   }
 
-  void removeCache() {
+  void clearCache() {
     cacheReplyChat = false;
     cacheReplyMessage = null;
   }
@@ -167,7 +172,14 @@ class ChatMessagesProvider extends ChangeNotifier {
     replyMessage = null;
 
     // Cancel reply and clear cache
-    removeCache();
+    clearCache();
+    notifyListeners();
+  }
+
+  void clearReplyAndCache() {
+    replyChat = false;
+    replyMessage = null;
+
     notifyListeners();
   }
 
@@ -405,6 +417,7 @@ class ChatMessagesProvider extends ChangeNotifier {
         ? 'You'
         : currentChat?.username;
 
+    log(cacheReplyMessage!.content);
     // Create a new Message object with the specified properties
     final newMessage = Message(
       id: messageId,
@@ -419,7 +432,7 @@ class ChatMessagesProvider extends ChangeNotifier {
     );
 
     // Clear the cache
-    removeCache();
+    clearCache();
 
     // Add the new message to the 'messages' sub-collection of the specified chat
     // document in Firestore
