@@ -4,13 +4,10 @@ import 'dart:math' as math;
 import 'package:auto_route/auto_route.dart';
 import 'package:conta/res/components/chat_text_form_field.dart';
 import 'package:conta/res/components/custom/custom_app_bar.dart';
-import 'package:conta/utils/services/file_picker_service.dart';
 import 'package:conta/utils/widget_functions.dart';
 import 'package:conta/view_model/chat_messages_provider.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
@@ -34,8 +31,6 @@ class _ChatScreenState extends State<ChatScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late ChatMessagesProvider chatProvider;
-
-  late final FilePickerService _filePickerService = FilePickerService();
 
   final messagesController = TextEditingController();
   final messagesFocusNode = FocusNode();
@@ -65,9 +60,6 @@ class _ChatScreenState extends State<ChatScreen>
     messagesFocusNode.dispose();
     messagesController.dispose();
     scrollController.dispose();
-
-    // Remove the status listeners as the page closes
-    chatProvider.removeOnlineStatusListener();
 
     _controller.dispose();
     super.dispose();
@@ -133,18 +125,15 @@ class _ChatScreenState extends State<ChatScreen>
   }
 
   void _onPrefixIconTap() async {
-    final chatId = chatProvider.currentChat!.chatId!;
-
     try {
-      List<PlatformFile>? result =
-          await _filePickerService.checkPermissionAndPickFile(chatId);
-
-      if (result != null && result.isNotEmpty) {
-        chatProvider.pickerResult = result;
+      final result = await chatProvider.chooseFiles();
+      if (result) {
         navigateToPreview();
+      } else {
+        AppUtils.showToast('Unable to pick file(s)');
       }
     } catch (e) {
-      showToast(e.toString());
+      AppUtils.showToast(e.toString());
     }
   }
 
@@ -265,12 +254,5 @@ class _ChatScreenState extends State<ChatScreen>
     );
   }
 }
-
-void showToast(String message) => Fluttertoast.showToast(
-      msg: message,
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.BOTTOM,
-      fontSize: 16.0,
-    );
 
 // Todo : FAB Scroll to bottom isn't working

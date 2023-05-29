@@ -15,6 +15,7 @@ import '../models/chat_tile_data.dart';
 import '../models/current_chat.dart';
 import '../models/message.dart';
 import '../models/search_user.dart';
+import '../utils/services/file_picker_service.dart';
 
 class ChatMessagesProvider extends ChangeNotifier {
   Map<String, Message> selectedMessages = {};
@@ -24,9 +25,6 @@ class ChatMessagesProvider extends ChangeNotifier {
 
   final currentUser = FirebaseAuth.instance.currentUser;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-  // Declare a variable to store the subscription
-  late StreamSubscription<DocumentSnapshot<Map<String, dynamic>>> subscription;
 
   //late final MessagingService _messagingService = MessagingService();
 
@@ -115,6 +113,36 @@ class ChatMessagesProvider extends ChangeNotifier {
       selectedMessages[message.id] = message;
     }
     notifyListeners();
+  }
+
+  Future<void> uploadFilesAndCaption(String caption) async {
+    final filePickerService = FilePickerService();
+    try {
+      final results = await filePickerService.sendFiles(
+        pickerResult,
+        currentChat!.chatId!,
+      );
+      uploadChat(caption);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<bool> chooseFiles() async {
+    final filePickerService = FilePickerService();
+    final id = currentChat!.chatId!;
+    try {
+      List<PlatformFile>? result =
+          await filePickerService.checkPermissionAndPickFile(id);
+
+      if (result != null && result.isNotEmpty) {
+        pickerResult = result;
+        return true;
+      }
+    } catch (e) {
+      rethrow;
+    }
+    return false;
   }
 
   void removeCache() {
@@ -368,7 +396,7 @@ class ChatMessagesProvider extends ChangeNotifier {
   Future<void> addNewMessageToChat(
     String chatId,
     String content, {
-    MessageType type = MessageType.text,
+    required MessageType type,
   }) async {
     // Generate a unique ID for the new message
     final messageId = const Uuid().v4();
@@ -489,10 +517,12 @@ class ChatMessagesProvider extends ChangeNotifier {
     final StreamController<DocumentSnapshot<Map<String, dynamic>>> controller =
         StreamController();
 
-    subscription = userDocRef
-        .snapshots()
-        .map((snapshot) => snapshot as DocumentSnapshot<Map<String, dynamic>>)
-        .listen((DocumentSnapshot<Map<String, dynamic>> snapshot) {
+    StreamSubscription<DocumentSnapshot<Map<String, dynamic>>> subscription =
+        userDocRef
+            .snapshots()
+            .map((snapshot) =>
+                snapshot as DocumentSnapshot<Map<String, dynamic>>)
+            .listen((DocumentSnapshot<Map<String, dynamic>> snapshot) {
       controller.add(snapshot);
     });
 
@@ -502,10 +532,5 @@ class ChatMessagesProvider extends ChangeNotifier {
     };
 
     return controller.stream;
-  }
-
-  // Call this function when the user exits the chat screen
-  void removeOnlineStatusListener() {
-    subscription.cancel();
   }
 }

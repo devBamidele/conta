@@ -8,7 +8,6 @@ import 'package:conta/res/components/shimmer/shimmer_widget.dart';
 import 'package:conta/res/components/snackbar_label.dart';
 import 'package:conta/utils/app_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
@@ -151,7 +150,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                               size: customSize - 2,
                               onTap: () {
                                 data.copyMessageContent();
-                                showToast("Message Copied");
+                                AppUtils.showToast("Message Copied");
                               }),
                           addWidth(20),
                           AppBarIcon(
@@ -178,13 +177,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
     );
   }
 }
-
-void showToast(String message) => Fluttertoast.showToast(
-      msg: message,
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.BOTTOM,
-      fontSize: 16.0,
-    );
 
 void confirmDelete(BuildContext context, ChatMessagesProvider data) {
   final length = data.selectedMessages.length;
@@ -216,12 +208,12 @@ void _showSnackbar(ChatMessagesProvider data) {
     label: SnackBarLabel(
       onTap: () {
         data.undoDelete();
-        showToast('Undid selected messages');
+        AppUtils.showToast('Undid selected messages');
       },
     ),
     onClosed: () {
       data.clearDeletedMessages();
-      showToast('cleared selected messages');
+      AppUtils.showToast('cleared selected messages');
     },
   );
 }

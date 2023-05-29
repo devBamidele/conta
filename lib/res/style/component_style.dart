@@ -1,5 +1,6 @@
 import 'package:conta/res/color.dart';
 import 'package:flutter/material.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 /// The border for the input fields
 const inputBorder = OutlineInputBorder(
@@ -109,3 +110,11 @@ const photoContainerDecoration = BoxDecoration(
 );
 
 const pagePadding = EdgeInsets.symmetric(horizontal: 20);
+
+const scrollingDotsEffect = ScrollingDotsEffect(
+  dotHeight: 13,
+  dotWidth: 13,
+  activeDotScale: 1.5,
+  spacing: 10,
+  dotColor: AppColors.extraTextColor,
+);

@@ -1,5 +1,6 @@
 import 'package:conta/res/color.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 /// Utility class for displaying SnackBars using a global key.
 class AppUtils {
@@ -41,5 +42,17 @@ class AppUtils {
     messengerKey.currentState!
       ..removeCurrentSnackBar()
       ..showSnackBar(snackBar).closed.then((_) => onClosed?.call());
+  }
+
+  /// Displays a Toast message with the specified [message].
+  ///
+  /// The Toast message is shown at the bottom of the screen with a short duration.
+  static void showToast(String message) {
+    Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      fontSize: 16.0,
+    );
   }
 }
