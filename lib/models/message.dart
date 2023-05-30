@@ -17,6 +17,7 @@ class Message {
   final String messageType;
   final String? sender;
   final String? replyMessage;
+  final List<String>? media;
   bool selected = false;
 
   /// Constructs a [Message] object.
@@ -39,6 +40,7 @@ class Message {
     this.seen = false,
     this.sent = false,
     this.reply = false,
+    this.media,
     this.sender,
     this.replyMessage,
   });
@@ -56,6 +58,7 @@ class Message {
         sent = json['sent'],
         reply = json['reply'] ?? false,
         sender = json['sender'],
+        media = json['media'] != null ? List<String>.from(json['media']) : null,
         replyMessage = json['message'],
         messageType = json['messageType'] ?? MessageType.text.name;
 
@@ -72,6 +75,7 @@ class Message {
         'sender': sender,
         'message': replyMessage,
         'messageType': messageType,
+        'media': media,
       };
 
   /// Update the value of the `selected` flag.

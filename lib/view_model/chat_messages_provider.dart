@@ -115,22 +115,17 @@ class ChatMessagesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> uploadFilesAndCaption(String caption) async {
+  Future<void> uploadFilesAndCaption(String caption) async {
     final filePickerService = FilePickerService();
     try {
       final results = await filePickerService.sendFiles(
         pickerResult,
         currentChat!.chatId!,
       );
-      uploadChat(caption, type: MessageType.media);
-
-      if (results != null) {
-        return true;
-      }
+      uploadChat(caption, type: MessageType.media, media: results);
     } catch (e) {
       rethrow;
     }
-    return false;
   }
 
   Future<bool> chooseFiles() async {
@@ -405,11 +400,8 @@ class ChatMessagesProvider extends ChangeNotifier {
   /// sub-collection of the specified chat document.
   ///
   /// The [content] parameter is the text of the message to add.
-  Future<void> addNewMessageToChat(
-    String chatId,
-    String content, {
-    required MessageType type,
-  }) async {
+  Future<void> addNewMessageToChat(String chatId, String content,
+      {required MessageType type, List<String>? media}) async {
     // Generate a unique ID for the new message
     final messageId = const Uuid().v4();
 
@@ -417,7 +409,6 @@ class ChatMessagesProvider extends ChangeNotifier {
         ? 'You'
         : currentChat?.username;
 
-    log(cacheReplyMessage!.content);
     // Create a new Message object with the specified properties
     final newMessage = Message(
       id: messageId,
@@ -429,6 +420,7 @@ class ChatMessagesProvider extends ChangeNotifier {
       replyMessage: cacheReplyMessage?.content,
       sender: senderName,
       messageType: type.name,
+      media: media,
     );
 
     // Clear the cache
@@ -493,6 +485,7 @@ class ChatMessagesProvider extends ChangeNotifier {
   Future<void> uploadChat(
     String content, {
     MessageType type = MessageType.text,
+    List<String>? media,
   }) async {
     final chatId = currentChat?.chatId == null
         ? generateChatId(currentUser!.uid, currentChat!.uidUser2)
@@ -519,7 +512,7 @@ class ChatMessagesProvider extends ChangeNotifier {
 
     // Add the new message to the 'messages' sub-collection of the chat document
     // in Firestore
-    await addNewMessageToChat(chatId, content, type: type);
+    await addNewMessageToChat(chatId, content, type: type, media: media);
   }
 
   Stream<DocumentSnapshot<Map<String, dynamic>>> getOnlineStatusStream() {

@@ -33,3 +33,26 @@ Widget noProfilePic({double size = 27}) {
     size: size,
   );
 }
+
+EdgeInsets getBubblePadding(
+    bool isSender, bool stateTick, bool hasMedia, bool hasReplyMessage) {
+  if (isSender) {
+    if (stateTick) {
+      if (hasReplyMessage) {
+        return const EdgeInsets.fromLTRB(3.5, 3, 13, 7);
+      } else if (hasMedia) {
+        return const EdgeInsets.fromLTRB(1, 4, 13.5, 7);
+      } else {
+        return const EdgeInsets.fromLTRB(7, 7, 14, 7);
+      }
+    } else {
+      return const EdgeInsets.fromLTRB(7, 7, 17, 7);
+    }
+  } else {
+    if (hasReplyMessage || hasMedia) {
+      return const EdgeInsets.fromLTRB(14, 3, 3, 7);
+    } else {
+      return const EdgeInsets.fromLTRB(14, 7, 3, 7);
+    }
+  }
+}

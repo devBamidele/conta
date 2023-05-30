@@ -125,6 +125,7 @@ class _ChatScreenState extends State<ChatScreen>
   }
 
   void _onPrefixIconTap() async {
+    chatProvider.clearPickerResult();
     try {
       final result = await chatProvider.chooseFiles();
       if (result) {

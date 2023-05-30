@@ -1,4 +1,5 @@
 import 'package:conta/res/components/reply_bubble.dart';
+import 'package:conta/utils/widget_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:swipe_to/swipe_to.dart';
@@ -8,6 +9,7 @@ import '../../models/message.dart';
 import '../../view_model/chat_messages_provider.dart';
 import '../color.dart';
 import 'bubble_painter.dart';
+import 'image_preview.dart';
 
 ///iMessage's chat bubble type
 ///
@@ -68,6 +70,8 @@ class _MessageBubbleState extends State<MessageBubble> {
   late TextPainter painter;
   late TextPainter timePainter;
   late double prefWidth;
+  late bool hasReply;
+  late bool hasMedia;
 
   @override
   void initState() {
@@ -76,6 +80,12 @@ class _MessageBubbleState extends State<MessageBubble> {
     //chatProvider.setResetOverlayColorCallback(resetOverlayColor);
 
     replyMessage = widget.message.replyMessage;
+
+    hasReply = widget.message.reply &&
+        widget.message.replyMessage != null &&
+        widget.message.sender != null;
+
+    hasMedia = widget.message.media != null;
 
     painter = TextPainter(
       text: TextSpan(text: widget.message.content, style: widget.textStyle),
@@ -151,26 +161,23 @@ void resetOverlayColor() {
   ///chat bubble builder method
   @override
   Widget build(BuildContext context) {
+    stateTick = true;
     if (widget.message.sent) {
-      stateTick = true;
       stateIcon = const Icon(
         Icons.done,
         size: 14,
         color: Colors.black45,
       );
-    } else {
-      stateTick = true;
-      stateIcon = const Icon(
-        Icons.wifi_off_rounded,
-        size: 14,
-        color: Colors.black45,
-      );
-    }
-    if (widget.message.seen) {
-      stateTick = true;
+    } else if (widget.message.seen) {
       stateIcon = const Icon(
         Icons.done_all,
         size: 15,
+        color: Colors.black45,
+      );
+    } else {
+      stateIcon = const Icon(
+        Icons.wifi_off_rounded,
+        size: 14,
         color: Colors.black45,
       );
     }
@@ -235,12 +242,6 @@ void resetOverlayColor() {
                           ? painter.width +
                               (prefWidth - painter.width).clamp(0, 30)
                           : width;
-/*
- if (widget.message.content ==
-                          'I said it before and I don\'t mind saying it again') {
-                        log('The Height for ${widget.message.content} is $height');
-                      }
- */
 
                       return Container(
                         constraints: BoxConstraints(
@@ -248,35 +249,42 @@ void resetOverlayColor() {
                           minHeight: height,
                           maxWidth: prefWidth,
                         ),
-                        margin: widget.isSender
-                            ? stateTick
-                                ? replyMessage != null
-                                    ? const EdgeInsets.fromLTRB(3.5, 3, 13, 7)
-                                    : const EdgeInsets.fromLTRB(7, 7, 14, 7)
-                                : const EdgeInsets.fromLTRB(7, 7, 17, 7)
-                            : replyMessage != null
-                                ? const EdgeInsets.fromLTRB(14, 3, 3, 7)
-                                : const EdgeInsets.fromLTRB(14, 7, 3, 7),
+                        margin: getBubblePadding(
+                          widget.isSender,
+                          stateTick,
+                          hasMedia,
+                          replyMessage != null,
+                        ),
                         child: Stack(
                           children: <Widget>[
                             Padding(
-                              padding: stateTick
-                                  ? replyMessage != null
-                                      ? const EdgeInsets.only(left: 0)
-                                      : const EdgeInsets.only(left: 4)
-                                  : const EdgeInsets.symmetric(horizontal: 4),
+                              padding: EdgeInsets.only(
+                                left: stateTick
+                                    ? (replyMessage != null ? 0 : 4)
+                                    : 4,
+                              ),
                               child: Column(
                                 mainAxisSize: MainAxisSize.max,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  if (widget.message.reply &&
-                                      widget.message.replyMessage != null &&
-                                      widget.message.sender != null)
+                                  if (hasReply)
                                     ReplyBubble(
                                       replyMessage:
                                           widget.message.replyMessage!,
                                       isSender: widget.isSender,
                                       username: widget.message.sender!,
+                                    ),
+                                  if (hasMedia)
+                                    Padding(
+                                      padding: const EdgeInsets.only(bottom: 3),
+                                      child: ClipRRect(
+                                        borderRadius: const BorderRadius.all(
+                                          Radius.circular(11.5),
+                                        ),
+                                        child: ImagePreview(
+                                          media: widget.message.media!,
+                                        ),
+                                      ),
                                     ),
                                   Padding(
                                     padding: EdgeInsets.only(
@@ -291,35 +299,32 @@ void resetOverlayColor() {
                                 ],
                               ),
                             ),
-                            stateIcon != null
-                                ? Positioned(
-                                    bottom: 0,
-                                    right: 4,
-                                    child: Row(
-                                      children: [
-                                        Padding(
-                                          padding: EdgeInsets.only(
-                                            right: widget.isSender ? 3 : 5,
-                                          ),
-                                          child: Text(
-                                            widget.timeSent,
-                                            style: widget.timeStyle,
-                                          ),
-                                        ),
-                                        Visibility(
-                                          visible: widget.isSender,
-                                          child: Padding(
-                                            padding:
-                                                const EdgeInsets.only(right: 6),
-                                            child: stateIcon,
-                                          ),
-                                        ),
-                                      ],
+                            if (stateIcon != null)
+                              Positioned(
+                                bottom: 0,
+                                right: 4,
+                                child: Row(
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.only(
+                                        right: widget.isSender ? 3 : 5,
+                                      ),
+                                      child: Text(
+                                        widget.timeSent,
+                                        style: widget.timeStyle,
+                                      ),
                                     ),
-                                  )
-                                : const SizedBox(
-                                    width: 1,
-                                  ),
+                                    if (widget.isSender)
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 6),
+                                        child: stateIcon,
+                                      ),
+                                  ],
+                                ),
+                              )
+                            else
+                              const SizedBox(width: 1),
                           ],
                         ),
                       );

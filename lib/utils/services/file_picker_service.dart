@@ -124,7 +124,7 @@ class FilePickerService {
         await storageInstance.ref(refPath).putFile(file);
 
         // I need to place the delay here
-        await Future.delayed(const Duration(milliseconds: 1200));
+        await Future.delayed(const Duration(milliseconds: 2000));
 
         final resizedDownloadUrl =
             await storageInstance.ref(resizedPath).getDownloadURL();
@@ -150,8 +150,24 @@ class FilePickerService {
     return ['jpg', 'jpeg', 'png'].contains(extension);
   }
 
+  /// Sends the specified files to a storage service and returns the file URLs.
+  ///
+  /// The [files] parameter represents the list of files to be sent. It should be
+  /// a list of [PlatformFile] objects, which contain information about each file
+  /// including its path.
+  ///
+  /// The [chatId] parameter is the identifier of the chat or conversation to
+  /// which the files belong.
+  ///
+  /// This function uploads the files to a storage service, such as Firebase
+  /// Storage, and returns a [Future] that completes with a list of file URLs.
+  /// If the upload is unsuccessful or encounters an error, an exception is thrown.
+  /// If any of the file paths in [files] are null, a 'One or more file paths
+  /// are null.' exception is thrown.
   Future<List<String>?> sendFiles(
-      List<PlatformFile> files, String chatId) async {
+    List<PlatformFile> files,
+    String chatId,
+  ) async {
     try {
       final filePaths = files.map((file) => file.path).toList();
 
@@ -159,9 +175,12 @@ class FilePickerService {
       if (filePaths.any((path) => path == null)) {
         throw 'One or more file paths are null.';
       }
+
       // Upload the files to storage (e.g., Firebase Storage) and return the file URLs
       return _uploadFilesToStorage(
-          filePaths: filePaths.cast<String>(), chatId: chatId);
+        filePaths: filePaths.cast<String>(),
+        chatId: chatId,
+      );
     } catch (e) {
       rethrow;
     }
