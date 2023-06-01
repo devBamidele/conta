@@ -2,13 +2,9 @@ import 'package:conta/res/color.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 
-Widget addHeight(double height) {
-  return SizedBox(height: height);
-}
+Widget addHeight(double height) => SizedBox(height: height);
 
-Widget addWidth(double width) {
-  return SizedBox(width: width);
-}
+Widget addWidth(double width) => SizedBox(width: width);
 
 Widget doubleTick({double size = 20}) {
   return Icon(
@@ -35,13 +31,18 @@ Widget noProfilePic({double size = 27}) {
 }
 
 EdgeInsets getBubblePadding(
-    bool isSender, bool stateTick, bool hasMedia, bool hasReplyMessage) {
+  bool isSender,
+  bool stateTick,
+  bool hasMedia,
+  bool hasReplyMessage,
+  bool hasContent,
+) {
   if (isSender) {
     if (stateTick) {
       if (hasReplyMessage) {
         return const EdgeInsets.fromLTRB(3.5, 3, 13, 7);
       } else if (hasMedia) {
-        return const EdgeInsets.fromLTRB(1, 4, 13.5, 7);
+        return EdgeInsets.fromLTRB(1, 4, 14, hasContent ? 8 : 2);
       } else {
         return const EdgeInsets.fromLTRB(7, 7, 14, 7);
       }
@@ -49,8 +50,10 @@ EdgeInsets getBubblePadding(
       return const EdgeInsets.fromLTRB(7, 7, 17, 7);
     }
   } else {
-    if (hasReplyMessage || hasMedia) {
+    if (hasReplyMessage) {
       return const EdgeInsets.fromLTRB(14, 3, 3, 7);
+    } else if (hasMedia) {
+      return EdgeInsets.fromLTRB(9, 3, 3, hasContent ? 8 : 0.5);
     } else {
       return const EdgeInsets.fromLTRB(14, 7, 3, 7);
     }

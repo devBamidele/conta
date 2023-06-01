@@ -185,4 +185,44 @@ class FilePickerService {
       rethrow;
     }
   }
+
+  /// Deletes files from Firebase Storage based on the provided list of file URLs.
+  ///
+  /// The [fileUrls] parameter is a list of file URLs to be deleted.
+  /// Each file URL should be a valid Firebase Storage URL.
+  /// Throws an exception if the URL format is invalid or if any error occurs during the deletion process.
+  Future<void> deleteFilesFromStorage(List<String> fileUrls) async {
+    try {
+      for (String fileUrl in fileUrls) {
+        // Extract the bucket name from the file URL
+        final bucketName = getBucketNameFromUrl(fileUrl);
+
+        // Get a reference to the file in Firebase Storage
+        final storageRef =
+            FirebaseStorage.instanceFor(bucket: bucketName).refFromURL(fileUrl);
+
+        // Delete the file
+        await storageRef.delete().then((value) => log('Deleted $fileUrl'));
+      }
+    } catch (e) {
+      // Handle the error
+      rethrow;
+    }
+  }
+
+  /// Extracts the bucket name from a Firebase Storage URL.
+  ///
+  /// The [url] parameter is a Firebase Storage URL from which the bucket name needs to be extracted.
+  /// Returns the extracted bucket name.
+  /// Throws an exception if the URL format is invalid and the bucket name cannot be extracted.
+  String getBucketNameFromUrl(String url) {
+    final RegExp regExp = RegExp(r'https:\/\/.*?\/v0\/b\/([^\/]+)\/');
+    final match = regExp.firstMatch(url);
+
+    if (match != null && match.groupCount >= 1) {
+      return 'gs://${match.group(1)!}';
+    } else {
+      throw Exception('Invalid URL format');
+    }
+  }
 }

@@ -128,12 +128,31 @@ class ChatMessagesProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> deleteFilesFromStorage() async {
+    final filePickerService = FilePickerService();
+    final fileUrls = <String>[];
+
+    try {
+      // Extract media URLs from each message in deletedMessages
+      for (final message in deletedMessages) {
+        final media = message.media;
+        if (media != null) {
+          fileUrls.addAll(media);
+        }
+      }
+
+      // Delete the files from storage
+      await filePickerService.deleteFilesFromStorage(fileUrls);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<bool> chooseFiles() async {
     final filePickerService = FilePickerService();
     final id = currentChat!.chatId!;
     try {
-      List<PlatformFile>? result =
-          await filePickerService.checkPermissionAndPickFile(id);
+      final result = await filePickerService.checkPermissionAndPickFile(id);
 
       if (result != null && result.isNotEmpty) {
         pickerResult = result;
@@ -162,7 +181,8 @@ class ChatMessagesProvider extends ChangeNotifier {
     Clipboard.setData(ClipboardData(text: clipText));
   }
 
-  void cancelReply() {
+  // When the back button from the appbar is pressed
+  void cancelReplyAndClearCache() {
     replyChat = false;
     replyMessage = null;
 
@@ -171,7 +191,7 @@ class ChatMessagesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void clearReplyAndCache() {
+  void clearReply() {
     replyChat = false;
     replyMessage = null;
 
@@ -390,9 +410,10 @@ class ChatMessagesProvider extends ChangeNotifier {
     deletedMessages.clear();
   }
 
-  void clearDeletedMessages() {
-    deletedMessages.clear();
-
+  Future<void> clearDeletedMessages() async {
+    await deleteFilesFromStorage().then(
+      (value) => deletedMessages.clear(),
+    );
     notifyListeners();
   }
 

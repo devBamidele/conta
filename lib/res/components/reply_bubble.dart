@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import '../color.dart';
 
 class ReplyBubble extends StatelessWidget {
-  const ReplyBubble(
-      {Key? key,
-      required this.replyMessage,
-      required this.isSender,
-      required this.username})
-      : super(key: key);
+  const ReplyBubble({
+    Key? key,
+    required this.replyMessage,
+    required this.isSender,
+    required this.username,
+  }) : super(key: key);
 
   final String replyMessage;
   final bool isSender;

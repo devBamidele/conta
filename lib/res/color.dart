@@ -7,6 +7,9 @@ class AppColors {
   static const Color inputBackGround = Color(0xFFFAFAFA);
   static const Color hintTextColor = Color(0xFF9E9E9E);
   static const Color darkIconColor = Color(0xFF858585);
+  static const Color photoContainerColor = Color(0xFFF2F2F2);
+
+  static const Color stateIconColor = Colors.black45;
   static Color transparentBackground = Colors.transparent.withAlpha(20);
   static Color transparentText = Colors.transparent.withAlpha(210);
 
@@ -30,4 +33,9 @@ class AppColors {
 
   // For the reply Message Widget
   static const Color replyMessageColor = Color(0xFF44001a);
+
+  // Rings for the discrete circle
+  static const Color mainRingColor = Color(0xffEEF0F2);
+  static const Color secondRingColor = Color(0xffC6C7C4);
+  static const Color thirdRingColor = Color(0xffA2999E);
 }

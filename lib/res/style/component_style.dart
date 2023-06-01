@@ -105,7 +105,7 @@ final shadow = BoxShadow(
 );
 
 const photoContainerDecoration = BoxDecoration(
-  color: Color(0xFFF2F2F2),
+  color: AppColors.photoContainerColor,
   shape: BoxShape.circle,
 );
 
@@ -118,4 +118,17 @@ const scrollingDotsEffect = ScrollingDotsEffect(
   spacing: 10,
   activeDotColor: AppColors.replyMessageColor,
   dotColor: AppColors.extraTextColor,
+);
+
+const timeStampShadow = BoxDecoration(
+  borderRadius: BorderRadius.all(
+    Radius.circular(12),
+  ),
+  boxShadow: [
+    BoxShadow(
+      color: Colors.black38,
+      spreadRadius: 8,
+      blurRadius: 10,
+    ),
+  ],
 );

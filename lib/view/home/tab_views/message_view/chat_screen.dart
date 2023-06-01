@@ -94,7 +94,7 @@ class _ChatScreenState extends State<ChatScreen>
     }
   }
 
-  onCancelReply() => chatProvider.clearReplyAndCache();
+  onCancelMessageReply() => chatProvider.cancelReplyAndClearCache();
 
   // Todo : Make the page scroll to the bottom (automatically) and add pagination
   _scrollToBottom() {
@@ -119,7 +119,7 @@ class _ChatScreenState extends State<ChatScreen>
 
     setState(() => _scrollToBottom());
 
-    onCancelReply();
+    chatProvider.clearReply();
 
     messagesController.clear();
   }
@@ -187,7 +187,7 @@ class _ChatScreenState extends State<ChatScreen>
                                             data.replyMessage!.senderId,
                                         message: data.replyMessage!,
                                         senderName: data.currentChat?.username,
-                                        onCancelReply: onCancelReply,
+                                        onCancelReply: onCancelMessageReply,
                                       ),
                                     ),
                                   ),

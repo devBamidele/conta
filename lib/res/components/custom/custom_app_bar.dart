@@ -49,7 +49,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                   leading: CustomBackButton(
                     padding: const EdgeInsets.only(left: 15),
                     color: AppColors.extraTextColor,
-                    onPressed: () => data.cancelReply(),
+                    onPressed: () => data.cancelReplyAndClearCache(),
                   ),
                   actions: [
                     Padding(
@@ -208,12 +208,10 @@ void _showSnackbar(ChatMessagesProvider data) {
     label: SnackBarLabel(
       onTap: () {
         data.undoDelete();
-        AppUtils.showToast('Undid selected messages');
       },
     ),
     onClosed: () {
       data.clearDeletedMessages();
-      AppUtils.showToast('cleared selected messages');
     },
   );
 }

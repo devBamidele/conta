@@ -23,10 +23,14 @@ class CustomBackButton extends StatelessWidget {
       alignment: Alignment.centerLeft,
       iconSize: 26,
       onPressed: () {
-        context.router.pop();
-        if (onPressed != null) {
-          onPressed!();
-        }
+        context.router.pop().then(
+              (value) => {
+                if (onPressed != null)
+                  {
+                    onPressed!(),
+                  }
+              },
+            );
       },
       icon: Icon(IconlyLight.arrow_left, color: color),
       splashColor: Colors.transparent,

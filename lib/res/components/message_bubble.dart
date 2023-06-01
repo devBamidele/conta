@@ -1,4 +1,5 @@
 import 'package:conta/res/components/reply_bubble.dart';
+import 'package:conta/res/style/component_style.dart';
 import 'package:conta/utils/widget_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -67,11 +68,14 @@ class _MessageBubbleState extends State<MessageBubble> {
   Icon? stateIcon;
   Color overlayColor = Colors.transparent;
   bool longPressed = false;
+  Color stateIconColor = Colors.transparent;
+
   late TextPainter painter;
   late TextPainter timePainter;
   late double prefWidth;
   late bool hasReply;
   late bool hasMedia;
+  late bool hasContent;
 
   @override
   void initState() {
@@ -80,6 +84,7 @@ class _MessageBubbleState extends State<MessageBubble> {
     //chatProvider.setResetOverlayColorCallback(resetOverlayColor);
 
     replyMessage = widget.message.replyMessage;
+    hasContent = widget.message.content.isNotEmpty;
 
     hasReply = widget.message.reply &&
         widget.message.replyMessage != null &&
@@ -162,23 +167,25 @@ void resetOverlayColor() {
   @override
   Widget build(BuildContext context) {
     stateTick = true;
+    stateIconColor =
+        hasMedia && !hasContent ? Colors.white : AppColors.stateIconColor;
     if (widget.message.sent) {
-      stateIcon = const Icon(
+      stateIcon = Icon(
         Icons.done,
         size: 14,
-        color: Colors.black45,
+        color: stateIconColor,
       );
     } else if (widget.message.seen) {
-      stateIcon = const Icon(
+      stateIcon = Icon(
         Icons.done_all,
         size: 15,
-        color: Colors.black45,
+        color: stateIconColor,
       );
     } else {
-      stateIcon = const Icon(
+      stateIcon = Icon(
         Icons.wifi_off_rounded,
         size: 14,
-        color: Colors.black45,
+        color: stateIconColor,
       );
     }
 
@@ -205,7 +212,7 @@ void resetOverlayColor() {
               alignment:
                   widget.isSender ? Alignment.topRight : Alignment.topLeft,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
                 child: CustomPaint(
                   painter: BubblePainter(
                     color: widget.color,
@@ -214,121 +221,136 @@ void resetOverlayColor() {
                         : Alignment.topLeft,
                     tail: widget.tail,
                   ),
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      lines = painter.width ~/ prefWidth;
+                  child: ClipRect(
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        lines = painter.width ~/ prefWidth;
 
-                      addedWidth = timePainter.width + 40;
+                        addedWidth = timePainter.width + 40;
 
-                      addedHeight =
-                          prefWidth < (painter.width % prefWidth) + addedWidth
-                              ? 42
-                              : 0;
+                        addedHeight =
+                            prefWidth < (painter.width % prefWidth) + addedWidth
+                                ? 42
+                                : 0;
 
-                      // If lines == 0, then the text can by default (without the timestamp)
-                      // fit within a single line of text.
-                      width =
-                          lines == 0 && painter.width < (prefWidth - addedWidth)
-                              ? painter.width + addedWidth
-                              : 0;
+                        // If lines == 0, then the text can by default (without the timestamp)
+                        // fit within a single line of text.
+                        width = lines == 0 &&
+                                painter.width < (prefWidth - addedWidth)
+                            ? painter.width + addedWidth
+                            : 0;
 
-                      height = width == 0
-                          ? lines == 0
-                              ? 2 * painter.height
-                              : (lines * painter.height) + addedHeight
-                          : 0;
+                        height = width == 0
+                            ? lines == 0
+                                ? 2 * painter.height
+                                : (lines * painter.height) + addedHeight
+                            : 0;
 
-                      width = height != 0 && lines == 0
-                          ? painter.width +
-                              (prefWidth - painter.width).clamp(0, 30)
-                          : width;
+                        width = height != 0 && lines == 0
+                            ? painter.width +
+                                (prefWidth - painter.width).clamp(0, 30)
+                            : width;
 
-                      return Container(
-                        constraints: BoxConstraints(
-                          minWidth: width,
-                          minHeight: height,
-                          maxWidth: prefWidth,
-                        ),
-                        margin: getBubblePadding(
-                          widget.isSender,
-                          stateTick,
-                          hasMedia,
-                          replyMessage != null,
-                        ),
-                        child: Stack(
-                          children: <Widget>[
-                            Padding(
-                              padding: EdgeInsets.only(
-                                left: stateTick
-                                    ? (replyMessage != null ? 0 : 4)
-                                    : 4,
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.max,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  if (hasReply)
-                                    ReplyBubble(
-                                      replyMessage:
-                                          widget.message.replyMessage!,
-                                      isSender: widget.isSender,
-                                      username: widget.message.sender!,
-                                    ),
-                                  if (hasMedia)
-                                    Padding(
-                                      padding: const EdgeInsets.only(bottom: 3),
-                                      child: ClipRRect(
-                                        borderRadius: const BorderRadius.all(
-                                          Radius.circular(11.5),
-                                        ),
-                                        child: ImagePreview(
-                                          media: widget.message.media!,
-                                        ),
-                                      ),
-                                    ),
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                      left: replyMessage != null ? 8 : 0,
-                                    ),
-                                    child: Text(
-                                      widget.message.content,
-                                      style: widget.textStyle,
-                                      textAlign: TextAlign.left,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            if (stateIcon != null)
-                              Positioned(
-                                bottom: 0,
-                                right: 4,
-                                child: Row(
+                        return Container(
+                          constraints: BoxConstraints(
+                            minWidth: width,
+                            minHeight: height,
+                            maxWidth: prefWidth,
+                          ),
+                          margin: getBubblePadding(
+                            widget.isSender,
+                            stateTick,
+                            hasMedia,
+                            replyMessage != null,
+                            hasContent,
+                          ),
+                          child: Stack(
+                            children: <Widget>[
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  left: stateTick
+                                      ? (replyMessage != null ? 0 : 4)
+                                      : 4,
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.max,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Padding(
-                                      padding: EdgeInsets.only(
-                                        right: widget.isSender ? 3 : 5,
+                                    if (hasReply)
+                                      ReplyBubble(
+                                        replyMessage:
+                                            widget.message.replyMessage!,
+                                        isSender: widget.isSender,
+                                        username: widget.message.sender!,
                                       ),
-                                      child: Text(
-                                        widget.timeSent,
-                                        style: widget.timeStyle,
-                                      ),
-                                    ),
-                                    if (widget.isSender)
+                                    if (hasMedia)
                                       Padding(
                                         padding:
-                                            const EdgeInsets.only(right: 6),
-                                        child: stateIcon,
+                                            const EdgeInsets.only(bottom: 3),
+                                        child: ClipRRect(
+                                          borderRadius: const BorderRadius.all(
+                                            Radius.circular(11.5),
+                                          ),
+                                          child: ImagePreview(
+                                            media: widget.message.media!,
+                                          ),
+                                        ),
+                                      ),
+                                    if (hasContent)
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                          left: replyMessage != null || hasMedia
+                                              ? 8
+                                              : 0,
+                                        ),
+                                        child: Text(
+                                          widget.message.content,
+                                          style: widget.textStyle,
+                                          textAlign: TextAlign.left,
+                                        ),
                                       ),
                                   ],
                                 ),
-                              )
-                            else
-                              const SizedBox(width: 1),
-                          ],
-                        ),
-                      );
-                    },
+                              ),
+                              if (stateIcon != null)
+                                Positioned(
+                                    bottom: hasContent ? 0 : 7,
+                                    right: hasContent ? 4 : 7,
+                                    child: Container(
+                                      decoration: hasMedia && !hasContent
+                                          ? timeStampShadow
+                                          : null,
+                                      child: Row(
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.only(
+                                              right: widget.isSender ? 4 : 5,
+                                            ),
+                                            child: Text(
+                                              widget.timeSent,
+                                              style: widget.timeStyle.copyWith(
+                                                color: hasMedia && !hasContent
+                                                    ? Colors.white
+                                                    : widget.timeStyle.color,
+                                              ),
+                                            ),
+                                          ),
+                                          if (widget.isSender)
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  right: 6),
+                                              child: stateIcon,
+                                            ),
+                                        ],
+                                      ),
+                                    ))
+                              else
+                                const SizedBox(width: 1),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),
