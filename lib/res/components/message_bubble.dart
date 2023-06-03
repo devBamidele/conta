@@ -1,5 +1,5 @@
+import 'package:blur/blur.dart';
 import 'package:conta/res/components/reply_bubble.dart';
-import 'package:conta/res/style/component_style.dart';
 import 'package:conta/utils/widget_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -30,6 +30,7 @@ class MessageBubble extends StatefulWidget {
   final TextStyle textStyle;
   final TextStyle timeStyle;
   final Message message;
+  final bool showOnlyLastImage;
 
   const MessageBubble({
     Key? key,
@@ -37,7 +38,7 @@ class MessageBubble extends StatefulWidget {
     required this.index,
     required this.timeSent,
     required this.message,
-    this.color = Colors.white70,
+    required this.color,
     this.tail = true,
     this.textStyle = const TextStyle(
       color: Colors.black,
@@ -47,6 +48,7 @@ class MessageBubble extends StatefulWidget {
       fontSize: 10,
       color: Colors.black45,
     ),
+    required this.showOnlyLastImage,
   }) : super(key: key);
 
   @override
@@ -169,6 +171,8 @@ void resetOverlayColor() {
     stateTick = true;
     stateIconColor =
         hasMedia && !hasContent ? Colors.white : AppColors.stateIconColor;
+
+    // Update the state icon depending on the state of 'seen' and 'sent'
     if (widget.message.sent) {
       stateIcon = Icon(
         Icons.done,
@@ -292,7 +296,9 @@ void resetOverlayColor() {
                                             Radius.circular(11.5),
                                           ),
                                           child: ImagePreview(
-                                            media: widget.message.media!,
+                                            media: widget.showOnlyLastImage
+                                                ? [widget.message.media!.last]
+                                                : widget.message.media!,
                                           ),
                                         ),
                                       ),
@@ -314,36 +320,14 @@ void resetOverlayColor() {
                               ),
                               if (stateIcon != null)
                                 Positioned(
-                                    bottom: hasContent ? 0 : 7,
-                                    right: hasContent ? 4 : 7,
-                                    child: Container(
-                                      decoration: hasMedia && !hasContent
-                                          ? timeStampShadow
-                                          : null,
-                                      child: Row(
-                                        children: [
-                                          Padding(
-                                            padding: EdgeInsets.only(
-                                              right: widget.isSender ? 4 : 5,
-                                            ),
-                                            child: Text(
-                                              widget.timeSent,
-                                              style: widget.timeStyle.copyWith(
-                                                color: hasMedia && !hasContent
-                                                    ? Colors.white
-                                                    : widget.timeStyle.color,
-                                              ),
-                                            ),
-                                          ),
-                                          if (widget.isSender)
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  right: 6),
-                                              child: stateIcon,
-                                            ),
-                                        ],
-                                      ),
-                                    ))
+                                  bottom: hasContent ? 0 : 7,
+                                  right: hasContent ? 5 : 4,
+                                  child: hasMedia && !hasContent
+                                      ? _getFrostedWidget(
+                                          isSender: widget.isSender,
+                                        )
+                                      : _getRowWidget(),
+                                )
                               else
                                 const SizedBox(width: 1),
                             ],
@@ -359,6 +343,42 @@ void resetOverlayColor() {
         ),
       ),
     );
+  }
+
+  Widget _getRowWidget() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(
+            right: widget.isSender ? 4 : 0,
+            //left: 3,
+          ),
+          child: Text(
+            widget.timeSent,
+            style: widget.timeStyle.copyWith(
+              color: hasMedia && !hasContent
+                  ? Colors.white
+                  : widget.timeStyle.color,
+            ),
+          ),
+        ),
+        if (widget.isSender) SizedBox(child: stateIcon),
+      ],
+    );
+  }
+
+  Widget _getFrostedWidget({bool isSender = true}) {
+    return SizedBox(
+      child: _getRowWidget(),
+    ).frosted(
+        blur: 0,
+        frostColor: Colors.transparent,
+        width: isSender ? 70 : 55,
+        height: 18,
+        borderRadius: const BorderRadius.all(Radius.circular(12))
+        //padding: const EdgeInsets.only(left: 10),
+        );
   }
 }
 

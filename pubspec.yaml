@@ -75,6 +75,7 @@ dependencies:
   video_player: ^2.6.1
   smooth_page_indicator: ^1.1.0
   path: ^1.8.2
+  blur: ^3.1.0
 
 
 

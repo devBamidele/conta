@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../../../../models/message.dart';
 import '../../../../res/color.dart';
 import '../../../../res/components/date_time/date_chip.dart';
+import '../../../../res/components/independent_image_bubble.dart';
 import '../../../../view_model/chat_messages_provider.dart';
 
 /// A widget that displays a stream of chat messages.
@@ -52,8 +53,13 @@ class _MessagesStreamState extends State<MessagesStream> {
                 controller: widget.scrollController,
                 itemCount: messages.length,
                 itemBuilder: (context, index) {
-                  Message message = messages[index];
-                  bool sameUser = message.senderId == data.currentUser!.uid;
+                  final message = messages[index];
+                  final sameUser = message.senderId == data.currentUser!.uid;
+                  final media = message.media; //
+
+                  // Whether or not to show the independent image bubble
+                  final showIIB =
+                      media != null && media.length <= 3 && media.length >= 2;
 
                   showDate = index == 0
                       ? true
@@ -73,33 +79,71 @@ class _MessagesStreamState extends State<MessagesStream> {
                           : true
                       : true;
 
-                  return Column(
-                    children: [
-                      Visibility(
-                        visible: showDate,
-                        child: DateChip(
-                          date: message.timestamp.toDate(),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(top: showTopSpacing ? 10 : 0),
-                        child: MessageBubble(
-                          key: Key(message.id),
-                          message: message,
-                          index: index,
-                          color:
-                              sameUser ? AppColors.bubbleColor : Colors.white,
-                          tail: showTail,
-                          isSender: sameUser,
-                          timeSent: message.timestamp.customFormat(),
-                          textStyle: const TextStyle(
-                            color: Colors.black87,
-                            fontSize: 15.5,
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
+                  return (showIIB)
+                      ? ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: media.length,
+                          itemBuilder: (BuildContext context, int innerIndex) {
+                            final isLast = innerIndex == media.length - 1;
+
+                            return isLast
+                                ? MessageBubble(
+                                    showOnlyLastImage: showIIB,
+                                    key: Key(message.id),
+                                    message: message,
+                                    index: index,
+                                    color: sameUser
+                                        ? AppColors.bubbleColor
+                                        : Colors.white,
+                                    tail: showTail,
+                                    isSender: sameUser,
+                                    timeSent: message.timestamp.customFormat(),
+                                    textStyle: const TextStyle(
+                                      color: Colors.black87,
+                                      fontSize: 15.5,
+                                    ),
+                                  )
+                                : IndependentImageBubble(
+                                    isSender: sameUser,
+                                    color: sameUser
+                                        ? AppColors.bubbleColor
+                                        : Colors.white,
+                                    media: message.media![innerIndex],
+                                    timeSent: message.timestamp.customFormat(),
+                                  );
+                          },
+                        )
+                      : Column(
+                          children: [
+                            Visibility(
+                              visible: showDate,
+                              child: DateChip(
+                                date: message.timestamp.toDate(),
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  EdgeInsets.only(top: showTopSpacing ? 10 : 0),
+                              child: MessageBubble(
+                                showOnlyLastImage: showIIB,
+                                key: Key(message.id),
+                                message: message,
+                                index: index,
+                                color: sameUser
+                                    ? AppColors.bubbleColor
+                                    : Colors.white,
+                                tail: showTail,
+                                isSender: sameUser,
+                                timeSent: message.timestamp.customFormat(),
+                                textStyle: const TextStyle(
+                                  color: Colors.black87,
+                                  fontSize: 15.5,
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
                 },
               );
             } else if (snapshot.hasError) {

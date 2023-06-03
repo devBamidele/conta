@@ -82,21 +82,6 @@ ButtonStyle resendButtonStyle({
   );
 }
 
-ButtonStyle getOutlinedButtonStyle(Color backgroundColor) {
-  return OutlinedButton.styleFrom(
-    backgroundColor: backgroundColor,
-    side: const BorderSide(
-      color: Colors.blue,
-    ),
-    minimumSize: const Size(double.infinity, 58),
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(
-        Radius.circular(28),
-      ),
-    ),
-  );
-}
-
 final shadow = BoxShadow(
   color: AppColors.primaryColor.withOpacity(0.7),
   offset: const Offset(1, 4),
@@ -118,17 +103,4 @@ const scrollingDotsEffect = ScrollingDotsEffect(
   spacing: 10,
   activeDotColor: AppColors.replyMessageColor,
   dotColor: AppColors.extraTextColor,
-);
-
-const timeStampShadow = BoxDecoration(
-  borderRadius: BorderRadius.all(
-    Radius.circular(12),
-  ),
-  boxShadow: [
-    BoxShadow(
-      color: Colors.black38,
-      spreadRadius: 8,
-      blurRadius: 10,
-    ),
-  ],
 );

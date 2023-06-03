@@ -16,31 +16,33 @@ class ImagePreview extends StatefulWidget {
 }
 
 class _ImagePreviewState extends State<ImagePreview> {
-  Size? imageSize;
+  List<Size?> imageSizes = [];
   late double prefWidth;
 
   @override
   void initState() {
     super.initState();
-    loadImageSize();
+    loadImageSizes();
   }
 
-  void loadImageSize() {
-    Image.network(widget.media[0])
-        .image
-        .resolve(const ImageConfiguration())
-        .addListener(
-      ImageStreamListener((ImageInfo info, bool _) {
-        if (mounted) {
-          setState(() {
-            imageSize = Size(
-              info.image.width.toDouble(),
-              info.image.height.toDouble(),
-            );
-          });
-        }
-      }),
-    );
+  void loadImageSizes() {
+    for (var mediaItem in widget.media) {
+      Image.network(mediaItem)
+          .image
+          .resolve(const ImageConfiguration())
+          .addListener(
+        ImageStreamListener((ImageInfo info, bool _) {
+          if (mounted) {
+            setState(() {
+              imageSizes.add(Size(
+                info.image.width.toDouble(),
+                info.image.height.toDouble(),
+              ));
+            });
+          }
+        }),
+      );
+    }
   }
 
   @override
@@ -48,35 +50,25 @@ class _ImagePreviewState extends State<ImagePreview> {
     super.didChangeDependencies();
 
     // The preferred width of the message bubble
-    prefWidth = MediaQuery.of(context).size.width * .75;
+    prefWidth = MediaQuery.of(context).size.width * 0.75;
   }
 
   @override
   Widget build(BuildContext context) {
-    if (imageSize != null) {
-      // Calculate the desired width and height based on the image's aspect ratio
-      double desiredWidth = imageSize!.width * 0.9;
-      double desiredHeight =
-          desiredWidth * (imageSize!.height / imageSize!.width);
-
-      // Set a maximum height for large images
-      double maxHeight = 400;
-
-      // Check if the desired height exceeds the maximum height
-      if (desiredHeight > maxHeight) {
-        desiredHeight = maxHeight;
-        desiredWidth = desiredHeight * (imageSize!.width / imageSize!.height);
-      }
-
-      if (desiredWidth < prefWidth) {}
-
-      return SizedBox(
-        width: desiredWidth,
-        height: desiredHeight,
-        child: Image.network(
-          widget.media[0],
-          fit: BoxFit.cover,
-        ),
+    if (imageSizes.isNotEmpty) {
+      return Column(
+        //
+        children: List.generate(widget.media.length, (index) {
+          final isLastItem = index == widget.media.length - 1;
+          return Padding(
+            padding: EdgeInsets.only(bottom: isLastItem ? 0 : 6),
+            child: ImagePreviewItem(
+              mediaUrl: widget.media[index],
+              imageSize: imageSizes[index]!,
+              prefWidth: prefWidth,
+            ),
+          );
+        }),
       );
     }
 
@@ -92,6 +84,57 @@ class _ImagePreviewState extends State<ImagePreview> {
           thirdRingColor: AppColors.thirdRingColor,
         ),
       ),
+    );
+  }
+}
+
+class ImagePreviewItem extends StatelessWidget {
+  final String mediaUrl;
+  final Size imageSize;
+  final double prefWidth;
+
+  const ImagePreviewItem({
+    Key? key,
+    required this.mediaUrl,
+    required this.imageSize,
+    required this.prefWidth,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        double maxWidth = constraints.maxWidth;
+        double maxHeight = 350;
+
+        double desiredWidth = imageSize.width * 0.8;
+        double desiredHeight =
+            desiredWidth * (imageSize.height / imageSize.width);
+
+        // Check if the desired width exceeds the available width
+        if (desiredWidth > maxWidth) {
+          desiredWidth = maxWidth;
+          desiredHeight = desiredWidth * (imageSize.height / imageSize.width);
+        }
+
+        // Check if the desired height exceeds the available height
+        if (desiredHeight > maxHeight) {
+          desiredHeight = maxHeight;
+          desiredWidth = desiredHeight * (imageSize.width / imageSize.height);
+        }
+//
+        return SizedBox(
+          width: desiredWidth,
+          height: desiredHeight,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.network(
+              mediaUrl,
+              fit: BoxFit.cover,
+            ),
+          ),
+        );
+      },
     );
   }
 }
