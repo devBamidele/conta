@@ -10,7 +10,7 @@ import '../../models/message.dart';
 import '../../view_model/chat_messages_provider.dart';
 import '../color.dart';
 import 'bubble_painter.dart';
-import 'image_preview.dart';
+import 'image_preview/image_preview.dart';
 
 ///iMessage's chat bubble type
 ///
@@ -304,11 +304,8 @@ void resetOverlayColor() {
                                       ),
                                     if (hasContent)
                                       Padding(
-                                        padding: EdgeInsets.only(
-                                          left: replyMessage != null || hasMedia
-                                              ? 8
-                                              : 0,
-                                        ),
+                                        padding: getContentPadding(
+                                            replyMessage != null, hasMedia),
                                         child: Text(
                                           widget.message.content,
                                           style: widget.textStyle,
@@ -328,8 +325,6 @@ void resetOverlayColor() {
                                         )
                                       : _getRowWidget(),
                                 )
-                              else
-                                const SizedBox(width: 1),
                             ],
                           ),
                         );
@@ -352,7 +347,6 @@ void resetOverlayColor() {
         Padding(
           padding: EdgeInsets.only(
             right: widget.isSender ? 4 : 0,
-            //left: 3,
           ),
           child: Text(
             widget.timeSent,
@@ -374,12 +368,10 @@ void resetOverlayColor() {
     ).frosted(
         blur: 0,
         frostColor: Colors.transparent,
-        width: isSender ? 70 : 55,
+        width: isSender ? 75 : 55,
         height: 18,
         borderRadius: const BorderRadius.all(Radius.circular(12))
         //padding: const EdgeInsets.only(left: 10),
         );
   }
 }
-
-// Todo: Fix layout issues with message bubble

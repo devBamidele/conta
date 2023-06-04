@@ -55,7 +55,7 @@ class _MessagesStreamState extends State<MessagesStream> {
                 itemBuilder: (context, index) {
                   final message = messages[index];
                   final sameUser = message.senderId == data.currentUser!.uid;
-                  final media = message.media; //
+                  final media = message.media;
 
                   // Whether or not to show the independent image bubble
                   final showIIB =
@@ -86,11 +86,12 @@ class _MessagesStreamState extends State<MessagesStream> {
                           itemCount: media.length,
                           itemBuilder: (BuildContext context, int innerIndex) {
                             final isLast = innerIndex == media.length - 1;
+                            final isFirst = innerIndex == 0;
 
                             return isLast
                                 ? MessageBubble(
                                     showOnlyLastImage: showIIB,
-                                    key: Key(message.id),
+                                    key: ValueKey<String>(message.id),
                                     message: message,
                                     index: index,
                                     color: sameUser
@@ -104,13 +105,24 @@ class _MessagesStreamState extends State<MessagesStream> {
                                       fontSize: 15.5,
                                     ),
                                   )
-                                : IndependentImageBubble(
-                                    isSender: sameUser,
-                                    color: sameUser
-                                        ? AppColors.bubbleColor
-                                        : Colors.white,
-                                    media: message.media![innerIndex],
-                                    timeSent: message.timestamp.customFormat(),
+                                : Column(
+                                    children: [
+                                      Visibility(
+                                        visible: showDate && isFirst,
+                                        child: DateChip(
+                                          date: message.timestamp.toDate(),
+                                        ),
+                                      ),
+                                      IndependentImageBubble(
+                                        isSender: sameUser,
+                                        color: sameUser
+                                            ? AppColors.bubbleColor
+                                            : Colors.white,
+                                        media: message.media![innerIndex],
+                                        timeSent:
+                                            message.timestamp.customFormat(),
+                                      ),
+                                    ],
                                   );
                           },
                         )

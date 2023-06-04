@@ -55,7 +55,17 @@ EdgeInsets getBubblePadding(
     } else if (hasMedia) {
       return EdgeInsets.fromLTRB(9, 3, 3, hasContent ? 8 : 0.5);
     } else {
-      return const EdgeInsets.fromLTRB(14, 7, 3, 7);
+      return const EdgeInsets.fromLTRB(16, 7, 3, 7);
     }
   }
+}
+
+EdgeInsets getContentPadding(
+  bool replyMessage,
+  bool hasMedia,
+) {
+  return EdgeInsets.only(
+    left: replyMessage || hasMedia ? 8 : 0,
+    top: replyMessage || hasMedia ? 3 : 0,
+  );
 }

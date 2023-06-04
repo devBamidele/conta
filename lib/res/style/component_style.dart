@@ -104,3 +104,10 @@ const scrollingDotsEffect = ScrollingDotsEffect(
   activeDotColor: AppColors.replyMessageColor,
   dotColor: AppColors.extraTextColor,
 );
+
+const customGridDelegate = SliverGridDelegateWithFixedCrossAxisCount(
+  crossAxisCount: 2,
+  childAspectRatio: 1.0,
+  mainAxisSpacing: 5.0,
+  crossAxisSpacing: 5.0,
+);

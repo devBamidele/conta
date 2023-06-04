@@ -6,7 +6,7 @@ import 'package:swipe_to/swipe_to.dart';
 
 import '../../view_model/chat_messages_provider.dart';
 import '../color.dart';
-import 'image_preview.dart';
+import 'image_preview/image_preview.dart';
 
 class IndependentImageBubble extends StatefulWidget {
   final bool isSender;
@@ -53,10 +53,33 @@ class _IndependentImageBubbleState extends State<IndependentImageBubble> {
             : Colors.transparent;
       });
 
+  void onLongTapMessage() {
+    /*
+    update();
+    chatProvider.onLongTapMessage(widget.message);
+    chatProvider.updateMLPValue();
+     */
+  }
+
+  void onTapMessage() {
+    /*
+    if (chatProvider.isMessageLongPressed) {
+      update();
+      chatProvider.onLongTapMessage(widget.message);
+    }
+    chatProvider.updateMLPValue();
+     */
+  }
+
+  void updateReply() {} //chatProvider.updateReplyBySwipe(widget.message);
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onTap: onTapMessage,
+      onDoubleTap: onLongTapMessage,
       child: SwipeTo(
+        offsetDx: 0.25,
         rightSwipeWidget: const Padding(
           padding: EdgeInsets.only(left: 25),
           child: Icon(
@@ -113,9 +136,7 @@ class _IndependentImageBubbleState extends State<IndependentImageBubble> {
                         Positioned(
                           bottom: 7,
                           right: 4,
-                          child: _getFrostedWidget(
-                            isSender: widget.isSender,
-                          ),
+                          child: _getFrostedWidget(),
                         )
                       ],
                     ),
@@ -151,13 +172,13 @@ class _IndependentImageBubbleState extends State<IndependentImageBubble> {
     );
   }
 
-  Widget _getFrostedWidget({bool isSender = true}) {
+  Widget _getFrostedWidget() {
     return SizedBox(
       child: _getRowWidget(),
     ).frosted(
         blur: 0,
         frostColor: Colors.transparent,
-        width: isSender ? 70 : 55,
+        width: 55,
         height: 18,
         borderRadius: const BorderRadius.all(Radius.circular(12))
         //padding: const EdgeInsets.only(left: 10),
