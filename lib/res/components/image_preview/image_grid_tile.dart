@@ -1,4 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+
+import '../custom_value_color_anim.dart';
 
 /// A widget that represents a tile within an image grid.
 ///
@@ -31,9 +34,16 @@ class ImageGridTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
-      child: Image.network(
-        mediaUrl,
+      child: CachedNetworkImage(
+        imageUrl: mediaUrl,
         fit: BoxFit.cover,
+        errorWidget: (context, url, error) => const Icon(Icons.error),
+        // Widget to display in case of loading error
+        progressIndicatorBuilder: (context, url, downloadProgress) => Center(
+          child: CircularProgressIndicator(
+            valueColor: customValueColorAnim(),
+          ),
+        ), // Custom progress indicator
       ),
     );
   }

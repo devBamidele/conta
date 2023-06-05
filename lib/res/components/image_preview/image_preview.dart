@@ -1,12 +1,12 @@
 import 'dart:ui';
 
+import 'package:auto_route/auto_route.dart';
 import 'package:conta/res/style/component_style.dart';
 import 'package:flutter/material.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 
-import '../../color.dart';
+import '../../../utils/app_router/router.gr.dart';
+import 'dynamic_sized_image_preview.dart';
 import 'image_grid_tile.dart';
-import 'image_preview_item.dart';
 
 class ImagePreview extends StatefulWidget {
   final List<String> media;
@@ -21,39 +21,20 @@ class ImagePreview extends StatefulWidget {
 }
 
 class _ImagePreviewState extends State<ImagePreview> {
-  List<Size?> imageSizes = [];
-
-  @override
-  void initState() {
-    super.initState();
-    loadImageSizes();
+  void onMediaClicked() {
+    goToMediaPreview();
   }
 
-  void loadImageSizes() {
-    for (var mediaItem in widget.media) {
-      Image.network(mediaItem)
-          .image
-          .resolve(const ImageConfiguration())
-          .addListener(
-        ImageStreamListener((ImageInfo info, bool _) {
-          if (mounted) {
-            setState(() {
-              imageSizes.add(Size(
-                info.image.width.toDouble(),
-                info.image.height.toDouble(),
-              ));
-            });
-          }
-        }),
+  void goToMediaPreview() => context.router.push(
+        MediaPreviewScreenRoute(media: widget.media),
       );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
-    if (imageSizes.isNotEmpty) {
-      if (widget.media.length >= 4) {
-        return GridView.builder(
+    if (widget.media.length >= 4) {
+      return GestureDetector(
+        onTap: onMediaClicked,
+        child: GridView.builder(
           gridDelegate: customGridDelegate,
           itemCount: 4,
           shrinkWrap: true,
@@ -95,27 +76,15 @@ class _ImagePreviewState extends State<ImagePreview> {
               );
             }
           },
-        );
-      } else {
-        return ImagePreviewItem(
-          mediaUrl: widget.media[0],
-          imageSize: imageSizes[0]!,
-        );
-      }
-    }
-
-    // Placeholder widget while the image dimensions are being fetched
-    return Container(
-      height: 90,
-      color: Colors.transparent,
-      child: Center(
-        child: LoadingAnimationWidget.discreteCircle(
-          size: 30,
-          color: AppColors.mainRingColor,
-          secondRingColor: AppColors.secondRingColor,
-          thirdRingColor: AppColors.thirdRingColor,
         ),
-      ),
-    );
+      );
+    } else {
+      return GestureDetector(
+        onTap: onMediaClicked,
+        child: DynamicSizedImagePreview(
+          mediaUrl: widget.media[0],
+        ),
+      );
+    }
   }
 }
