@@ -1,6 +1,8 @@
+import 'dart:developer';
 import 'dart:ui';
 
 import 'package:auto_route/auto_route.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conta/res/style/component_style.dart';
 import 'package:flutter/material.dart';
 
@@ -10,10 +12,14 @@ import 'image_grid_tile.dart';
 
 class ImagePreview extends StatefulWidget {
   final List<String> media;
+  final Timestamp timeSent;
+  final String sender;
 
   const ImagePreview({
     Key? key,
     required this.media,
+    required this.timeSent,
+    required this.sender,
   }) : super(key: key);
 
   @override
@@ -22,11 +28,16 @@ class ImagePreview extends StatefulWidget {
 
 class _ImagePreviewState extends State<ImagePreview> {
   void onMediaClicked() {
+    log('Navigate');
     goToMediaPreview();
   }
 
   void goToMediaPreview() => context.router.push(
-        MediaPreviewScreenRoute(media: widget.media),
+        MediaPreviewScreenRoute(
+          media: widget.media,
+          sender: widget.sender,
+          timeSent: widget.timeSent,
+        ),
       );
 
   @override

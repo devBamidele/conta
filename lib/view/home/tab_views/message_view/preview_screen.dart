@@ -105,7 +105,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                           maxWidth: MediaQuery.of(context).size.width,
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(10, 5, 10, 18),
+                          padding: chatFieldPadding,
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [

@@ -30,7 +30,6 @@ class MessageBubble extends StatefulWidget {
   final TextStyle textStyle;
   final TextStyle timeStyle;
   final Message message;
-  final bool showOnlyLastImage;
 
   const MessageBubble({
     Key? key,
@@ -48,7 +47,6 @@ class MessageBubble extends StatefulWidget {
       fontSize: 10,
       color: Colors.black45,
     ),
-    required this.showOnlyLastImage,
   }) : super(key: key);
 
   @override
@@ -90,7 +88,7 @@ class _MessageBubbleState extends State<MessageBubble> {
 
     hasReply = widget.message.reply &&
         widget.message.replyMessage != null &&
-        widget.message.sender != null;
+        widget.message.replySenderId != null;
 
     hasMedia = widget.message.media != null;
 
@@ -174,23 +172,11 @@ void resetOverlayColor() {
 
     // Update the state icon depending on the state of 'seen' and 'sent'
     if (widget.message.sent) {
-      stateIcon = Icon(
-        Icons.done,
-        size: 14,
-        color: stateIconColor,
-      );
+      stateIcon = sentIcon(stateIconColor);
     } else if (widget.message.seen) {
-      stateIcon = Icon(
-        Icons.done_all,
-        size: 15,
-        color: stateIconColor,
-      );
+      stateIcon = seenIcon(stateIconColor);
     } else {
-      stateIcon = Icon(
-        Icons.wifi_off_rounded,
-        size: 14,
-        color: stateIconColor,
-      );
+      stateIcon = offlineIcon(stateIconColor);
     }
 
     return GestureDetector(
@@ -199,13 +185,9 @@ void resetOverlayColor() {
       child: SwipeTo(
         offsetDx: 0.25,
         onRightSwipe: () => updateReply(),
-        rightSwipeWidget: const Padding(
-          padding: EdgeInsets.only(left: 25),
-          child: Icon(
-            Icons.reply_rounded,
-            size: 30,
-            color: AppColors.primaryColor,
-          ),
+        rightSwipeWidget: Padding(
+          padding: const EdgeInsets.only(left: 25),
+          child: replyIcon(),
         ),
         child: VisibilityDetector(
           key: widget.key!,
@@ -276,44 +258,55 @@ void resetOverlayColor() {
                                       ? (replyMessage != null ? 0 : 4)
                                       : 4,
                                 ),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.max,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    if (hasReply)
-                                      ReplyBubble(
-                                        replyMessage:
-                                            widget.message.replyMessage!,
-                                        isSender: widget.isSender,
-                                        username: widget.message.sender!,
-                                      ),
-                                    if (hasMedia)
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(bottom: 3),
-                                        child: ClipRRect(
-                                          borderRadius: const BorderRadius.all(
-                                            Radius.circular(11.5),
-                                          ),
-                                          child: ImagePreview(
-                                            media: widget.showOnlyLastImage
-                                                ? [widget.message.media!.last]
-                                                : widget.message.media!,
+                                child: Consumer<ChatMessagesProvider>(
+                                    builder: (_, data, child) {
+                                  return Column(
+                                    mainAxisSize: MainAxisSize.max,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      if (hasReply)
+                                        ReplyBubble(
+                                          replyMessage:
+                                              widget.message.replyMessage!,
+                                          messageSender:
+                                              widget.message.replySenderId! ==
+                                                      data.currentUser!.uid
+                                                  ? 'You'
+                                                  : data.currentChat!.username,
+                                        ),
+                                      if (hasMedia)
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(bottom: 3),
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                              Radius.circular(11.5),
+                                            ),
+                                            child: ImagePreview(
+                                              sender: widget.isSender
+                                                  ? 'You'
+                                                  : data.currentChat!.username,
+                                              timeSent:
+                                                  widget.message.timestamp,
+                                              media: widget.message.media!,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    if (hasContent)
-                                      Padding(
-                                        padding: getContentPadding(
-                                            replyMessage != null, hasMedia),
-                                        child: Text(
-                                          widget.message.content,
-                                          style: widget.textStyle,
-                                          textAlign: TextAlign.left,
+                                      if (hasContent)
+                                        Padding(
+                                          padding: getContentPadding(
+                                              replyMessage != null, hasMedia),
+                                          child: Text(
+                                            widget.message.content,
+                                            style: widget.textStyle,
+                                            textAlign: TextAlign.left,
+                                          ),
                                         ),
-                                      ),
-                                  ],
-                                ),
+                                    ],
+                                  );
+                                }),
                               ),
                               if (stateIcon != null)
                                 Positioned(
@@ -370,8 +363,6 @@ void resetOverlayColor() {
         frostColor: Colors.transparent,
         width: isSender ? 75 : 55,
         height: 18,
-        borderRadius: const BorderRadius.all(Radius.circular(12))
-        //padding: const EdgeInsets.only(left: 10),
-        );
+        borderRadius: const BorderRadius.all(Radius.circular(12)));
   }
 }

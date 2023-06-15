@@ -423,46 +423,67 @@ class ChatMessagesProvider extends ChangeNotifier {
   /// The [content] parameter is the text of the message to add.
   Future<void> addNewMessageToChat(String chatId, String content,
       {required MessageType type, List<String>? media}) async {
-    // Generate a unique ID for the new message
     final messageId = const Uuid().v4();
+    final messagesCollection =
+        firestore.collection('chats').doc(chatId).collection('messages');
 
-    final senderName = replyMessage?.senderId == currentUser?.uid
-        ? 'You'
-        : currentChat?.username;
+    final batch = firestore.batch();
 
-    // Create a new Message object with the specified properties
-    final newMessage = Message(
-      id: messageId,
-      senderId: currentUser!.uid,
-      recipientId: currentChat!.uidUser2,
-      content: content,
-      timestamp: Timestamp.now(),
-      reply: cacheReplyChat,
-      replyMessage: cacheReplyMessage?.content,
-      sender: senderName,
-      messageType: type.name,
-      media: media,
-    );
+    if (media != null && (media.length >= 2 && media.length <= 3)) {
+      // Create individual media messages for each URL in the list if they are
+      // between 2 and 3 inclusive
+      for (int i = 0; i < media.length; i++) {
+        final id = const Uuid().v4();
 
-    // Clear the cache
+        final imageMessage = Message(
+          id: id,
+          senderId: currentUser!.uid,
+          recipientId: currentChat!.uidUser2,
+          content: i == media.length - 1 ? content : '',
+          timestamp: Timestamp.now(),
+          messageType: MessageType.media.name,
+          media: [media[i]],
+        );
+
+        batch.set(
+          messagesCollection.doc(id),
+          imageMessage.toJson(),
+        );
+      }
+    } else {
+      // Create a single message with the provided content
+      final newMessage = Message(
+        id: messageId,
+        senderId: currentUser!.uid,
+        recipientId: currentChat!.uidUser2,
+        content: content,
+        timestamp: Timestamp.now(),
+        reply: cacheReplyChat,
+        replyMessage: cacheReplyMessage?.content,
+        replySenderId: cacheReplyMessage?.senderId,
+        messageType: type.name,
+        media: media,
+      );
+
+      batch.set(
+        messagesCollection.doc(messageId),
+        newMessage.toJson(),
+      );
+    }
+
     clearCache();
 
-    // Add the new message to the 'messages' sub-collection of the specified chat
-    // document in Firestore
-    await firestore
-        .collection('chats')
-        .doc(chatId)
-        .collection('messages')
-        .doc(messageId)
-        .set(newMessage.toJson());
+    await batch.commit();
+
+    // _messagingService.sendNotification(
 
     /*
-     _messagingService.sendNotification(
+    await functions.httpsCallable('sendNotification')({
       recipientIds: [currentChat!.uidUser2],
       message: content,
       senderName: currentUser!.displayName!,
-    );
-     */
+    });
+    */
   }
 
   // Todo : Look at the efficiency of this function

@@ -12,6 +12,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:auto_route/auto_route.dart' as _i13;
+import 'package:cloud_firestore/cloud_firestore.dart' as _i16;
 import 'package:conta/res/components/image_preview/media_preview_screeen.dart'
     as _i10;
 import 'package:conta/view/account_setup/set_name_screen.dart' as _i2;
@@ -105,6 +106,8 @@ class AppRouter extends _i13.RootStackRouter {
         child: _i10.MediaPreviewScreen(
           key: args.key,
           media: args.media,
+          sender: args.sender,
+          timeSent: args.timeSent,
         ),
       );
     },
@@ -340,12 +343,16 @@ class MediaPreviewScreenRoute
   MediaPreviewScreenRoute({
     _i14.Key? key,
     required List<String> media,
+    required String sender,
+    required _i16.Timestamp timeSent,
   }) : super(
           MediaPreviewScreenRoute.name,
           path: '/media-preview-screen',
           args: MediaPreviewScreenRouteArgs(
             key: key,
             media: media,
+            sender: sender,
+            timeSent: timeSent,
           ),
         );
 
@@ -356,15 +363,21 @@ class MediaPreviewScreenRouteArgs {
   const MediaPreviewScreenRouteArgs({
     this.key,
     required this.media,
+    required this.sender,
+    required this.timeSent,
   });
 
   final _i14.Key? key;
 
   final List<String> media;
 
+  final String sender;
+
+  final _i16.Timestamp timeSent;
+
   @override
   String toString() {
-    return 'MediaPreviewScreenRouteArgs{key: $key, media: $media}';
+    return 'MediaPreviewScreenRouteArgs{key: $key, media: $media, sender: $sender, timeSent: $timeSent}';
   }
 }
 

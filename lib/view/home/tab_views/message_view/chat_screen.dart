@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:auto_route/auto_route.dart';
 import 'package:conta/res/components/chat_text_form_field.dart';
 import 'package:conta/res/components/custom/custom_app_bar.dart';
+import 'package:conta/res/style/component_style.dart';
 import 'package:conta/utils/widget_functions.dart';
 import 'package:conta/view_model/chat_messages_provider.dart';
 import 'package:flutter/material.dart';
@@ -98,6 +99,7 @@ class _ChatScreenState extends State<ChatScreen>
 
   // Todo : Make the page scroll to the bottom (automatically) and add pagination
   _scrollToBottom() {
+    log('I was clicked');
     // Scroll to the bottom of the list
     SchedulerBinding.instance.addPostFrameCallback((_) {
       log('Well I got executed');
@@ -131,7 +133,7 @@ class _ChatScreenState extends State<ChatScreen>
       if (result) {
         navigateToPreview();
       } else {
-        AppUtils.showToast('Unable to pick file(s)');
+        // AppUtils.showToast('Unable to pick file(s)');
       }
     } catch (e) {
       AppUtils.showToast(e.toString());
@@ -153,7 +155,7 @@ class _ChatScreenState extends State<ChatScreen>
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(10, 5, 10, 18),
+              padding: chatFieldPadding,
               child: Stack(
                 clipBehavior: Clip.none,
                 children: [
@@ -240,7 +242,7 @@ class _ChatScreenState extends State<ChatScreen>
                   ),
                   Positioned(
                     right: 0,
-                    top: -50,
+                    top: 0,
                     child: CustomFAB(
                       showIcon: showIcon,
                       onPressed: _scrollToBottom,

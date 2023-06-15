@@ -27,4 +27,9 @@ extension TimeStampExtensions on Timestamp {
         first.month == second.month &&
         first.day == second.day);
   }
+
+  String toStringForSinglePic() => DateFormat('d MMMM, HH:mm').format(toDate());
+
+  String toStringForMultiplePics() =>
+      DateFormat('dd MMMM yyyy').format(toDate());
 }

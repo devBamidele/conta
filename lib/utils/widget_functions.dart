@@ -30,6 +30,39 @@ Widget noProfilePic({double size = 27}) {
   );
 }
 
+/// The following icons track the state of the message
+Icon sentIcon(Color color) {
+  return Icon(
+    Icons.done,
+    size: 14,
+    color: color,
+  );
+}
+
+Icon offlineIcon(Color color) {
+  return Icon(
+    Icons.wifi_off_rounded,
+    size: 14,
+    color: color,
+  );
+}
+
+Icon seenIcon(Color color) {
+  return Icon(
+    Icons.done_all,
+    size: 15,
+    color: color,
+  );
+}
+
+Widget replyIcon() {
+  return const Icon(
+    Icons.reply_rounded,
+    size: 30,
+    color: AppColors.primaryColor,
+  );
+}
+
 EdgeInsets getBubblePadding(
   bool isSender,
   bool stateTick,

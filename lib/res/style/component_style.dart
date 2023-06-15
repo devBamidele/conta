@@ -96,6 +96,8 @@ const photoContainerDecoration = BoxDecoration(
 
 const pagePadding = EdgeInsets.symmetric(horizontal: 20);
 
+const chatFieldPadding = EdgeInsets.fromLTRB(10, 5, 10, 15);
+
 const scrollingDotsEffect = ScrollingDotsEffect(
   dotHeight: 11,
   dotWidth: 11,

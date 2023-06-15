@@ -15,8 +15,8 @@ class Message {
   final bool sent;
   final bool reply;
   final String messageType;
-  final String? sender;
   final String? replyMessage;
+  final String? replySenderId;
   final List<String>? media;
   bool selected = false;
 
@@ -29,7 +29,7 @@ class Message {
   /// The [timestamp] is the timestamp when the message was sent.
   /// The [messageType] indicates the type of message, such as text, image, etc.
   /// The [seen], [sent], and [reply] are optional flags for message status.
-  /// The [sender] and [replyMessage] are optional fields for additional information.
+  /// The [replySender] and [replyMessage] are optional fields for additional information.
   Message({
     required this.id,
     required this.senderId,
@@ -41,8 +41,8 @@ class Message {
     this.sent = false,
     this.reply = false,
     this.media,
-    this.sender,
     this.replyMessage,
+    this.replySenderId,
   });
 
   /// Deserialize the JSON data received from Firestore into a [Message] object.
@@ -57,10 +57,10 @@ class Message {
         seen = json['seen'],
         sent = json['sent'],
         reply = json['reply'] ?? false,
-        sender = json['sender'],
-        media = json['media'] != null ? List<String>.from(json['media']) : null,
         replyMessage = json['message'],
-        messageType = json['messageType'] ?? MessageType.text.name;
+        replySenderId = json['replySenderId'],
+        messageType = json['messageType'] ?? MessageType.text.name,
+        media = json['media'] != null ? List<String>.from(json['media']) : null;
 
   /// Serialize the [Message] object into a JSON object for storage in Firestore.
   Map<String, dynamic> toJson() => {
@@ -72,8 +72,8 @@ class Message {
         'seen': seen,
         'sent': sent,
         'reply': reply,
-        'sender': sender,
         'message': replyMessage,
+        'replySenderId': replySenderId,
         'messageType': messageType,
         'media': media,
       };
@@ -83,5 +83,24 @@ class Message {
   /// The [newValue] indicates the new value for the `selected` flag.
   void updateSelected(bool newValue) {
     selected = newValue;
+  }
+
+  @override
+  String toString() {
+    return 'Message{\n'
+        '  id: $id,\n'
+        '  senderId: $senderId,\n'
+        '  recipientId: $recipientId,\n'
+        '  content: $content,\n'
+        '  timestamp: $timestamp,\n'
+        '  seen: $seen,\n'
+        '  sent: $sent,\n'
+        '  reply: $reply,\n'
+        '  messageType: $messageType,\n'
+        '  replySenderId: $replySenderId,\n'
+        '  replyMessage: $replyMessage,\n'
+        '  media: $media,\n'
+        '  selected: $selected\n'
+        '}';
   }
 }
