@@ -22,12 +22,12 @@ class FilePickerService {
     try {
       final result = await FilePicker.platform.pickFiles(
         allowMultiple: true,
-        type: FileType.media, // Only allow media files (videos and pictures)
+        type: FileType.image, // Only allow only pictures
       );
 
       if (result != null && result.files.isNotEmpty) {
         List<PlatformFile> validFiles = [];
-        int maxSizeInBytes = 100 * 1024 * 1024; // 100MB limit
+        int maxSizeInBytes = 50 * 1024 * 1024; // 50MB limit
         int filesExceedingSizeLimit = 0;
 
         for (PlatformFile file in result.files) {
@@ -84,62 +84,73 @@ class FilePickerService {
     return result;
   }
 
-  /// Uploads multiple files to Firebase Storage and returns their download URLs.
+  /// Uploads multiple photos to Firebase Storage and returns their download URLs.
   ///
-  /// The [filePaths] parameter specifies a list of file paths to be uploaded.
-  /// The [chatId] parameter represents the ID of the chat associated with the files.
+  /// The [photoPaths] parameter specifies a list of file paths to the photos to be uploaded.
+  /// The [chatId] parameter represents the ID of the chat associated with the photos.
   ///
-  /// Returns a [Future] that completes with a list of download URLs for the uploaded files,
-  /// or `null` if no files were uploaded.
+  /// Returns a [Future] that completes with a list of download URLs for the uploaded photos,
+  /// or `null` if no photos were uploaded.
   ///
-  /// Throws an error if there is any issue during the file upload process.
-  Future<List<String>?> _uploadFilesToStorage({
-    required List<String> filePaths,
+  /// Throws an error if there is any issue during the photo upload process, such as an invalid file type.
+  ///
+  /// Note: This function assumes that the file paths in [photoPaths] represent valid
+  /// file locations on the device. Make sure the photos exist before invoking this function.
+  Future<List<String>?> uploadPhotosToStorage({
+    required List<String> photoPaths,
     required String chatId,
+    required List<String> uIds,
   }) async {
     try {
-      final List<Future<String>> uploadTasks = filePaths.map((filePath) async {
-        final mediaId = const Uuid().v4();
-        final file = File(filePath);
-        final isPhoto = _isPhotoFile(file); // Check if it's a photo file
+      final List<String> photoUrls = await Future.wait(
+        photoPaths.asMap().entries.map((entry) async {
+          final int index = entry.key;
+          final String photoPath = entry.value;
+          String messageId = '';
 
-        // Depending on the file type, the file will be sent to a specified bucket
-        final bucketName = isPhoto
-            ? 'gs://conta---instant-messaging-app-appimages' // Bucket for photo files
-            : null; // Default bucket for other files
+          final mediaId = const Uuid().v4();
+          final photoFile = File(photoPath);
 
-        final baseName = path.basenameWithoutExtension(filePath);
+          log('The media ID is: $mediaId');
 
-        // Extract the reference as a string
-        String refPath = isPhoto ? 'images/' : '';
-        refPath += 'chats/$chatId/$mediaId/$baseName';
+          // Check if it's a photo file
+          final isPhoto = _isPhotoFile(photoFile);
+          if (!isPhoto) {
+            throw 'Invalid file type: $photoPath';
+          }
 
-        String resizedPath = isPhoto
-            ? 'images/chats/$chatId/$mediaId/resized/${baseName}_600x600'
-            : refPath;
+          if (uIds.length > 3) {
+            messageId = uIds[0];
+          } else {
+            messageId = uIds[index];
+          }
 
-        final storageInstance = FirebaseStorage.instanceFor(bucket: bucketName);
+          final metadata = SettableMetadata(
+            customMetadata: {
+              'messageId': messageId,
+            },
+          );
 
-        // Handle the upload and get the download URL
-        await storageInstance.ref(refPath).putFile(file);
+          final baseName = path.basenameWithoutExtension(photoPath);
+          final refPath = 'images/chats/$chatId/$mediaId/$baseName';
 
-        // I need to place the delay here
-        await Future.delayed(const Duration(milliseconds: 2000));
+          final storageInstance = FirebaseStorage.instanceFor(
+            bucket: 'gs://conta---instant-messaging-app-appimages',
+          );
 
-        final resizedDownloadUrl =
-            await storageInstance.ref(resizedPath).getDownloadURL();
+          await storageInstance.ref(refPath).putFile(photoFile, metadata);
 
-        log(resizedDownloadUrl);
+          final downloadUrl =
+              await storageInstance.ref(refPath).getDownloadURL();
 
-        return resizedDownloadUrl; // Return the download URL
-      }).toList();
+          log(downloadUrl);
+          return downloadUrl;
+        }),
+      );
 
-      final List<String> fileUrls = await Future.wait(uploadTasks);
-
-      return fileUrls.isNotEmpty ? fileUrls : null;
+      return photoUrls.isNotEmpty ? photoUrls : null;
     } catch (e) {
-      // Handle any errors during file upload
-      throw 'Error uploading file: $e';
+      throw 'Error uploading photos: $e';
     }
   }
 
@@ -150,42 +161,6 @@ class FilePickerService {
     return ['jpg', 'jpeg', 'png'].contains(extension);
   }
 
-  /// Sends the specified files to a storage service and returns the file URLs.
-  ///
-  /// The [files] parameter represents the list of files to be sent. It should be
-  /// a list of [PlatformFile] objects, which contain information about each file
-  /// including its path.
-  ///
-  /// The [chatId] parameter is the identifier of the chat or conversation to
-  /// which the files belong.
-  ///
-  /// This function uploads the files to a storage service, such as Firebase
-  /// Storage, and returns a [Future] that completes with a list of file URLs.
-  /// If the upload is unsuccessful or encounters an error, an exception is thrown.
-  /// If any of the file paths in [files] are null, a 'One or more file paths
-  /// are null.' exception is thrown.
-  Future<List<String>?> sendFiles(
-    List<PlatformFile> files,
-    String chatId,
-  ) async {
-    try {
-      final filePaths = files.map((file) => file.path).toList();
-
-      // Check if any of the filePaths is null
-      if (filePaths.any((path) => path == null)) {
-        throw 'One or more file paths are null.';
-      }
-
-      // Upload the files to storage (e.g., Firebase Storage) and return the file URLs
-      return _uploadFilesToStorage(
-        filePaths: filePaths.cast<String>(),
-        chatId: chatId,
-      );
-    } catch (e) {
-      rethrow;
-    }
-  }
-
   /// Deletes files from Firebase Storage based on the provided list of file URLs.
   ///
   /// The [fileUrls] parameter is a list of file URLs to be deleted.
@@ -194,12 +169,10 @@ class FilePickerService {
   Future<void> deleteFilesFromStorage(List<String> fileUrls) async {
     try {
       for (String fileUrl in fileUrls) {
-        // Extract the bucket name from the file URL
-        final bucketName = getBucketNameFromUrl(fileUrl);
-
         // Get a reference to the file in Firebase Storage
-        final storageRef =
-            FirebaseStorage.instanceFor(bucket: bucketName).refFromURL(fileUrl);
+        final storageRef = FirebaseStorage.instanceFor(
+          bucket: 'gs://conta---instant-messaging-app-appimages',
+        ).refFromURL(fileUrl);
 
         // Delete the file
         await storageRef.delete().then((value) => log('Deleted $fileUrl'));
@@ -209,20 +182,5 @@ class FilePickerService {
       rethrow;
     }
   }
-
-  /// Extracts the bucket name from a Firebase Storage URL.
-  ///
-  /// The [url] parameter is a Firebase Storage URL from which the bucket name needs to be extracted.
-  /// Returns the extracted bucket name.
-  /// Throws an exception if the URL format is invalid and the bucket name cannot be extracted.
-  String getBucketNameFromUrl(String url) {
-    final RegExp regExp = RegExp(r'https:\/\/.*?\/v0\/b\/([^\/]+)\/');
-    final match = regExp.firstMatch(url);
-
-    if (match != null && match.groupCount >= 1) {
-      return 'gs://${match.group(1)!}';
-    } else {
-      throw Exception('Invalid URL format');
-    }
-  }
 }
+//

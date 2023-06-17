@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:ui';
 
 import 'package:auto_route/auto_route.dart';
@@ -10,54 +9,46 @@ import '../../../utils/app_router/router.gr.dart';
 import 'dynamic_sized_image_preview.dart';
 import 'image_grid_tile.dart';
 
-class ImagePreview extends StatefulWidget {
+class ImagePreview extends StatelessWidget {
   final List<String> media;
   final Timestamp timeSent;
   final String sender;
+  final String chatId;
 
   const ImagePreview({
     Key? key,
     required this.media,
     required this.timeSent,
     required this.sender,
+    required this.chatId,
   }) : super(key: key);
 
-  @override
-  State<ImagePreview> createState() => _ImagePreviewState();
-}
-
-class _ImagePreviewState extends State<ImagePreview> {
-  void onMediaClicked() {
-    log('Navigate');
-    goToMediaPreview();
-  }
-
-  void goToMediaPreview() => context.router.push(
+  void goToMediaPreview(BuildContext context) => context.router.push(
         MediaPreviewScreenRoute(
-          media: widget.media,
-          sender: widget.sender,
-          timeSent: widget.timeSent,
+          media: media,
+          sender: sender,
+          timeSent: timeSent,
         ),
       );
 
   @override
   Widget build(BuildContext context) {
-    if (widget.media.length >= 4) {
+    if (media.length >= 4) {
       return GestureDetector(
-        onTap: onMediaClicked,
+        onTap: () => goToMediaPreview(context),
         child: GridView.builder(
           gridDelegate: customGridDelegate,
           itemCount: 4,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (context, index) {
-            if (index == 3 && widget.media.length > 4) {
-              final remainingCount = widget.media.length - 4;
+            if (index == 3 && media.length > 4) {
+              final remainingCount = media.length - 4;
               return Stack(
                 fit: StackFit.expand,
                 children: [
                   ImageGridTile(
-                    mediaUrl: widget.media[index],
+                    mediaUrl: media[index],
                   ),
                   Positioned.fill(
                     child: ClipRRect(
@@ -83,7 +74,7 @@ class _ImagePreviewState extends State<ImagePreview> {
               );
             } else {
               return ImageGridTile(
-                mediaUrl: widget.media[index],
+                mediaUrl: media[index],
               );
             }
           },
@@ -91,9 +82,9 @@ class _ImagePreviewState extends State<ImagePreview> {
       );
     } else {
       return GestureDetector(
-        onTap: onMediaClicked,
+        onTap: () => goToMediaPreview(context),
         child: DynamicSizedImagePreview(
-          mediaUrl: widget.media[0],
+          mediaUrl: media.first,
         ),
       );
     }

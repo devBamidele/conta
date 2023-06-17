@@ -115,14 +115,42 @@ class ChatMessagesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> uploadFilesAndCaption(String caption) async {
+  List<String> generateUniqueIds(int number) {
+    final List<String> uniqueIds = [];
+
+    if (number > 0) {
+      if (number == 1) {
+        uniqueIds.add(const Uuid().v4());
+      } else if (number >= 2 && number <= 3) {
+        for (int i = 0; i < number; i++) {
+          final String uniqueId = const Uuid().v4();
+          if (!uniqueIds.contains(uniqueId)) {
+            uniqueIds.add(uniqueId);
+          }
+        }
+      } else if (number >= 4) {
+        uniqueIds.add(const Uuid().v4());
+      }
+    }
+
+    return uniqueIds;
+  }
+
+  Future<void> uploadImagesAndCaption(String caption) async {
     final filePickerService = FilePickerService();
+    final photoPaths =
+        pickerResult.map((file) => file.path).whereType<String>().toList();
+
+    final uIds = generateUniqueIds(photoPaths.length);
+
     try {
-      final results = await filePickerService.sendFiles(
-        pickerResult,
-        currentChat!.chatId!,
+      final results = await filePickerService.uploadPhotosToStorage(
+        chatId: currentChat!.chatId!,
+        photoPaths: photoPaths,
+        uIds: uIds,
       );
-      uploadChat(caption, type: MessageType.media, media: results);
+      await uploadChat(caption,
+          type: MessageType.media, media: results, uIds: uIds);
     } catch (e) {
       rethrow;
     }
@@ -421,9 +449,21 @@ class ChatMessagesProvider extends ChangeNotifier {
   /// sub-collection of the specified chat document.
   ///
   /// The [content] parameter is the text of the message to add.
-  Future<void> addNewMessageToChat(String chatId, String content,
-      {required MessageType type, List<String>? media}) async {
-    final messageId = const Uuid().v4();
+  Future<void> addNewMessageToChat(
+    String chatId,
+    String content, {
+    required MessageType type,
+    List<String>? media,
+    List<String>? uIds,
+  }) async {
+    String messageId = '';
+
+    if (media == null) {
+      messageId = const Uuid().v4();
+    } else {
+      messageId = uIds![0];
+    }
+
     final messagesCollection =
         firestore.collection('chats').doc(chatId).collection('messages');
 
@@ -433,7 +473,7 @@ class ChatMessagesProvider extends ChangeNotifier {
       // Create individual media messages for each URL in the list if they are
       // between 2 and 3 inclusive
       for (int i = 0; i < media.length; i++) {
-        final id = const Uuid().v4();
+        final id = uIds![i];
 
         final imageMessage = Message(
           id: id,
@@ -443,6 +483,7 @@ class ChatMessagesProvider extends ChangeNotifier {
           timestamp: Timestamp.now(),
           messageType: MessageType.media.name,
           media: [media[i]],
+          downPending: true,
         );
 
         batch.set(
@@ -463,6 +504,7 @@ class ChatMessagesProvider extends ChangeNotifier {
         replySenderId: cacheReplyMessage?.senderId,
         messageType: type.name,
         media: media,
+        downPending: media != null ? true : false,
       );
 
       batch.set(
@@ -528,6 +570,7 @@ class ChatMessagesProvider extends ChangeNotifier {
     String content, {
     MessageType type = MessageType.text,
     List<String>? media,
+    List<String>? uIds,
   }) async {
     final chatId = currentChat?.chatId == null
         ? generateChatId(currentUser!.uid, currentChat!.uidUser2)
@@ -554,7 +597,8 @@ class ChatMessagesProvider extends ChangeNotifier {
 
     // Add the new message to the 'messages' sub-collection of the chat document
     // in Firestore
-    await addNewMessageToChat(chatId, content, type: type, media: media);
+    await addNewMessageToChat(chatId, content,
+        type: type, media: media, uIds: uIds);
   }
 
   Stream<DocumentSnapshot<Map<String, dynamic>>> getOnlineStatusStream() {

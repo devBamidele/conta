@@ -175,7 +175,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
     );
 
     try {
-      await chatProvider.uploadFilesAndCaption(caption);
+      await chatProvider.uploadImagesAndCaption(caption);
     } catch (e) {
       AppUtils.showToast(e.toString());
     } finally {

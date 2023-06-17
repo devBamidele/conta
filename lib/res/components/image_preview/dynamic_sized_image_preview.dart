@@ -16,13 +16,7 @@ import '../custom_value_color_anim.dart';
 ///
 /// If the calculated dimensions exceed the available width or height, the image is scaled down while maintaining the aspect ratio.
 /// The scaled image is then displayed within a [SizedBox] with rounded corners using [ClipRRect].
-///
-/// Example usage:
-/// ```dart
-/// DynamicSizedImagePreview(
-///   mediaUrl: 'https://example.com/image.jpg',
-/// )
-/// ```
+
 class DynamicSizedImagePreview extends StatefulWidget {
   /// The URL of the image to be displayed.
   final String mediaUrl;

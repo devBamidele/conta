@@ -285,6 +285,7 @@ void resetOverlayColor() {
                                               Radius.circular(11.5),
                                             ),
                                             child: ImagePreview(
+                                              chatId: data.currentChat!.chatId!,
                                               sender: widget.isSender
                                                   ? 'You'
                                                   : data.currentChat!.username,
