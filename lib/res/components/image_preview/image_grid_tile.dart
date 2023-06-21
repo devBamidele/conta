@@ -10,14 +10,6 @@ import '../custom_value_color_anim.dart';
 /// to the image and ensures the image covers the available space within the tile.
 ///
 /// The [mediaUrl] parameter is required and specifies the URL of the image to be displayed.
-///
-/// Example usage:
-///
-/// ```dart
-/// ImageGridTile(
-///   mediaUrl: 'https://example.com/image.jpg',
-/// )
-/// ```
 class ImageGridTile extends StatelessWidget {
   /// The URL of the image to be displayed within the tile.
   final String mediaUrl;
@@ -48,60 +40,3 @@ class ImageGridTile extends StatelessWidget {
     );
   }
 }
-/*
-
-Future<void> uploadImagesAndResize(BuildContext context) async {
-    // Display circular progress indicator
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) => Dialog(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16.0),
-              Text('Uploading and resizing images...'),
-            ],
-          ),
-        ),
-      ),
-    );
-
-    try {
-      final updatedMediaUrls = <String?>[];
-
-      for (String? url in message.media!) {
-        if (url != null && !url.startsWith('http')) {
-          final resizedUrl = await uploadAndResizeImage(url);
-          updatedMediaUrls.add(resizedUrl);
-        } else {
-          updatedMediaUrls.add(url);
-        }
-      }
-
-      // Update the message with the updated media URLs
-      message.media = updatedMediaUrls;
-
-      // Update the message in Firestore
-
-      // Close the progress indicator dialog
-      Navigator.pop(context);
-    } catch (e) {
-      // Handle any errors during image upload and resizing
-
-      // Close the progress indicator dialog
-      Navigator.pop(context);
-    }
-  }
-
-  Future<String> uploadAndResizeImage(String filePath) async {
-    // Upload the image to storage and resize it
-    // Wait for the extension to resize the image and retrieve the download URL
-
-    return resizedImageUrl; // The resized image's download URL
-  }
-
- */

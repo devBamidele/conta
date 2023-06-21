@@ -89,17 +89,17 @@ class _PreviewScreenState extends State<PreviewScreen> {
                   ),
                 ),
                 Positioned(
-                  bottom: 0,
+                  bottom: 100,
+                  child: SmoothPageIndicator(
+                    controller: _controller,
+                    count: mediaFiles.length,
+                    effect: scrollingDotsEffect,
+                  ),
+                ),
+                Positioned(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
                   child: Column(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 30),
-                        child: SmoothPageIndicator(
-                          controller: _controller,
-                          count: mediaFiles.length,
-                          effect: scrollingDotsEffect,
-                        ),
-                      ),
                       ConstrainedBox(
                         constraints: BoxConstraints(
                           maxWidth: MediaQuery.of(context).size.width,

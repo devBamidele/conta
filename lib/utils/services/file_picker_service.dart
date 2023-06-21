@@ -179,8 +179,7 @@ class FilePickerService {
       }
     } catch (e) {
       // Handle the error
-      rethrow;
+      log('Error deleting file');
     }
   }
 }
-//
