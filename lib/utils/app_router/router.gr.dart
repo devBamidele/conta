@@ -13,7 +13,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:auto_route/auto_route.dart' as _i13;
 import 'package:cloud_firestore/cloud_firestore.dart' as _i16;
-import 'package:conta/res/components/image_preview/media_preview_screeen.dart'
+import 'package:conta/res/components/image_preview/media_preview_screen.dart'
     as _i10;
 import 'package:conta/view/account_setup/set_name_screen.dart' as _i2;
 import 'package:conta/view/account_setup/set_photo_page.dart' as _i3;

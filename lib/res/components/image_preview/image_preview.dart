@@ -81,11 +81,10 @@ class ImagePreview extends StatelessWidget {
         ),
       );
     } else {
-      return GestureDetector(
-        onTap: () => goToMediaPreview(context),
-        child: DynamicSizedImagePreview(
-          mediaUrl: media.first,
-        ),
+      return DynamicSizedImagePreview(
+        sender: sender,
+        timeSent: timeSent,
+        mediaUrl: media.first,
       );
     }
   }

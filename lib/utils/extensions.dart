@@ -33,3 +33,17 @@ extension TimeStampExtensions on Timestamp {
   String toStringForMultiplePics() =>
       DateFormat('dd MMMM yyyy').format(toDate());
 }
+
+extension StringExtentions on String {
+  /// Returns the file name from a URL
+  String getFileName() {
+    RegExp regExp = RegExp(r'2Fresized%2F(.+)_600x600\?alt');
+    Match? match = regExp.firstMatch(this);
+
+    if (match != null && match.groupCount > 0) {
+      return match.group(1)!;
+    } else {
+      return '';
+    }
+  }
+}

@@ -1,11 +1,16 @@
 import 'dart:async';
-import 'dart:io' show SocketException;
+import 'dart:developer';
+import 'dart:io' show Directory, File;
 
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:auto_route/auto_route.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:conta/utils/app_router/router.gr.dart';
+import 'package:conta/utils/extensions.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show PlatformException;
+import 'package:http/http.dart' as http;
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
+import '../../../utils/services/storage_manager.dart';
 import '../../color.dart';
 import '../custom_value_color_anim.dart';
 
@@ -20,6 +25,8 @@ import '../custom_value_color_anim.dart';
 class DynamicSizedImagePreview extends StatefulWidget {
   /// The URL of the image to be displayed.
   final String mediaUrl;
+  final String sender;
+  final Timestamp timeSent;
 
   /// Creates a [DynamicSizedImagePreview] widget.
   ///
@@ -27,6 +34,8 @@ class DynamicSizedImagePreview extends StatefulWidget {
   const DynamicSizedImagePreview({
     Key? key,
     required this.mediaUrl,
+    required this.sender,
+    required this.timeSent,
   }) : super(key: key);
 
   @override
@@ -35,20 +44,59 @@ class DynamicSizedImagePreview extends StatefulWidget {
 }
 
 class _DynamicSizedImagePreviewState extends State<DynamicSizedImagePreview> {
+  String? localImagePath;
+  late String storageDirectory;
+  late String fileName;
+
   Size? imageSize;
   bool networkError = false;
 
   @override
   void initState() {
     super.initState();
-    loadImageSize();
+
+    fileName = widget.mediaUrl.getFileName();
+
+    storageDirectory = StorageManager.storageDirectory!;
+
+    _checkLocalFile().then((value) => loadImageSize());
+  }
+
+  Future<void> _checkLocalFile() async {
+    final storageDir = Directory(storageDirectory);
+    final localFile = File('${storageDir.path}/$fileName');
+
+    if (await localFile.exists()) {
+      setState(() {
+        localImagePath = localFile.path;
+        log('The file exists locally at $localImagePath');
+      });
+    } else {
+      await _downloadAndSaveImage();
+    }
+  }
+
+  Future<void> _downloadAndSaveImage() async {
+    final response = await http.get(Uri.parse(widget.mediaUrl));
+
+    final storageDir =
+        await Directory(storageDirectory).create(recursive: true);
+
+    final localFile = await File('${storageDir.path}/$fileName')
+        .writeAsBytes(response.bodyBytes);
+
+    setState(() {
+      localImagePath = localFile.path;
+      log('Successfully downloaded and saved at $localImagePath');
+    });
   }
 
   void loadImageSize() {
-    final completer = Completer<void>();
-
-    try {
-      Image.network(widget.mediaUrl)
+    if (localImagePath == null) {
+      log('The local image path is currently null');
+    } else {
+      log('The local image path is: $localImagePath');
+      Image.file(File(localImagePath!))
           .image
           .resolve(const ImageConfiguration())
           .addListener(
@@ -61,41 +109,18 @@ class _DynamicSizedImagePreviewState extends State<DynamicSizedImagePreview> {
               );
             });
           }
-          completer.complete();
         }),
       );
-
-      Future.delayed(const Duration(seconds: 10)).then((_) {
-        if (!completer.isCompleted) {
-          // Timeout occurred
-          if (mounted) {
-            setState(() {
-              networkError = true;
-            });
-          }
-          completer.completeError('Image load timed out');
-        }
-      });
-    } catch (error) {
-      if (error is PlatformException && error.code == 'network_error') {
-        // No internet connection, stop trying to download the image
-        if (mounted) {
-          setState(() {
-            networkError = true;
-          });
-        }
-      } else if (error is SocketException) {
-        // SocketException occurred, handle it accordingly
-        if (mounted) {
-          setState(() {
-            networkError = true;
-          });
-        }
-      } else {
-        networkError = true;
-      }
     }
   }
+
+  void goToMediaPreview(BuildContext context) => context.router.push(
+        MediaPreviewScreenRoute(
+          media: [localImagePath!],
+          sender: widget.sender,
+          timeSent: widget.timeSent,
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -128,19 +153,24 @@ class _DynamicSizedImagePreviewState extends State<DynamicSizedImagePreview> {
             height: desiredHeight,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: CachedNetworkImage(
-                imageUrl: widget.mediaUrl,
-                fit: BoxFit.cover,
-                errorWidget: (context, url, error) => const Icon(Icons.error),
-                // Widget to display in case of loading error
-                progressIndicatorBuilder: (context, url, downloadProgress) =>
-                    Center(
-                  child: CircularProgressIndicator(
-                    value: downloadProgress.progress,
-                    valueColor: customValueColorAnim(),
-                  ),
-                ),
-              ),
+              child: localImagePath != null
+                  ? GestureDetector(
+                      onTap: () => goToMediaPreview(context),
+                      child: Hero(
+                        tag: localImagePath!,
+                        child: Image.file(
+                          File(localImagePath!),
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(Icons.error),
+                        ),
+                      ),
+                    )
+                  : Center(
+                      child: CircularProgressIndicator(
+                        valueColor: customValueColorAnim(),
+                      ),
+                    ),
             ),
           );
         },

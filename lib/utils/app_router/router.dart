@@ -1,5 +1,5 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:conta/res/components/image_preview/media_preview_screeen.dart';
+import 'package:conta/res/components/image_preview/media_preview_screen.dart';
 import 'package:conta/view/account_setup/verify_account_screen.dart';
 import 'package:conta/view/authentication/forgot_password_screen.dart';
 import 'package:conta/view/authentication/login_screen.dart';

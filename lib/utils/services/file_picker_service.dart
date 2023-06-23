@@ -1,12 +1,11 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:agora_uikit/agora_uikit.dart';
-import 'package:conta/utils/app_utils.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
+import 'package:permission_handler/permission_handler.dart';
 import 'package:uuid/uuid.dart';
 
 class FilePickerService {
@@ -27,20 +26,9 @@ class FilePickerService {
 
       if (result != null && result.files.isNotEmpty) {
         List<PlatformFile> validFiles = [];
-        int maxSizeInBytes = 50 * 1024 * 1024; // 50MB limit
-        int filesExceedingSizeLimit = 0;
 
         for (PlatformFile file in result.files) {
-          if (file.size <= maxSizeInBytes) {
-            validFiles.add(file);
-          } else {
-            filesExceedingSizeLimit++;
-          }
-        }
-
-        if (filesExceedingSizeLimit > 0) {
-          AppUtils.showSnackbar(
-              '$filesExceedingSizeLimit file(s) exceeded the size limit.');
+          validFiles.add(file);
         }
 
         // Process or send the selected file

@@ -3,11 +3,8 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  agora_rtc_engine
   audioplayers_windows
   connectivity_plus_windows
-  iris_event
-  network_info_plus_windows
   permission_handler_windows
   url_launcher_windows
 )
