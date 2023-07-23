@@ -1,8 +1,8 @@
-1. Saving images locally, so the app does not have to download it everytime
-2. Start with noti
+1. Image downloading and caching
+2. The notifications need to be worked on and perfected
 
 
-
+look at image_grid_tile and dynamic_image_preview
 
 
 I can send single images with no breeze, the data gets uploaded to firebase and the cloud function works perfectly.However
@@ -16,3 +16,17 @@ results to some unintended errors (Icons)
 4 images, client-side error
 
 
+useFirstLogin() {
+    myEmailController.text = 'bamideledavid.ajewole@gmail.com';
+    myPasswordController.text = 'Bamidele12345';
+  }
+
+  useSecondLogin() {
+    myEmailController.text = 'bamideledavid.femi@gmail.com';
+    myPasswordController.text = 'Olorunfemi005';
+  }
+
+  useThirdLogin() {
+    myEmailController.text = 'ajewole.bamidele@stu.cu.edu.ng';
+    myPasswordController.text = 'dele004';
+  }

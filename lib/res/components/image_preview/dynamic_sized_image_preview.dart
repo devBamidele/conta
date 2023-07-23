@@ -6,6 +6,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:conta/utils/extensions.dart';
+import 'package:conta/utils/widget_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -27,6 +28,7 @@ class DynamicSizedImagePreview extends StatefulWidget {
   final String mediaUrl;
   final String sender;
   final Timestamp timeSent;
+  final bool isResized;
 
   /// Creates a [DynamicSizedImagePreview] widget.
   ///
@@ -36,6 +38,7 @@ class DynamicSizedImagePreview extends StatefulWidget {
     required this.mediaUrl,
     required this.sender,
     required this.timeSent,
+    required this.isResized,
   }) : super(key: key);
 
   @override
@@ -55,6 +58,20 @@ class _DynamicSizedImagePreviewState extends State<DynamicSizedImagePreview> {
   void initState() {
     super.initState();
 
+    if (widget.isResized) {
+      loadImage();
+    }
+  }
+
+  @override
+  void didUpdateWidget(DynamicSizedImagePreview oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isResized && widget.isResized != oldWidget.isResized) {
+      loadImage();
+    }
+  }
+
+  void loadImage() {
     fileName = widget.mediaUrl.getFileName();
 
     storageDirectory = StorageManager.storageDirectory!;
@@ -84,11 +101,12 @@ class _DynamicSizedImagePreviewState extends State<DynamicSizedImagePreview> {
 
     final localFile = await File('${storageDir.path}/$fileName')
         .writeAsBytes(response.bodyBytes);
-
-    setState(() {
-      localImagePath = localFile.path;
-      log('Successfully downloaded and saved at $localImagePath');
-    });
+    if (mounted) {
+      setState(() {
+        localImagePath = localFile.path;
+        log('Successfully downloaded and saved at $localImagePath');
+      });
+    }
   }
 
   void loadImageSize() {
@@ -180,10 +198,9 @@ class _DynamicSizedImagePreviewState extends State<DynamicSizedImagePreview> {
       return SizedBox(
         height: 70,
         child: Center(
-          child: Icon(
-            Icons.wifi_off_rounded,
+          child: offlineIcon(
             size: 30,
-            color: Colors.transparent.withAlpha(120),
+            Colors.transparent.withAlpha(120),
           ),
         ),
       );

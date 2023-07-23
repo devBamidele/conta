@@ -8,6 +8,7 @@ class AppColors {
   static const Color hintTextColor = Color(0xFF9E9E9E);
   static const Color darkIconColor = Color(0xFF858585);
   static const Color photoContainerColor = Color(0xFFF2F2F2);
+  static const Color dateChipColor = Color(0x558AD3D5);
 
   static const Color stateIconColor = Colors.black45;
   static Color transparentBackground = Colors.transparent.withAlpha(20);

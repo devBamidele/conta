@@ -1,6 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.bamidele.ajewole.conta">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -54,7 +53,7 @@
 
                 <!-- Accepts URIs that begin with YOUR_SCHEME://YOUR_HOST -->
                 <data
-                    android:host="conta---instant-messaging-app.firebaseapp.com/__/auth/handler"
+                    android:host="conta---instant-messaging-app.firebaseapp.com"
                     android:scheme="https" />
             </intent-filter>
         </activity>

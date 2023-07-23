@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:conta/res/style/component_style.dart';
+import 'package:conta/utils/extensions.dart';
 import 'package:conta/view/account_setup/set_photo_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
@@ -8,8 +9,9 @@ import 'package:provider/provider.dart';
 
 import '../../res/color.dart';
 import '../../res/components/custom/custom_back_button.dart';
-import '../../res/components/login_text_field.dart';
+import '../../res/components/custom_text_field.dart';
 import '../../res/components/shake_error.dart';
+import '../../res/style/app_text_style.dart';
 import '../../utils/widget_functions.dart';
 import '../../view_model/authentication_provider.dart';
 
@@ -25,6 +27,8 @@ class SetNameScreen extends StatefulWidget {
 }
 
 class _SetNameScreenState extends State<SetNameScreen> {
+  late AuthenticationProvider authProvider;
+
   final myNameController = TextEditingController();
   final myUserNameController = TextEditingController();
   String? existingUserName;
@@ -50,6 +54,9 @@ class _SetNameScreenState extends State<SetNameScreen> {
   @override
   void initState() {
     super.initState();
+
+    authProvider = Provider.of<AuthenticationProvider>(context, listen: false);
+
     myNameController.addListener(_updateNameEmpty);
 
     nameFocusNode.addListener(_updateNameColor);
@@ -62,9 +69,6 @@ class _SetNameScreenState extends State<SetNameScreen> {
   }
 
   void _checkIfUsernameExits() async {
-    final authProvider =
-        Provider.of<AuthenticationProvider>(context, listen: false);
-
     // check if the username already exists in the Firestore database
     final exists =
         await authProvider.checkIfUsernameExists(myUserNameController.text);
@@ -135,30 +139,6 @@ class _SetNameScreenState extends State<SetNameScreen> {
     super.dispose();
   }
 
-  String? name(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter your full name';
-    } else if (!RegExp(r'^[a-zA-Z0-9\s]+$').hasMatch(value)) {
-      return 'Only letters, numbers, underscores, and spaces are allowed.';
-    } else if (value.trim().length < 4 || value.trim().length > 25) {
-      return 'Username must be between 4 and 20 characters long';
-    } else {
-      return null;
-    }
-  }
-
-  String? username(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter your username';
-    } else if (!RegExp(r'^[a-zA-Z0-9_\s]+$').hasMatch(value)) {
-      return 'Only letters, numbers, underscores, and spaces are allowed.';
-    } else if (value.trim().length < 4 || value.trim().length > 20) {
-      return 'Username must be between 4 and 20 characters long';
-    } else {
-      return existingUserName;
-    }
-  }
-
   void onContinuePressed() {
     final name = formKey1.currentState?.validate();
     final username = formKey2.currentState?.validate();
@@ -181,8 +161,8 @@ class _SetNameScreenState extends State<SetNameScreen> {
   void setValues() {
     final name = myNameController.text.trim();
     final userName = myUserNameController.text.trim();
-    Provider.of<AuthenticationProvider>(context, listen: false)
-        .setNameAndUserName(name, userName);
+
+    authProvider.setNameAndUserName(name, userName);
 
     context.router.pushNamed(SetPhotoScreen.tag);
   }
@@ -206,11 +186,7 @@ class _SetNameScreenState extends State<SetNameScreen> {
                 addHeight(20),
                 const Text(
                   'What\'s your name?',
-                  style: TextStyle(
-                    height: 1.1,
-                    fontSize: 42,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: AppTextStyles.headlineLarge,
                 ),
                 addHeight(10),
                 Container(
@@ -218,11 +194,7 @@ class _SetNameScreenState extends State<SetNameScreen> {
                   child: const Text(
                     'This will be displayed on your profile',
                     textAlign: TextAlign.left,
-                    style: TextStyle(
-                      fontSize: 16,
-                      height: 1.25,
-                      color: AppColors.opaqueTextColor,
-                    ),
+                    style: AppTextStyles.headlineSmall,
                   ),
                 ),
                 addHeight(55),
@@ -241,7 +213,7 @@ class _SetNameScreenState extends State<SetNameScreen> {
                         IconlyBold.profile,
                         color: nameColor,
                       ),
-                      validation: name,
+                      validation: (name) => name.validateName(),
                     ),
                   ),
                 ),
@@ -265,7 +237,8 @@ class _SetNameScreenState extends State<SetNameScreen> {
                           Icons.alternate_email_rounded,
                           color: usernameColor,
                         ),
-                        validation: username,
+                        validation: (username) =>
+                            username.validateUsername(existingUserName),
                       ),
                     ),
                   ),
@@ -280,11 +253,7 @@ class _SetNameScreenState extends State<SetNameScreen> {
                     onPressed: onContinuePressed,
                     child: const Text(
                       'Continue',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: AppTextStyles.labelMedium,
                     ),
                   ),
                 ),

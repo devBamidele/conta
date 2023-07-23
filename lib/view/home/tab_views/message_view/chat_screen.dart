@@ -151,6 +151,7 @@ class _ChatScreenState extends State<ChatScreen>
           children: [
             Expanded(
               child: MessagesStream(
+                //
                 scrollController: scrollController,
               ),
             ),

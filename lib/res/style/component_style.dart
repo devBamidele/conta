@@ -48,9 +48,7 @@ InputBorder customBorder({
 
 /// The decoration for the outlined button
 final loginOptionsStyle = OutlinedButton.styleFrom(
-  side: BorderSide(
-    color: AppColors.dividerColor,
-  ),
+  side: BorderSide(color: AppColors.dividerColor),
   minimumSize: const Size(88, 60),
   shape: const RoundedRectangleBorder(
     borderRadius: BorderRadius.all(
@@ -70,9 +68,7 @@ ButtonStyle resendButtonStyle({
 }) {
   return OutlinedButton.styleFrom(
     foregroundColor: foregroundColor ?? AppColors.dividerColor,
-    side: BorderSide(
-      color: sideColor ?? AppColors.primaryColor,
-    ),
+    side: BorderSide(color: sideColor ?? AppColors.primaryColor),
     backgroundColor: backgroundColor ?? Colors.white,
     elevation: elevation ?? 0,
     minimumSize: minimumSize ?? const Size(double.infinity, 58),

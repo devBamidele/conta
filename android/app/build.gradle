@@ -34,9 +34,10 @@ if (keystorePropertiesFile.exists()) {
 
 
 android {
+    namespace 'com.bamidele.ajewole.conta'
+
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
-
 
     lintOptions {
         warningsAsErrors true
@@ -61,8 +62,7 @@ android {
         multiDexEnabled true
         applicationId "com.bamidele.ajewole.conta"
 
-
-        minSdkVersion 19
+        minSdkVersion 24
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
@@ -86,6 +86,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
 }
 
 flutter {
@@ -100,8 +101,8 @@ dependencies {
 
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation 'com.google.firebase:firebase-analytics-ktx'
-    
-    implementation 'com.google.firebase:firebase-auth:21.3.0'
+
+    implementation 'com.google.firebase:firebase-auth:22.1.0'
 
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.google.android.gms:play-services-base:18.2.0'

@@ -1,6 +1,7 @@
 import 'package:conta/res/components/message_bubble.dart';
 import 'package:conta/utils/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -33,6 +34,7 @@ class _MessagesStreamState extends State<MessagesStream> {
 
   @override
   Widget build(BuildContext context) {
+    double desiredSize = MediaQuery.of(context).size.width * 0.5;
     return Consumer<ChatMessagesProvider>(
       builder: (_, data, __) {
         return StreamBuilder(
@@ -44,8 +46,12 @@ class _MessagesStreamState extends State<MessagesStream> {
             if (snapshot.hasData) {
               List<Message> messages = snapshot.data!;
               if (messages.isEmpty) {
-                return const Center(
-                  child: Text('Empty'),
+                return Center(
+                  child: SvgPicture.asset(
+                    'assets/images/empty.svg',
+                    width: desiredSize,
+                    height: desiredSize,
+                  ),
                 );
               }
               return ListView.builder(

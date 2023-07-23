@@ -6,7 +6,7 @@ class CustomBackButton extends StatelessWidget {
   const CustomBackButton({
     Key? key,
     this.padding,
-    this.size = 28,
+    this.size = 26,
     this.color = Colors.black,
     this.onPressed,
   }) : super(key: key);
@@ -21,14 +21,11 @@ class CustomBackButton extends StatelessWidget {
     return IconButton(
       padding: padding,
       alignment: Alignment.centerLeft,
-      iconSize: 26,
+      iconSize: size,
       onPressed: () {
         context.router.pop().then(
               (value) => {
-                if (onPressed != null)
-                  {
-                    onPressed!(),
-                  }
+                if (onPressed != null) {onPressed!()}
               },
             );
       },

@@ -39,13 +39,11 @@ class AuthService {
 
   Future<void> signOutFromApp() async {
     try {
-      await updateUserOnlineStatus(false);
-      await _auth.signOut();
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'network-request-failed') {
-        // Handle network connection errors here
-        log('Error: ${e.code}. Please check your internet connection.');
-      }
+      // Update user online status to false and sign out the user
+      await updateUserOnlineStatus(false)
+          .catchError((e) => log('Error updating user online status: $e'))
+          .then((_) => _auth.signOut())
+          .catchError((e) => log('Error signing out: $e'));
     } catch (e) {
       // Handle any other errors here
       log('Error: $e');

@@ -2,22 +2,21 @@ import 'package:auto_route/auto_route.dart';
 import 'package:conta/res/color.dart';
 import 'package:conta/res/components/shake_error.dart';
 import 'package:conta/res/style/component_style.dart';
+import 'package:conta/utils/extensions.dart';
 import 'package:conta/utils/widget_functions.dart';
 import 'package:conta/view/account_setup/set_name_screen.dart';
 import 'package:conta/view/authentication/login_screen.dart';
 import 'package:conta/view_model/authentication_provider.dart';
-import 'package:email_validator/email_validator.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:iconly/iconly.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
 import '../../res/components/custom/custom_back_button.dart';
 import '../../res/components/custom/custom_check_box.dart';
-import '../../res/components/login_text_field.dart';
+import '../../res/components/custom_text_field.dart';
+import '../../res/style/app_text_style.dart';
 import '../../utils/app_utils.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -30,6 +29,8 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  late AuthenticationProvider authProvider;
+
   final myEmailController = TextEditingController();
   final myPasswordController = TextEditingController();
 
@@ -66,6 +67,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     myEmailController.addListener(_updateEmailEmpty);
 
     emailFocusNode.addListener(_updateEmailColor);
+
+    authProvider = Provider.of<AuthenticationProvider>(context, listen: false);
   }
 
   void _updatePasswordEmpty() {
@@ -151,44 +154,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final String email = myEmailController.text.trim();
     final String password = myPasswordController.text;
 
-    showDialog(
+    await authProvider.checkEmailAndPassword(
       context: context,
-      barrierDismissible: false,
-      builder: (context) => Center(
-        child: LoadingAnimationWidget.staggeredDotsWave(
-          color: AppColors.primaryShadeColor,
-          size: 60,
-        ),
-      ),
+      email: email,
+      password: password,
+      showSnackbar: showSnackbar,
+      onAuthenticate: gotoNext,
     );
-
-    try {
-      // Check if the email is already registered with Firebase
-      final signInMethods =
-          await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
-
-      if (signInMethods.isNotEmpty) {
-        // Email is already registered with Firebase
-        showSnackbar('An account already exists for that email.');
-      } else {
-        setValues(email, password);
-      }
-    } catch (e) {
-      // Handle exceptions
-      showSnackbar(
-          'An error occurred while checking email and password. Please try again later.');
-    } finally {
-      context.router.pop();
-    }
   }
 
-  // Save the values to the Authentication Provider amd proceed
-  void setValues(String email, String password) {
-    Provider.of<AuthenticationProvider>(context, listen: false)
-        .setEmailAndPassword(email, password);
-
-    context.router.pushNamed(SetNameScreen.tag);
-  }
+  gotoNext() => context.router.pushNamed(SetNameScreen.tag);
 
   @override
   Widget build(BuildContext context) {
@@ -209,11 +184,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 addHeight(20),
                 const Text(
                   'Create your Account',
-                  style: TextStyle(
-                    height: 1.1,
-                    fontSize: 42,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: AppTextStyles.headlineLarge,
                 ),
                 addHeight(10),
                 Container(
@@ -221,11 +192,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child: const Text(
                     'Enter your email and password below',
                     textAlign: TextAlign.left,
-                    style: TextStyle(
-                      fontSize: 16,
-                      height: 1.25,
-                      color: AppColors.opaqueTextColor,
-                    ),
+                    style: AppTextStyles.headlineSmall,
                   ),
                 ),
                 addHeight(55),
@@ -244,10 +211,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         IconlyBold.message,
                         color: emailColor,
                       ),
-                      validation: (email) =>
-                          email != null && !EmailValidator.validate(email)
-                              ? 'Enter a valid email '
-                              : null,
+                      validation: (email) => email.validateEmail(),
                     ),
                   ),
                 ),
@@ -269,10 +233,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         action: TextInputAction.done,
                         hintText: 'Password',
                         obscureText: _passwordVisible,
-                        //This will obscure text dynamically
-                        validation: (value) => value != null && value.length < 6
-                            ? 'Enter a minimum of 6 characters'
-                            : null,
+                        validation: (value) => value.validatePassword(),
                         prefixIcon: Icon(
                           IconlyBold.lock,
                           color: passwordColor,
@@ -324,11 +285,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     onPressed: validate,
                     child: const Text(
                       'Continue',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: AppTextStyles.labelMedium,
                     ),
                   ),
                 ),
@@ -336,12 +293,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 RichText(
                   textAlign: TextAlign.center,
                   text: TextSpan(
-                    style: const TextStyle(
-                      fontSize: 16,
-                      height: 1.4,
-                      letterSpacing: 0.2,
-                      color: AppColors.opaqueTextColor,
-                    ),
+                    style: AppTextStyles.labelSmall,
                     children: [
                       const TextSpan(
                         text: 'Already have an account?',

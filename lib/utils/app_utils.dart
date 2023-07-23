@@ -1,6 +1,7 @@
 import 'package:conta/res/color.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 /// Utility class for displaying SnackBars using a global key.
 class AppUtils {
@@ -21,16 +22,20 @@ class AppUtils {
     if (text == null) return;
 
     final snackBar = SnackBar(
+      margin: const EdgeInsets.only(left: 20, right: 20, bottom: 15),
+      behavior: SnackBarBehavior.floating,
       duration: delay,
       content: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: label == null
+            ? MainAxisAlignment.center
+            : MainAxisAlignment.spaceBetween,
         children: [
           Text(
             text,
             textAlign: TextAlign.center,
             style: const TextStyle(
               color: Colors.black87,
-              fontSize: 15,
+              fontSize: 16,
             ),
           ),
           label ?? const SizedBox.shrink(),
@@ -53,6 +58,21 @@ class AppUtils {
       toastLength: Toast.LENGTH_SHORT,
       gravity: ToastGravity.BOTTOM,
       fontSize: 16.0,
+    );
+  }
+
+  /// Shows a centered loading dialog with a staggered dots wave animation.
+  ///
+  /// The dialog blocks user interaction until it is dismissed.
+  static void showLoadingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => Center(
+        child: LoadingAnimationWidget.staggeredDotsWave(
+          color: AppColors.primaryShadeColor,
+          size: 60,
+        ),
+      ),
     );
   }
 }

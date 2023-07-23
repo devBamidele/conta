@@ -3,25 +3,24 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:auto_route/auto_route.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:conta/res/components/custom/custom_back_button.dart';
 import 'package:conta/res/components/custom/custom_check_box.dart';
 import 'package:conta/res/components/login_options.dart';
+import 'package:conta/res/style/app_text_style.dart';
 import 'package:conta/res/style/component_style.dart';
 import 'package:conta/utils/app_router/router.gr.dart';
+import 'package:conta/utils/extensions.dart';
 import 'package:conta/view/authentication/forgot_password_screen.dart';
 import 'package:conta/view_model/authentication_provider.dart';
-import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:iconly/iconly.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:uni_links/uni_links.dart';
 
 import '../../res/color.dart';
-import '../../res/components/login_text_field.dart';
+import '../../res/components/custom_text_field.dart';
 import '../../res/components/shake_error.dart';
 import '../../utils/app_utils.dart';
 import '../../utils/services/auth_service.dart';
@@ -141,27 +140,15 @@ class _LoginScreenState extends State<LoginScreen> {
     shakeState1.currentState?.dispose();
     shakeState2.currentState?.dispose();
 
+    disposeDeepLink();
+    super.dispose();
+  }
+
+  void disposeDeepLink() {
     if (deepLinkSubscription != null) {
       deepLinkSubscription!.cancel();
       deepLinkSubscription = null;
     }
-
-    super.dispose();
-  }
-
-  useFirstLogin() {
-    myEmailController.text = 'bamideledavid.ajewole@gmail.com';
-    myPasswordController.text = 'Bamidele12345';
-  }
-
-  useSecondLogin() {
-    myEmailController.text = 'bamideledavid.femi@gmail.com';
-    myPasswordController.text = 'Olorunfemi005';
-  }
-
-  useThirdLogin() {
-    myEmailController.text = 'ajewole.bamidele@stu.cu.edu.ng';
-    myPasswordController.text = 'dele004';
   }
 
   useFourthLogin() {
@@ -176,9 +163,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void onContinuePressed() {
-    //useFirstLogin();
-    //useSecondLogin();
-    // useThirdLogin();
     useFourthLogin();
 
     final email = formKey1.currentState?.validate();
@@ -219,7 +203,7 @@ class _LoginScreenState extends State<LoginScreen> {
           _authService.updateUserOnlineStatus(true);
 
           // Navigate to home screen
-          navigateToHome();
+          gotoHome();
         } on FirebaseAuthException catch (e) {
           if (e.code == 'account-exists-with-different-credential') {
             showSnackbar('Account exists with different credential');
@@ -239,117 +223,34 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> loginWithGoogle() async {
-    try {
-      // Sign in with Google and get user credential
-      UserCredential userCredential = await authProvider.signInWithGoogle();
-      User? user = userCredential.user;
-
-      // Check if user is authenticated and email is verified
-      if (user == null || !user.emailVerified) {
-        showSnackbar('Please verify your email before logging in');
-        return;
-      }
-
-      // Set One Signal id for the User
-      //_messagingService.setExternalUserId(user.uid);
-
-      // Update user online status
-      _authService.updateUserOnlineStatus(true);
-
-      // Navigate to home screen
-      navigateToHome();
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'account-exists-with-different-credential') {
-        showSnackbar('Account exists with different credential');
-      } else if (e.code == 'invalid-credential') {
-        showSnackbar('Invalid credential');
-      } else {
-        showSnackbar('An error occurred, please try again later');
-      }
-    } on SocketException {
-      showSnackbar('No internet connection');
-    } catch (_) {
-      showSnackbar('An error occurred, please try again later');
-    }
+    await authProvider.loginWithGoogle(
+      showSnackbar: showSnackbar,
+      onAuthenticate: onAuthenticate,
+    );
   }
 
-  Future<void> loginWithGithub() async => await authProvider.githubLogin();
+  Future<void> loginWithGithub() async {
+    await authProvider.loginWithGithub();
+  }
 
   Future<void> loginWithEmailAndPassword() async {
     final String email = myEmailController.text.trim();
     final String password = myPasswordController.text;
 
-    showDialog(
+    await authProvider.loginWithEmailAndPassword(
       context: context,
-      builder: (context) => Center(
-        child: LoadingAnimationWidget.staggeredDotsWave(
-          color: AppColors.primaryShadeColor,
-          size: 60,
-        ),
-      ),
+      email: email,
+      password: password,
+      showSnackbar: showSnackbar,
+      onAuthenticate: onAuthenticate,
     );
-
-    // Check if the device is currently offline.
-    ConnectivityResult connectivityResult =
-        await Connectivity().checkConnectivity();
-
-    if (connectivityResult == ConnectivityResult.none) {
-      // User's device is not connected to the internet,
-      showSnackbar('No internet connection');
-
-      /*
-       if (mounted) {
-        context.router.pop();
-      }
-       */
-
-      // Todo : Apply fix when I uncomment this code
-
-      // Exit the function
-      return;
-    }
-
-    try {
-      UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      User? user = userCredential.user;
-
-      // User is authenticated and email is verified
-      if (user != null && user.emailVerified) {
-        // Set One Signal id for the User
-        //_messagingService.setExternalUserId(user.uid);
-
-        // Tell Firebase the user is now online
-        _authService.updateUserOnlineStatus(true);
-        navigateToHome();
-      } else {
-        // Email is not verified
-        showSnackbar('Please verify your email before logging in');
-      }
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'network-request-failed') {
-        // User's device is not connected to the internet,
-        showSnackbar('No internet connection');
-      } else {
-        // Handle login errors
-        showSnackbar('Invalid email or password');
-      }
-    } catch (e) {
-      // Handle other errors
-      showSnackbar('An error occurred while checking email and password.'
-          ' Please try again later.');
-    } finally {
-      if (mounted) {
-        context.router.pop();
-      }
-    }
   }
 
-  navigateToHome() => context.router.replaceAll([const PersistentTabRoute()]);
+  void onAuthenticate() {
+    _authService.updateUserOnlineStatus(true).then((_) => gotoHome());
+  }
+
+  gotoHome() => context.router.replaceAll([const PersistentTabRoute()]);
 
   checkRoot() => isRootScreen = context.router.isRoot;
 
@@ -376,11 +277,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 addHeight(20),
                 const Text(
                   'Login to your Account',
-                  style: TextStyle(
-                    height: 1.1,
-                    fontSize: 42,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: AppTextStyles.headlineLarge,
                 ),
                 addHeight(10),
                 Container(
@@ -388,11 +285,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: const Text(
                     'Enter your email and password below',
                     textAlign: TextAlign.left,
-                    style: TextStyle(
-                      fontSize: 16,
-                      height: 1.25,
-                      color: AppColors.opaqueTextColor,
-                    ),
+                    style: AppTextStyles.headlineSmall,
                   ),
                 ),
                 addHeight(55),
@@ -411,10 +304,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         IconlyBold.message,
                         color: emailColor,
                       ),
-                      validation: (email) =>
-                          email != null && !EmailValidator.validate(email)
-                              ? 'Enter a valid email '
-                              : null,
+                      validation: (email) => email.validateEmail(),
                     ),
                   ),
                 ),
@@ -436,10 +326,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         action: TextInputAction.done,
                         hintText: 'Password',
                         obscureText: _passwordVisible,
-                        //This will obscure text dynamically
-                        validation: (value) => value != null && value.length < 6
-                            ? 'Enter a minimum of 6 characters'
-                            : null,
+                        validation: (value) => value.validatePassword(),
                         prefixIcon: Icon(
                           IconlyBold.lock,
                           color: passwordColor,
@@ -491,11 +378,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: onContinuePressed,
                     child: const Text(
                       'Continue',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: AppTextStyles.labelMedium,
                     ),
                   ),
                 ),
@@ -506,12 +389,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: const Text(
                     'Forgot the password?',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16,
-                      height: 1.4,
-                      letterSpacing: 0.2,
-                      color: AppColors.primaryColor,
-                    ),
+                    style: AppTextStyles.labelSmall,
                   ),
                 ),
                 addHeight(40),
@@ -524,12 +402,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: Colors.white,
                       child: const Text(
                         'or continue with',
-                        style: TextStyle(
-                          fontSize: 18,
-                          height: 1.4,
-                          letterSpacing: 0.2,
-                          color: AppColors.continueWithColor,
-                        ),
+                        style: AppTextStyles.titleSmall,
                       ),
                     ),
                   ],
@@ -542,11 +415,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       scale: 0.9,
                       onTap: () => loginWithGoogle(),
                       path: 'assets/images/google.svg',
-                    ),
-                    LoginOptions(
-                      scale: 0.6,
-                      onTap: () {},
-                      path: 'assets/images/facebook.svg',
                     ),
                     LoginOptions(
                       scale: 0.9,

@@ -117,10 +117,11 @@ class _MessageBubbleState extends State<MessageBubble> {
 
   void onVisibilityChanged(VisibilityInfo info) {
     if (mounted) {
+      bool visible = !widget.message.seen &&
+          info.visibleFraction > 0.8 &&
+          !widget.isSender;
       setState(() {
-        if (!widget.message.seen &&
-            info.visibleFraction > 0.8 &&
-            !widget.isSender) {
+        if (visible) {
           chatProvider.updateMessageSeen(widget.message.id);
         }
       });
@@ -261,7 +262,6 @@ void resetOverlayColor() {
                                 child: Consumer<ChatMessagesProvider>(
                                     builder: (_, data, child) {
                                   return Column(
-                                    mainAxisSize: MainAxisSize.max,
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
@@ -285,6 +285,8 @@ void resetOverlayColor() {
                                               Radius.circular(11.5),
                                             ),
                                             child: ImagePreview(
+                                              isResized:
+                                                  widget.message.isResized,
                                               chatId: data.currentChat!.chatId!,
                                               sender: widget.isSender
                                                   ? 'You'

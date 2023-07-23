@@ -6,11 +6,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
-import '../../res/color.dart';
 import '../../res/components/custom/custom_back_button.dart';
+import '../../res/style/app_text_style.dart';
 import '../../res/style/component_style.dart';
 import '../../utils/app_utils.dart';
 import '../../utils/widget_functions.dart';
@@ -26,65 +25,35 @@ class SetPhotoScreen extends StatefulWidget {
 }
 
 class _SetPhotoScreenState extends State<SetPhotoScreen> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  late AuthenticationProvider authProvider;
 
   final _picker = ImagePicker();
   File? _imageFile;
 
+  @override
+  void initState() {
+    super.initState();
+
+    authProvider = Provider.of<AuthenticationProvider>(context, listen: false);
+  }
+
   Future<void> createUser() async {
-    final authProvider =
-        Provider.of<AuthenticationProvider>(context, listen: false);
-
-    final username = authProvider.username!;
-    final email = authProvider.email!;
-    final password = authProvider.password!;
-
-    showDialog(
+    authProvider.createUser(
       context: context,
-      barrierDismissible: false,
-      builder: (context) => Center(
-        child: LoadingAnimationWidget.staggeredDotsWave(
-          color: AppColors.primaryShadeColor,
-          size: 60,
-        ),
-      ),
+      showSnackbar: showSnackbar,
+      onAuthenticate: verifyAccount,
     );
-
-    try {
-      UserCredential userCredential =
-          await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      final userId = userCredential.user!.uid;
-
-      // Upload the image and create the User in firestore
-      authProvider.createNewUser(userId, _imageFile);
-
-      // Update the display name
-      await userCredential.user!.updateDisplayName(username);
-
-      // Send email verification to new user
-      await userCredential.user!.sendEmailVerification();
-
-      verifyAccount(userCredential);
-    } catch (e) {
-      // Handle exceptions
-      if (e.toString() == 'An error occurred while uploading the image') {
-        AppUtils.showSnackbar(e.toString());
-      } else {
-        AppUtils.showSnackbar('An error occurred while creating the account. '
-            'Please try again later.');
-      }
-    } finally {
-      context.router.pop();
-    }
   }
 
   verifyAccount(UserCredential credential) => context.router.replaceAll(
         [VerifyAccountScreenRoute(userCredential: credential)],
       );
+
+  void showSnackbar(String message) {
+    if (mounted) {
+      AppUtils.showSnackbar(message);
+    }
+  }
 
   void addPhoto() {
     if (_imageFile == null) {
@@ -142,11 +111,7 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
                         addHeight(20),
                         const Text(
                           'Set a photo of yourself',
-                          style: TextStyle(
-                            height: 1.1,
-                            fontSize: 42,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: AppTextStyles.headlineLarge,
                         ),
                         addHeight(10),
                         Container(
@@ -154,11 +119,7 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
                           child: const Text(
                             'Add a photo to boost profile engagement',
                             textAlign: TextAlign.left,
-                            style: TextStyle(
-                              fontSize: 16,
-                              height: 1.25,
-                              color: AppColors.opaqueTextColor,
-                            ),
+                            style: AppTextStyles.headlineSmall,
                           ),
                         ),
                         addHeight(55),
@@ -203,11 +164,7 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
                           onPressed: () => addPhoto(),
                           child: Text(
                             _imageFile == null ? 'Add a photo' : 'Continue',
-                            style: const TextStyle(
-                              fontSize: 18,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: AppTextStyles.labelMedium,
                           ),
                         ),
                       ),

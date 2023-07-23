@@ -197,7 +197,7 @@ class ChatMessagesProvider extends ChangeNotifier {
     cacheReplyMessage = null;
   }
 
-  void copyMessageContent() {
+  Future<void> copyMessageContent() async {
     final StringBuffer clipTextBuffer = StringBuffer();
 
     for (var message in selectedMessages.values) {
@@ -206,7 +206,7 @@ class ChatMessagesProvider extends ChangeNotifier {
 
     final clipText = clipTextBuffer.toString().trim();
 
-    Clipboard.setData(ClipboardData(text: clipText));
+    await Clipboard.setData(ClipboardData(text: clipText));
   }
 
   // When the back button from the appbar is pressed
@@ -483,7 +483,7 @@ class ChatMessagesProvider extends ChangeNotifier {
           timestamp: Timestamp.now(),
           messageType: MessageType.media.name,
           media: [media[i]],
-          downPending: true,
+          isResized: false,
         );
 
         batch.set(
@@ -504,7 +504,7 @@ class ChatMessagesProvider extends ChangeNotifier {
         replySenderId: cacheReplyMessage?.senderId,
         messageType: type.name,
         media: media,
-        downPending: media != null ? true : false,
+        isResized: media != null ? false : true,
       );
 
       batch.set(

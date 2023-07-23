@@ -30,6 +30,13 @@ Widget noProfilePic({double size = 27}) {
   );
 }
 
+Icon errorIcon({double size = 27}) {
+  return Icon(
+    Icons.error,
+    size: size,
+  );
+}
+
 /// The following icons track the state of the message
 Icon sentIcon(Color color) {
   return Icon(
@@ -39,10 +46,10 @@ Icon sentIcon(Color color) {
   );
 }
 
-Icon offlineIcon(Color color) {
+Icon offlineIcon(Color color, {double size = 14}) {
   return Icon(
     Icons.wifi_off_rounded,
-    size: 14,
+    size: size,
     color: color,
   );
 }

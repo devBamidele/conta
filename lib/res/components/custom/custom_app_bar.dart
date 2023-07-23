@@ -6,6 +6,7 @@ import 'package:conta/res/components/custom/custom_back_button.dart';
 import 'package:conta/res/components/online_status.dart';
 import 'package:conta/res/components/shimmer/shimmer_widget.dart';
 import 'package:conta/res/components/snackbar_label.dart';
+import 'package:conta/res/style/app_text_style.dart';
 import 'package:conta/utils/app_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
@@ -35,7 +36,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
   @override
   Widget build(BuildContext context) {
     return Consumer<ChatMessagesProvider>(
-      builder: (_, data, Widget? child) {
+      builder: (_, data, __) {
         final currentChat = data.currentChat!;
         return AnimatedSwitcher(
           duration: const Duration(milliseconds: 300),
@@ -93,7 +94,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                               )
                             : const Icon(
                                 IconlyBold.profile,
-                                color: Color(0xFF9E9E9E),
+                                color: AppColors.hintTextColor,
                                 size: 25,
                               ),
                       ),
@@ -105,11 +106,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                             Text(
                               currentChat.username,
                               overflow: TextOverflow.fade,
-                              style: const TextStyle(
-                                fontSize: 17.5,
-                                height: 1.2,
-                                fontWeight: FontWeight.w500,
-                              ),
+                              style: AppTextStyles.titleMedium,
                             ),
                             addHeight(2),
                             const OnlineStatus(),
@@ -146,12 +143,12 @@ class _CustomAppBarState extends State<CustomAppBar> {
                             ),
                           addWidth(20),
                           AppBarIcon(
-                              icon: Icons.content_copy_outlined,
-                              size: customSize - 2,
-                              onTap: () {
-                                data.copyMessageContent();
-                                AppUtils.showToast("Message Copied");
-                              }),
+                            icon: Icons.content_copy_outlined,
+                            size: customSize - 2,
+                            onTap: () => data.copyMessageContent().whenComplete(
+                                  () => AppUtils.showToast("Message Copied"),
+                                ),
+                          ),
                           addWidth(20),
                           AppBarIcon(
                             icon: Icons.reply_rounded,
@@ -206,12 +203,8 @@ void _showSnackbar(ChatMessagesProvider data) {
     'Successfully deleted message',
     delay: const Duration(seconds: 3),
     label: SnackBarLabel(
-      onTap: () {
-        data.undoDelete();
-      },
+      onTap: () => data.undoDelete(),
     ),
-    onClosed: () {
-      data.clearDeletedMessages();
-    },
+    onClosed: () => data.clearDeletedMessages(),
   );
 }

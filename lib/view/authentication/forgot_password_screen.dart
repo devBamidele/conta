@@ -1,21 +1,20 @@
-import 'dart:developer';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:conta/res/components/shake_error.dart';
 import 'package:conta/utils/app_router/router.gr.dart';
-import 'package:email_validator/email_validator.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:conta/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:iconly/iconly.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:provider/provider.dart';
 
 import '../../res/color.dart';
 import '../../res/components/custom/custom_back_button.dart';
-import '../../res/components/login_text_field.dart';
+import '../../res/components/custom_text_field.dart';
+import '../../res/style/app_text_style.dart';
 import '../../res/style/component_style.dart';
 import '../../utils/app_utils.dart';
 import '../../utils/widget_functions.dart';
+import '../../view_model/authentication_provider.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({Key? key}) : super(key: key);
@@ -27,6 +26,8 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+  late AuthenticationProvider authProvider;
+
   final myEmailController = TextEditingController();
   final emailFocusNode = FocusNode();
 
@@ -45,6 +46,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     myEmailController.addListener(_updateEmailEmpty);
 
     emailFocusNode.addListener(_updateEmailColor);
+
+    authProvider = Provider.of<AuthenticationProvider>(context, listen: false);
   }
 
   void _updateEmailEmpty() {
@@ -93,52 +96,19 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     }
   }
 
-  navigateToLogin(String email) => context.router.replaceAll(
+  void navigateToLogin(String email) => context.router.replaceAll(
         [ResendResetEmailRoute(email: email)],
       );
 
   Future<void> sendPasswordResetEmail() async {
     String email = myEmailController.text.trim();
 
-    showDialog(
+    authProvider.sendPasswordResetEmail(
       context: context,
-      builder: (context) => Center(
-        child: LoadingAnimationWidget.staggeredDotsWave(
-          color: AppColors.primaryShadeColor,
-          size: 60,
-        ),
-      ),
+      email: email,
+      showSnackbar: showSnackbar,
+      onAuthenticate: navigateToLogin,
     );
-
-    try {
-      // Check if the email is registered with the app
-      final auth = FirebaseAuth.instance;
-      final List<String> methods = await auth.fetchSignInMethodsForEmail(email);
-
-      if (methods.isNotEmpty) {
-        // Send password reset email
-        await auth.sendPasswordResetEmail(email: email).then(
-              (value) => log('Sent verification email'),
-            );
-
-        // Navigate to the password reset page
-        navigateToLogin(email);
-      } else {
-        // Email is not registered with the app
-        showSnackbar('Email is not registered with the app');
-      }
-    } catch (e) {
-      if (e is FirebaseAuthException && e.code == 'network-request-failed') {
-        // Handle network error specifically
-        showSnackbar(
-            'A network error has occurred. Please check your internet connection.');
-      } else {
-        // Handle other exceptions
-        showSnackbar('Error sending password reset email');
-      }
-    } finally {
-      context.router.pop();
-    }
   }
 
   @override
@@ -160,11 +130,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 addHeight(20),
                 const Text(
                   'Recover your password',
-                  style: TextStyle(
-                    height: 1.1,
-                    fontSize: 42,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: AppTextStyles.headlineLarge,
                 ),
                 addHeight(10),
                 Container(
@@ -172,11 +138,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   child: const Text(
                     'Enter your email address',
                     textAlign: TextAlign.left,
-                    style: TextStyle(
-                      fontSize: 16,
-                      height: 1.25,
-                      color: AppColors.opaqueTextColor,
-                    ),
+                    style: AppTextStyles.headlineSmall,
                   ),
                 ),
                 addHeight(55),
@@ -195,10 +157,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         IconlyBold.message,
                         color: emailColor,
                       ),
-                      validation: (email) =>
-                          email != null && !EmailValidator.validate(email)
-                              ? 'Enter a valid email '
-                              : null,
+                      validation: (email) => email.validateEmail(),
                     ),
                   ),
                 ),
@@ -212,11 +171,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     onPressed: onContinuePressed,
                     child: const Text(
                       'Send Recovery OTP',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: AppTextStyles.labelMedium,
                     ),
                   ),
                 ),
