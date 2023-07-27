@@ -1,12 +1,11 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:conta/res/color.dart';
 import 'package:conta/res/components/shake_error.dart';
 import 'package:conta/res/style/component_style.dart';
+import 'package:conta/utils/app_router/router.dart';
+import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:conta/utils/extensions.dart';
 import 'package:conta/utils/widget_functions.dart';
-import 'package:conta/view/account_setup/set_name_screen.dart';
-import 'package:conta/view/authentication/login_screen.dart';
-import 'package:conta/view_model/authentication_provider.dart';
+import 'package:conta/view_model/auth_provider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
@@ -14,7 +13,6 @@ import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
 import '../../res/components/custom/custom_back_button.dart';
-import '../../res/components/custom/custom_check_box.dart';
 import '../../res/components/custom_text_field.dart';
 import '../../res/style/app_text_style.dart';
 import '../../utils/app_utils.dart';
@@ -22,14 +20,12 @@ import '../../utils/app_utils.dart';
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
 
-  static const tag = '/sign_up_screen';
-
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  late AuthenticationProvider authProvider;
+  late AuthProvider authProvider;
 
   final myEmailController = TextEditingController();
   final myPasswordController = TextEditingController();
@@ -50,7 +46,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Color fillEmailColor = AppColors.inputBackGround;
 
   late bool _passwordVisible;
-  bool _isChecked = false;
 
   bool _isPasswordEmpty = true;
   bool _isEmailEmpty = true;
@@ -68,7 +63,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     emailFocusNode.addListener(_updateEmailColor);
 
-    authProvider = Provider.of<AuthenticationProvider>(context, listen: false);
+    authProvider = Provider.of<AuthProvider>(context, listen: false);
   }
 
   void _updatePasswordEmpty() {
@@ -147,7 +142,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       checkEmailAndPassword();
       return;
     }
-    Vibrate.feedback(FeedbackType.heavy);
+    Vibrate.feedback(FeedbackType.success);
   }
 
   Future<void> checkEmailAndPassword() async {
@@ -163,12 +158,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  gotoNext() => context.router.pushNamed(SetNameScreen.tag);
+  gotoNext() => navPush(context, const SetNameScreenRoute());
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus,
+      onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: false,
@@ -257,25 +252,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 18),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CustomCheckbox(
-                        value: _isChecked,
-                        onChanged: (value) {
-                          setState(() {
-                            _isChecked = value ?? false;
-                          });
-                        },
-                      ),
-                      const Text(
-                        'Remember me',
-                      ),
-                    ],
-                  ),
-                ),
+                addHeight(40),
                 Container(
                   decoration: BoxDecoration(
                     boxShadow: [shadow],
@@ -301,13 +278,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       TextSpan(
                         text: ' Login',
                         style: const TextStyle(
-                          color: AppColors.primaryColor,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 17,
                         ),
                         recognizer: TapGestureRecognizer()
                           // handle click event for the Login link
                           ..onTap =
-                              () => context.router.pushNamed(LoginScreen.tag),
+                              () => navPush(context, const LoginScreenRoute()),
                       ),
                     ],
                   ),

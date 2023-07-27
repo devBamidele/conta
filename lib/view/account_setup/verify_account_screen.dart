@@ -1,12 +1,13 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:conta/res/style/app_text_style.dart';
 import 'package:conta/res/style/component_style.dart';
 import 'package:conta/utils/widget_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../res/color.dart';
-import '../../utils/app_router/router.gr.dart';
 import '../../res/components/countdown_timer.dart';
+import '../../utils/app_router/router.gr.dart';
 
 class VerifyAccountScreen extends StatefulWidget {
   const VerifyAccountScreen({
@@ -88,11 +89,7 @@ class _VerifyAccountScreenState extends State<VerifyAccountScreen> {
                   addHeight(70),
                   const Text(
                     'Verify your email',
-                    style: TextStyle(
-                      height: 1.1,
-                      fontSize: 42,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: AppTextStyles.headlineLarge,
                   ),
                   addHeight(10),
                   Container(
@@ -100,10 +97,7 @@ class _VerifyAccountScreenState extends State<VerifyAccountScreen> {
                     child: Text(
                       'A link has been sent to $email',
                       textAlign: TextAlign.left,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: AppColors.opaqueTextColor,
-                      ),
+                      style: AppTextStyles.headlineSmall,
                     ),
                   ),
                   addHeight(60),
@@ -114,16 +108,12 @@ class _VerifyAccountScreenState extends State<VerifyAccountScreen> {
                       children: [
                         const Text(
                           'Resend code in',
-                          style: TextStyle(height: 1.4, fontSize: 18),
+                          style: AppTextStyles.titleSmall,
                         ),
                         addWidth(3),
                         CountdownTimer(
                           key: _countdownTimerKey,
-                          textStyle: const TextStyle(
-                            height: 1.4,
-                            fontSize: 18,
-                            color: AppColors.primaryColor,
-                          ),
+                          textStyle: AppTextStyles.titleSmall,
                           durationInSeconds: countDownDuration,
                           onTimerTick: (duration) {
                             setState(() {});
@@ -174,11 +164,7 @@ class _VerifyAccountScreenState extends State<VerifyAccountScreen> {
                         onPressed: () => navigateToLogin(),
                         child: const Text(
                           'Proceed to Login',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: AppTextStyles.labelMedium,
                         ),
                       ),
                     ),

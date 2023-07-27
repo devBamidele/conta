@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:auto_route/auto_route.dart';
+import 'package:conta/res/color.dart';
 import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,7 @@ import '../../res/style/app_text_style.dart';
 import '../../res/style/component_style.dart';
 import '../../utils/app_utils.dart';
 import '../../utils/widget_functions.dart';
-import '../../view_model/authentication_provider.dart';
+import '../../view_model/auth_provider.dart';
 
 class SetPhotoScreen extends StatefulWidget {
   const SetPhotoScreen({Key? key}) : super(key: key);
@@ -25,7 +26,7 @@ class SetPhotoScreen extends StatefulWidget {
 }
 
 class _SetPhotoScreenState extends State<SetPhotoScreen> {
-  late AuthenticationProvider authProvider;
+  late AuthProvider authProvider;
 
   final _picker = ImagePicker();
   File? _imageFile;
@@ -34,7 +35,7 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
   void initState() {
     super.initState();
 
-    authProvider = Provider.of<AuthenticationProvider>(context, listen: false);
+    authProvider = Provider.of<AuthProvider>(context, listen: false);
   }
 
   Future<void> createUser() async {
@@ -73,109 +74,104 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AuthenticationProvider>(
-      builder: (_, authProvider, Widget? child) {
-        return GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: Scaffold(
-            backgroundColor: Colors.white,
-            resizeToAvoidBottomInset: false,
-            body: SafeArea(
-              child: Padding(
-                padding: pagePadding,
-                child: Stack(
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        resizeToAvoidBottomInset: false,
+        body: SafeArea(
+          child: Padding(
+            padding: pagePadding,
+            child: Stack(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const CustomBackButton(
-                              padding: EdgeInsets.only(left: 0, top: 25),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 24),
-                              child: GestureDetector(
-                                onTap: createUser,
-                                child: const Text(
-                                  'Skip',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                  ),
-                                ),
+                        const CustomBackButton(
+                          padding: EdgeInsets.only(left: 0, top: 25),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 24),
+                          child: GestureDetector(
+                            onTap: createUser,
+                            child: const Text(
+                              'Skip',
+                              style: TextStyle(
+                                fontSize: 18,
                               ),
-                            )
-                          ],
-                        ),
-                        addHeight(20),
-                        const Text(
-                          'Set a photo of yourself',
-                          style: AppTextStyles.headlineLarge,
-                        ),
-                        addHeight(10),
-                        Container(
-                          alignment: Alignment.topLeft,
-                          child: const Text(
-                            'Add a photo to boost profile engagement',
-                            textAlign: TextAlign.left,
-                            style: AppTextStyles.headlineSmall,
+                            ),
                           ),
-                        ),
-                        addHeight(55),
-                        GestureDetector(
-                          onTap: () => _pickImage(ImageSource.camera),
-                          child: CircleAvatar(
-                            radius: 90,
-                            backgroundColor: photoContainerDecoration.color,
-                            backgroundImage: _imageFile != null
-                                ? FileImage(_imageFile!)
-                                : null,
-                            child: _imageFile == null
-                                ? const Icon(
-                                    IconlyBold.profile,
-                                    color: Color(0xFF9E9E9E),
-                                    size: 58,
-                                  )
-                                : null,
-                          ),
-                        ),
-                        addHeight(36),
-                        Text(
-                          authProvider.username ?? 'No name set',
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 26,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                        )
                       ],
                     ),
-                    Positioned(
-                      bottom: 40,
-                      left: 0,
-                      right: 0,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          boxShadow: [shadow],
-                        ),
-                        child: ElevatedButton(
-                          style: elevatedButton,
-                          onPressed: () => addPhoto(),
-                          child: Text(
-                            _imageFile == null ? 'Add a photo' : 'Continue',
-                            style: AppTextStyles.labelMedium,
-                          ),
-                        ),
+                    addHeight(20),
+                    const Text(
+                      'Set a photo of yourself',
+                      style: AppTextStyles.headlineLarge,
+                    ),
+                    addHeight(10),
+                    Container(
+                      alignment: Alignment.topLeft,
+                      child: const Text(
+                        'Add a photo to boost profile engagement',
+                        textAlign: TextAlign.left,
+                        style: AppTextStyles.headlineSmall,
+                      ),
+                    ),
+                    addHeight(55),
+                    GestureDetector(
+                      onTap: () => _pickImage(ImageSource.camera),
+                      child: CircleAvatar(
+                        radius: 90,
+                        backgroundColor: photoContainerDecoration.color,
+                        backgroundImage:
+                            _imageFile != null ? FileImage(_imageFile!) : null,
+                        child: _imageFile == null
+                            ? const Icon(
+                                IconlyBold.profile,
+                                color: AppColors.hintTextColor,
+                                size: 58,
+                              )
+                            : null,
+                      ),
+                    ),
+                    addHeight(36),
+                    Text(
+                      authProvider.username ?? 'No name set',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
                 ),
-              ),
+                Positioned(
+                  bottom: 40,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      boxShadow: [shadow],
+                    ),
+                    child: ElevatedButton(
+                      style: elevatedButton,
+                      onPressed: () => addPhoto(),
+                      child: Text(
+                        _imageFile == null ? 'Add a photo' : 'Continue',
+                        style: AppTextStyles.labelMedium,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }

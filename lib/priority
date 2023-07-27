@@ -30,3 +30,8 @@ useFirstLogin() {
     myEmailController.text = 'ajewole.bamidele@stu.cu.edu.ng';
     myPasswordController.text = 'dele004';
   }
+
+   useFourthLogin() {
+      myEmailController.text = 'bickerstethdemilade@gmail.com';
+      myPasswordController.text = 'demilade';
+    }

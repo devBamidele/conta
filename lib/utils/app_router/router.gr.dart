@@ -12,23 +12,24 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:auto_route/auto_route.dart' as _i13;
-import 'package:cloud_firestore/cloud_firestore.dart' as _i16;
+import 'package:cloud_firestore/cloud_firestore.dart' as _i17;
 import 'package:conta/res/components/image_preview/media_preview_screen.dart'
     as _i10;
 import 'package:conta/view/account_setup/set_name_screen.dart' as _i2;
 import 'package:conta/view/account_setup/set_photo_page.dart' as _i3;
+import 'package:conta/view/account_setup/sign_up_screen.dart' as _i5;
 import 'package:conta/view/account_setup/verify_account_screen.dart' as _i4;
-import 'package:conta/view/authentication/forgot_password_screen.dart' as _i6;
 import 'package:conta/view/authentication/login_screen.dart' as _i7;
+import 'package:conta/view/authentication/recover_password_screen.dart' as _i6;
 import 'package:conta/view/authentication/resend_reset_email.dart' as _i8;
-import 'package:conta/view/authentication/sign_up_screen.dart' as _i5;
 import 'package:conta/view/home/persistent_tab.dart' as _i11;
 import 'package:conta/view/home/tab_views/message_view/chat_screen.dart'
     as _i12;
 import 'package:conta/view/home/tab_views/message_view/preview_screen.dart'
     as _i9;
 import 'package:conta/view/onboard/splash_screen.dart' as _i1;
-import 'package:firebase_auth/firebase_auth.dart' as _i15;
+import 'package:firebase_auth/firebase_auth.dart' as _i16;
+import 'package:flutter/cupertino.dart' as _i15;
 import 'package:flutter/material.dart' as _i14;
 
 class AppRouter extends _i13.RootStackRouter {
@@ -74,7 +75,7 @@ class AppRouter extends _i13.RootStackRouter {
     ForgotPasswordScreenRoute.name: (routeData) {
       return _i13.AdaptivePage<dynamic>(
         routeData: routeData,
-        child: const _i6.ForgotPasswordScreen(),
+        child: const _i6.RecoverPasswordScreen(),
       );
     },
     LoginScreenRoute.name: (routeData) {
@@ -223,8 +224,8 @@ class SetPhotoScreenRoute extends _i13.PageRouteInfo<void> {
 class VerifyAccountScreenRoute
     extends _i13.PageRouteInfo<VerifyAccountScreenRouteArgs> {
   VerifyAccountScreenRoute({
-    _i14.Key? key,
-    required _i15.UserCredential userCredential,
+    _i15.Key? key,
+    required _i16.UserCredential userCredential,
   }) : super(
           VerifyAccountScreenRoute.name,
           path: '/verify_account_screen',
@@ -243,9 +244,9 @@ class VerifyAccountScreenRouteArgs {
     required this.userCredential,
   });
 
-  final _i14.Key? key;
+  final _i15.Key? key;
 
-  final _i15.UserCredential userCredential;
+  final _i16.UserCredential userCredential;
 
   @override
   String toString() {
@@ -266,7 +267,7 @@ class SignUpScreenRoute extends _i13.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i6.ForgotPasswordScreen]
+/// [_i6.RecoverPasswordScreen]
 class ForgotPasswordScreenRoute extends _i13.PageRouteInfo<void> {
   const ForgotPasswordScreenRoute()
       : super(
@@ -294,7 +295,7 @@ class LoginScreenRoute extends _i13.PageRouteInfo<void> {
 class ResendResetEmailRoute
     extends _i13.PageRouteInfo<ResendResetEmailRouteArgs> {
   ResendResetEmailRoute({
-    _i14.Key? key,
+    _i15.Key? key,
     required String email,
   }) : super(
           ResendResetEmailRoute.name,
@@ -314,7 +315,7 @@ class ResendResetEmailRouteArgs {
     required this.email,
   });
 
-  final _i14.Key? key;
+  final _i15.Key? key;
 
   final String email;
 
@@ -341,10 +342,10 @@ class PreviewScreenRoute extends _i13.PageRouteInfo<void> {
 class MediaPreviewScreenRoute
     extends _i13.PageRouteInfo<MediaPreviewScreenRouteArgs> {
   MediaPreviewScreenRoute({
-    _i14.Key? key,
+    _i15.Key? key,
     required List<String> media,
     required String sender,
-    required _i16.Timestamp timeSent,
+    required _i17.Timestamp timeSent,
   }) : super(
           MediaPreviewScreenRoute.name,
           path: '/media-preview-screen',
@@ -367,13 +368,13 @@ class MediaPreviewScreenRouteArgs {
     required this.timeSent,
   });
 
-  final _i14.Key? key;
+  final _i15.Key? key;
 
   final List<String> media;
 
   final String sender;
 
-  final _i16.Timestamp timeSent;
+  final _i17.Timestamp timeSent;
 
   @override
   String toString() {

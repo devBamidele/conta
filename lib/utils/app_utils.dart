@@ -22,6 +22,7 @@ class AppUtils {
     if (text == null) return;
 
     final snackBar = SnackBar(
+      elevation: 4,
       margin: const EdgeInsets.only(left: 20, right: 20, bottom: 15),
       behavior: SnackBarBehavior.floating,
       duration: delay,
@@ -41,7 +42,7 @@ class AppUtils {
           label ?? const SizedBox.shrink(),
         ],
       ),
-      backgroundColor: AppColors.dividerColor,
+      backgroundColor: AppColors.selectedBackgroundColor,
     );
 
     messengerKey.currentState!

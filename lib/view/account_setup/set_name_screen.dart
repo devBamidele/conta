@@ -13,21 +13,19 @@ import '../../res/components/custom_text_field.dart';
 import '../../res/components/shake_error.dart';
 import '../../res/style/app_text_style.dart';
 import '../../utils/widget_functions.dart';
-import '../../view_model/authentication_provider.dart';
+import '../../view_model/auth_provider.dart';
 
 class SetNameScreen extends StatefulWidget {
   const SetNameScreen({
     Key? key,
   }) : super(key: key);
 
-  static const tag = '/set_name_screen';
-
   @override
   State<SetNameScreen> createState() => _SetNameScreenState();
 }
 
 class _SetNameScreenState extends State<SetNameScreen> {
-  late AuthenticationProvider authProvider;
+  late AuthProvider authProvider;
 
   final myNameController = TextEditingController();
   final myUserNameController = TextEditingController();
@@ -55,7 +53,7 @@ class _SetNameScreenState extends State<SetNameScreen> {
   void initState() {
     super.initState();
 
-    authProvider = Provider.of<AuthenticationProvider>(context, listen: false);
+    authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     myNameController.addListener(_updateNameEmpty);
 
@@ -154,7 +152,7 @@ class _SetNameScreenState extends State<SetNameScreen> {
       setValues();
       return;
     }
-    Vibrate.feedback(FeedbackType.heavy);
+    Vibrate.feedback(FeedbackType.success);
   }
 
   // Save the values to the authentication provider and proceed
@@ -170,7 +168,7 @@ class _SetNameScreenState extends State<SetNameScreen> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus,
+      onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: false,
@@ -243,7 +241,7 @@ class _SetNameScreenState extends State<SetNameScreen> {
                     ),
                   ),
                 ),
-                addHeight(67),
+                addHeight(40),
                 Container(
                   decoration: BoxDecoration(
                     boxShadow: [shadow],

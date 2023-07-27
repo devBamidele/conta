@@ -49,6 +49,15 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    /*
+    allprojects {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "--warning-mode all"
+        }
+    }
+     */
+
+
     kotlinOptions {
         jvmTarget = '1.8'
     }

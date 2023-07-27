@@ -1,7 +1,6 @@
 import 'package:conta/utils/services/storage_manager.dart';
-import 'package:conta/view_model/authentication_provider.dart';
+import 'package:conta/view_model/auth_provider.dart';
 import 'package:conta/view_model/chat_messages_provider.dart';
-import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -16,14 +15,11 @@ void main() async {
   await dotenv.load();
 
   // Activate app check
-  await FirebaseAppCheck.instance
-      .activate(androidProvider: AndroidProvider.debug);
+  // await FirebaseAppCheck.instance
+  //   .activate(androidProvider: AndroidProvider.debug);
 
   // Get the application document directory
   await StorageManager.initialize();
-
-  // Instantiate and start the heartbeat service
-  // HeartbeatService().start();
 
   /*
   OneSignal.shared.setAppId(dotenv.env['APP_ID']!);
@@ -39,7 +35,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ChatMessagesProvider()),
-        ChangeNotifierProvider(create: (_) => AuthenticationProvider()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
       ],
       child: const MyApp(),
     ),

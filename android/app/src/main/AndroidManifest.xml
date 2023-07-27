@@ -11,7 +11,6 @@
         android:maxSdkVersion="32"
         tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <!-- Provide required visibility configuration for API level 30 and above -->
     <queries>
         <!-- If your app checks for internet support -->
@@ -46,6 +45,9 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -56,6 +58,7 @@
                     android:host="conta---instant-messaging-app.firebaseapp.com"
                     android:scheme="https" />
             </intent-filter>
+
         </activity>
 
         <!-- Don't delete the meta-data below.

@@ -1,5 +1,5 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:conta/res/components/shake_error.dart';
+import 'package:conta/utils/app_router/router.dart';
 import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:conta/utils/extensions.dart';
 import 'package:flutter/material.dart';
@@ -14,19 +14,19 @@ import '../../res/style/app_text_style.dart';
 import '../../res/style/component_style.dart';
 import '../../utils/app_utils.dart';
 import '../../utils/widget_functions.dart';
-import '../../view_model/authentication_provider.dart';
+import '../../view_model/auth_provider.dart';
 
-class ForgotPasswordScreen extends StatefulWidget {
-  const ForgotPasswordScreen({Key? key}) : super(key: key);
+class RecoverPasswordScreen extends StatefulWidget {
+  const RecoverPasswordScreen({Key? key}) : super(key: key);
 
   static const tag = '/forgot_password_screen';
 
   @override
-  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+  State<RecoverPasswordScreen> createState() => _RecoverPasswordScreenState();
 }
 
-class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
-  late AuthenticationProvider authProvider;
+class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
+  late AuthProvider authProvider;
 
   final myEmailController = TextEditingController();
   final emailFocusNode = FocusNode();
@@ -47,7 +47,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
     emailFocusNode.addListener(_updateEmailColor);
 
-    authProvider = Provider.of<AuthenticationProvider>(context, listen: false);
+    authProvider = Provider.of<AuthProvider>(context, listen: false);
   }
 
   void _updateEmailEmpty() {
@@ -85,7 +85,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       sendPasswordResetEmail();
     } else {
       shakeState.currentState?.shake();
-      Vibrate.feedback(FeedbackType.heavy);
+      Vibrate.feedback(FeedbackType.success);
       return;
     }
   }
@@ -96,9 +96,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     }
   }
 
-  void navigateToLogin(String email) => context.router.replaceAll(
-        [ResendResetEmailRoute(email: email)],
-      );
+  void navigateToLogin(String email) {
+    navReplaceAll(
+      context,
+      [ResendResetEmailRoute(email: email)],
+    );
+  }
 
   Future<void> sendPasswordResetEmail() async {
     String email = myEmailController.text.trim();

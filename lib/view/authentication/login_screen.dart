@@ -1,27 +1,22 @@
 import 'dart:async';
-import 'dart:developer';
-import 'dart:io';
 
-import 'package:auto_route/auto_route.dart';
 import 'package:conta/res/components/custom/custom_back_button.dart';
-import 'package:conta/res/components/custom/custom_check_box.dart';
 import 'package:conta/res/components/login_options.dart';
 import 'package:conta/res/style/app_text_style.dart';
 import 'package:conta/res/style/component_style.dart';
 import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:conta/utils/extensions.dart';
-import 'package:conta/view/authentication/forgot_password_screen.dart';
-import 'package:conta/view_model/authentication_provider.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:conta/view_model/auth_provider.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
-import 'package:uni_links/uni_links.dart';
 
 import '../../res/color.dart';
 import '../../res/components/custom_text_field.dart';
 import '../../res/components/shake_error.dart';
+import '../../utils/app_router/router.dart';
 import '../../utils/app_utils.dart';
 import '../../utils/services/auth_service.dart';
 import '../../utils/widget_functions.dart';
@@ -39,7 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
   late StreamSubscription? deepLinkSubscription;
 
   late final AuthService _authService = AuthService();
-  late AuthenticationProvider authProvider;
+  late AuthProvider authProvider;
 
   final myEmailController = TextEditingController();
   final myPasswordController = TextEditingController();
@@ -60,7 +55,6 @@ class _LoginScreenState extends State<LoginScreen> {
   Color fillEmailColor = AppColors.inputBackGround;
 
   late bool _passwordVisible;
-  bool _isChecked = false;
 
   late bool isRootScreen;
 
@@ -71,9 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
 
-    linkStreamListen();
-
-    checkRoot();
+    isRootScreen = isRoot(context);
 
     _passwordVisible = true;
 
@@ -85,7 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     emailFocusNode.addListener(_updateEmailColor);
 
-    authProvider = Provider.of<AuthenticationProvider>(context, listen: false);
+    authProvider = Provider.of<AuthProvider>(context, listen: false);
   }
 
   void _updatePasswordEmpty() {
@@ -151,11 +143,6 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  useFourthLogin() {
-    myEmailController.text = 'bickerstethdemilade@gmail.com';
-    myPasswordController.text = 'demilade';
-  }
-
   void showSnackbar(String message) {
     if (mounted) {
       AppUtils.showSnackbar(message);
@@ -163,8 +150,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void onContinuePressed() {
-    useFourthLogin();
-
     final email = formKey1.currentState?.validate();
     final password = formKey2.currentState?.validate();
 
@@ -179,47 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
       loginWithEmailAndPassword();
       return;
     }
-    Vibrate.feedback(FeedbackType.heavy);
-  }
-
-  void linkStreamListen() {
-    deepLinkSubscription = linkStream.listen(
-      (String? link) async {
-        String code = authProvider.getCodeFromGitHubLink(link);
-
-        log('Gotten code from Github link');
-        try {
-          UserCredential userCredential =
-              await authProvider.loginWithGitHub(code);
-          User? user = userCredential.user;
-
-          // Check if user is authenticated and email is verified
-          if (user == null || !user.emailVerified) {
-            showSnackbar('Please verify your email before logging in');
-            return;
-          }
-
-          // Update user online status
-          _authService.updateUserOnlineStatus(true);
-
-          // Navigate to home screen
-          gotoHome();
-        } on FirebaseAuthException catch (e) {
-          if (e.code == 'account-exists-with-different-credential') {
-            showSnackbar('Account exists with different credential');
-          } else if (e.code == 'invalid-credential') {
-            showSnackbar('Invalid credential');
-          } else {
-            showSnackbar('An error occurred, please try again later');
-          }
-        } on SocketException {
-          showSnackbar('No internet connection');
-        } catch (_) {
-          showSnackbar('An error occurred, please try again later');
-        }
-      },
-      cancelOnError: true,
-    );
+    Vibrate.feedback(FeedbackType.success);
   }
 
   Future<void> loginWithGoogle() async {
@@ -227,10 +172,6 @@ class _LoginScreenState extends State<LoginScreen> {
       showSnackbar: showSnackbar,
       onAuthenticate: onAuthenticate,
     );
-  }
-
-  Future<void> loginWithGithub() async {
-    await authProvider.loginWithGithub();
   }
 
   Future<void> loginWithEmailAndPassword() async {
@@ -250,9 +191,7 @@ class _LoginScreenState extends State<LoginScreen> {
     _authService.updateUserOnlineStatus(true).then((_) => gotoHome());
   }
 
-  gotoHome() => context.router.replaceAll([const PersistentTabRoute()]);
-
-  checkRoot() => isRootScreen = context.router.isRoot;
+  gotoHome() => navReplaceAll(context, [const PersistentTabRoute()]);
 
   @override
   Widget build(BuildContext context) {
@@ -347,28 +286,28 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                         ),
                       ),
+                    ), //
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 20),
+                    child: GestureDetector(
+                      onTap: () =>
+                          navPush(context, const ForgotPasswordScreenRoute()),
+                      child: Text(
+                        'Forgot password ?',
+                        textAlign: TextAlign.center,
+                        style: AppTextStyles.labelSmall.copyWith(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 17,
+                        ),
+                      ),
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 18),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CustomCheckbox(
-                        value: _isChecked,
-                        onChanged: (value) {
-                          setState(() {
-                            _isChecked = value ?? false;
-                          });
-                        },
-                      ),
-                      const Text(
-                        'Remember me',
-                      ),
-                    ],
-                  ),
-                ),
+                addHeight(40),
                 Container(
                   decoration: BoxDecoration(
                     boxShadow: [shadow],
@@ -383,45 +322,58 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 addHeight(28),
-                GestureDetector(
-                  onTap: () =>
-                      context.router.pushNamed(ForgotPasswordScreen.tag),
-                  child: const Text(
-                    'Forgot the password?',
-                    textAlign: TextAlign.center,
+                RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
                     style: AppTextStyles.labelSmall,
+                    children: [
+                      const TextSpan(
+                        text: 'Don\'t have an account?',
+                      ),
+                      TextSpan(
+                        text: ' Sign up',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 17,
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          // handle click event for the Login link
+                          ..onTap =
+                              () => navPush(context, const SignUpScreenRoute()),
+                      ),
+                    ],
                   ),
                 ),
                 addHeight(40),
                 Stack(
                   alignment: Alignment.center,
                   children: [
-                    const Divider(),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Divider(),
+                    ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
                       color: Colors.white,
                       child: const Text(
                         'or continue with',
-                        style: AppTextStyles.titleSmall,
+                        style: AppTextStyles.headlineSmall,
                       ),
                     ),
                   ],
                 ),
-                addHeight(20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    LoginOptions(
-                      scale: 0.9,
-                      onTap: () => loginWithGoogle(),
-                      path: 'assets/images/google.svg',
-                    ),
-                    LoginOptions(
-                      scale: 0.9,
-                      onTap: () => loginWithGithub(),
-                      path: 'assets/images/github.svg',
-                    ),
-                  ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 30),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      LoginOptions(
+                        scale: 1,
+                        onTap: () => loginWithGoogle(),
+                        path: 'assets/images/google.svg',
+                      ),
+                    ],
+                  ),
                 )
               ],
             ),

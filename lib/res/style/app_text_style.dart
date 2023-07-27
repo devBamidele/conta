@@ -36,7 +36,7 @@ class AppTextStyles {
   static const TextStyle labelSmall = TextStyle(
     fontSize: 16,
     height: 1.4,
-    letterSpacing: 0.2,
+    letterSpacing: 0.3,
     color: AppColors.primaryColor,
   );
 
