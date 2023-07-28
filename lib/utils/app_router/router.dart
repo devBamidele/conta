@@ -25,7 +25,7 @@ import '../../view/onboard/splash_screen.dart';
     // Authentication screens
     AutoRoute(page: SignUpScreen),
     AutoRoute(page: RecoverPasswordScreen, path: RecoverPasswordScreen.tag),
-    AutoRoute(page: LoginScreen, path: LoginScreen.tag),
+    AutoRoute(page: LoginScreen),
     AutoRoute(page: ResendResetEmail),
     AutoRoute(page: PreviewScreen, path: PreviewScreen.tag),
 

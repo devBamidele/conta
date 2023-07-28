@@ -44,4 +44,3 @@ app.*.map.json
 /android/app/release
 /debug.keystore
 /.env
-/lib/secret_keys

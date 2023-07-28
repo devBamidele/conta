@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:auto_route/auto_route.dart';
 import 'package:conta/res/color.dart';
 import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,6 +11,7 @@ import 'package:provider/provider.dart';
 import '../../res/components/custom/custom_back_button.dart';
 import '../../res/style/app_text_style.dart';
 import '../../res/style/component_style.dart';
+import '../../utils/app_router/router.dart';
 import '../../utils/app_utils.dart';
 import '../../utils/widget_functions.dart';
 import '../../view_model/auth_provider.dart';
@@ -46,7 +46,8 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
     );
   }
 
-  verifyAccount(UserCredential credential) => context.router.replaceAll(
+  verifyAccount(UserCredential credential) => navReplaceAll(
+        context,
         [VerifyAccountScreenRoute(userCredential: credential)],
       );
 

@@ -96,4 +96,17 @@ extension StringExtentions on String? {
       return existingUserName;
     }
   }
+
+  bool validateInput() {
+    final value = this?.trim();
+    if (value == null || value.isEmpty) {
+      return false;
+    } else if (!RegExp(r'^[a-zA-Z0-9_\s]+$').hasMatch(value)) {
+      return false;
+    } else if (value.length < 4 || value.length > 30) {
+      return false;
+    } else {
+      return true;
+    }
+  }
 }

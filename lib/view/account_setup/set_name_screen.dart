@@ -1,7 +1,9 @@
-import 'package:auto_route/auto_route.dart';
+import 'dart:async';
+
 import 'package:conta/res/style/component_style.dart';
+import 'package:conta/utils/app_router/router.dart';
+import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:conta/utils/extensions.dart';
-import 'package:conta/view/account_setup/set_photo_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:iconly/iconly.dart';
@@ -49,6 +51,8 @@ class _SetNameScreenState extends State<SetNameScreen> {
   bool _isNameEmpty = true;
   bool _isUserNameEmpty = true;
 
+  Timer? _debounce;
+
   @override
   void initState() {
     super.initState();
@@ -61,25 +65,9 @@ class _SetNameScreenState extends State<SetNameScreen> {
 
     myUserNameController.addListener(_updateUserNameEmpty);
 
-    myUserNameController.addListener(_checkIfUsernameExits);
+    myUserNameController.addListener(_onSearchChanged);
 
     usernameFocusNode.addListener(_updateUserNameColor);
-  }
-
-  void _checkIfUsernameExits() async {
-    // check if the username already exists in the Firestore database
-    final exists =
-        await authProvider.checkIfUsernameExists(myUserNameController.text);
-
-    if (exists) {
-      setState(() {
-        existingUserName = 'This username is already occupied';
-      });
-    } else {
-      setState(() {
-        existingUserName = null;
-      });
-    }
   }
 
   void _updateNameEmpty() {
@@ -120,6 +108,24 @@ class _SetNameScreenState extends State<SetNameScreen> {
     });
   }
 
+  _onSearchChanged() {
+    final text = myUserNameController.text;
+    if (text.validateInput()) {
+      if (_debounce?.isActive ?? false) _debounce?.cancel();
+      _debounce = Timer(
+        const Duration(milliseconds: 500),
+        () async {
+          // Perform the username availability check here
+          bool unique = await authProvider.checkIfUsernameExists(text);
+          setState(() {
+            existingUserName =
+                unique ? null : 'This username is already occupied';
+          });
+        },
+      );
+    }
+  }
+
   @override
   void dispose() {
     myNameController.dispose();
@@ -134,6 +140,7 @@ class _SetNameScreenState extends State<SetNameScreen> {
     shakeState1.currentState?.dispose();
     shakeState2.currentState?.dispose();
 
+    _debounce?.cancel();
     super.dispose();
   }
 
@@ -162,7 +169,7 @@ class _SetNameScreenState extends State<SetNameScreen> {
 
     authProvider.setNameAndUserName(name, userName);
 
-    context.router.pushNamed(SetPhotoScreen.tag);
+    navPush(context, const SetPhotoScreenRoute());
   }
 
   @override
