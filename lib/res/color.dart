@@ -16,7 +16,7 @@ class AppColors {
 
   // For text
   static const Color opaqueTextColor = Color(0xFF969696);
-  static Color dividerColor = Colors.grey.shade300;
+  static Color dividerColor = Colors.grey.shade200;
   static const Color continueWithColor = Color(0xFF616161);
   static const Color extraTextColor = Color(0xFF999999);
 

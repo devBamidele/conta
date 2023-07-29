@@ -109,4 +109,14 @@ extension StringExtentions on String? {
       return true;
     }
   }
+
+  String shortenEmail() {
+    if (this == null) {
+      return '';
+    }
+    final start = this!.substring(0, 3);
+    final end = this!.substring(this!.indexOf('@') - 2);
+    const middle = '****';
+    return '$start$middle$end';
+  }
 }

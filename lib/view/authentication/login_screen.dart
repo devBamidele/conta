@@ -29,8 +29,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  late StreamSubscription? deepLinkSubscription;
-
   late final AuthService _authService = AuthService();
   late AuthProvider authProvider;
 
@@ -53,7 +51,6 @@ class _LoginScreenState extends State<LoginScreen> {
   Color fillEmailColor = AppColors.inputBackGround;
 
   late bool _passwordVisible;
-
   late bool isRootScreen;
 
   bool _isPasswordEmpty = true;
@@ -130,15 +127,7 @@ class _LoginScreenState extends State<LoginScreen> {
     shakeState1.currentState?.dispose();
     shakeState2.currentState?.dispose();
 
-    disposeDeepLink();
     super.dispose();
-  }
-
-  void disposeDeepLink() {
-    if (deepLinkSubscription != null) {
-      deepLinkSubscription!.cancel();
-      deepLinkSubscription = null;
-    }
   }
 
   void showSnackbar(String message) {
@@ -189,6 +178,12 @@ class _LoginScreenState extends State<LoginScreen> {
     _authService.updateUserOnlineStatus(true).then((_) => gotoHome());
   }
 
+  void toggleVisibility() {
+    setState(
+      () => _passwordVisible = !_passwordVisible,
+    );
+  }
+
   gotoHome() => navReplaceAll(context, [const PersistentTabRoute()]);
 
   @override
@@ -199,181 +194,172 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: false,
         body: SafeArea(
-          child: Padding(
-            padding: pagePadding,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Visibility(
-                  visible: isRootScreen,
-                  replacement: const CustomBackButton(
-                    padding: EdgeInsets.only(left: 0, top: 25),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: pagePadding,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Visibility(
+                    visible: isRootScreen,
+                    replacement: const CustomBackButton(
+                      padding: EdgeInsets.only(left: 0, top: 25),
+                    ),
+                    child: addHeight(50),
                   ),
-                  child: addHeight(50),
-                ),
-                addHeight(20),
-                const Text(
-                  'Login to your Account',
-                  style: AppTextStyles.headlineLarge,
-                ),
-                addHeight(10),
-                Container(
-                  alignment: Alignment.topLeft,
-                  child: const Text(
-                    'Enter your email and password below',
-                    textAlign: TextAlign.left,
-                    style: AppTextStyles.headlineSmall,
+                  addHeight(20),
+                  const Text(
+                    'Login to your Account',
+                    style: AppTextStyles.headlineLarge,
                   ),
-                ),
-                addHeight(55),
-                Form(
-                  key: formKey1,
-                  child: ShakeWidget(
-                    key: shakeState1,
-                    shakeCount: 3,
-                    shakeOffset: 6,
-                    child: CustomTextField(
-                      focusNode: emailFocusNode,
-                      textController: myEmailController,
-                      customFillColor: fillEmailColor,
-                      hintText: 'Email',
-                      prefixIcon: Icon(
-                        IconlyBold.message,
-                        color: emailColor,
-                      ),
-                      validation: (email) => email.validateEmail(),
+                  addHeight(10),
+                  Container(
+                    alignment: Alignment.topLeft,
+                    child: const Text(
+                      'Enter your email and password below',
+                      textAlign: TextAlign.left,
+                      style: AppTextStyles.headlineSmall,
                     ),
                   ),
-                ),
-                Form(
-                  key: formKey2,
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      top: 20,
-                      bottom: 20,
-                    ),
+                  addHeight(55),
+                  Form(
+                    key: formKey1,
                     child: ShakeWidget(
-                      key: shakeState2,
-                      shakeCount: 3,
-                      shakeOffset: 6,
+                      key: shakeState1,
                       child: CustomTextField(
-                        focusNode: passwordFocusNode,
-                        textController: myPasswordController,
-                        customFillColor: fillPasswordColor,
-                        action: TextInputAction.done,
-                        hintText: 'Password',
-                        obscureText: _passwordVisible,
-                        validation: (value) => value.validatePassword(),
+                        focusNode: emailFocusNode,
+                        textController: myEmailController,
+                        customFillColor: fillEmailColor,
+                        hintText: 'Email',
                         prefixIcon: Icon(
-                          IconlyBold.lock,
-                          color: passwordColor,
+                          IconlyBold.message,
+                          color: emailColor,
                         ),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            // Based on passwordVisible state choose the icon
-                            _passwordVisible
-                                ? Icons.visibility_off
-                                : Icons.visibility,
+                        validation: (email) => email?.trim().validateEmail(),
+                      ),
+                    ),
+                  ),
+                  Form(
+                    key: formKey2,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        top: 20,
+                        bottom: 10,
+                      ),
+                      child: ShakeWidget(
+                        key: shakeState2,
+                        child: CustomTextField(
+                          focusNode: passwordFocusNode,
+                          textController: myPasswordController,
+                          customFillColor: fillPasswordColor,
+                          action: TextInputAction.done,
+                          hintText: 'Password',
+                          obscureText: _passwordVisible,
+                          validation: (value) => value.validatePassword(),
+                          prefixIcon: Icon(
+                            IconlyBold.lock,
                             color: passwordColor,
                           ),
-                          onPressed: () {
-                            // Update the state i.e. toggle the state of passwordVisible variable
-                            setState(() {
-                              _passwordVisible = !_passwordVisible;
-                            });
-                          },
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              // Based on passwordVisible state choose the icon
+                              _passwordVisible
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              color: passwordColor,
+                            ),
+                            onPressed: toggleVisibility,
+                          ),
                         ),
-                      ),
-                    ), //
+                      ), //
+                    ),
                   ),
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 20),
-                    child: GestureDetector(
-                      onTap: () =>
-                          navPush(context, const ForgotPasswordScreenRoute()),
-                      child: Text(
-                        'Forgot password ?',
-                        textAlign: TextAlign.center,
-                        style: AppTextStyles.labelSmall.copyWith(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 17,
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: GestureDetector(
+                        onTap: () => navPush(
+                            context, const RecoverPasswordScreenRoute()),
+                        child: Text(
+                          'Forgot password ?',
+                          textAlign: TextAlign.center,
+                          style: AppTextStyles.labelSmall.copyWith(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 15,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                addHeight(40),
-                Container(
-                  decoration: BoxDecoration(
-                    boxShadow: [shadow],
-                  ),
-                  child: ElevatedButton(
-                    style: elevatedButton,
-                    onPressed: onContinuePressed,
-                    child: const Text(
-                      'Continue',
-                      style: AppTextStyles.labelMedium,
+                  addHeight(40),
+                  Container(
+                    decoration: BoxDecoration(
+                      boxShadow: [shadow],
+                    ),
+                    child: ElevatedButton(
+                      style: elevatedButton,
+                      onPressed: onContinuePressed,
+                      child: const Text(
+                        'Continue',
+                        style: AppTextStyles.labelMedium,
+                      ),
                     ),
                   ),
-                ),
-                addHeight(28),
-                RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    style: AppTextStyles.labelSmall,
+                  addHeight(28),
+                  RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      children: [
+                        const TextSpan(
+                          text: 'Don\'t have an account? ',
+                          style: AppTextStyles.headlineSmall,
+                        ),
+                        TextSpan(
+                          text: ' Sign up',
+                          style: AppTextStyles.labelSmall.copyWith(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 17,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            // handle click event for the Login link
+                            ..onTap = () =>
+                                navPush(context, const SignUpScreenRoute()),
+                        ),
+                      ],
+                    ),
+                  ),
+                  addHeight(40),
+                  Stack(
+                    alignment: Alignment.center,
                     children: [
-                      const TextSpan(
-                        text: 'Don\'t have an account?',
-                      ),
-                      TextSpan(
-                        text: ' Sign up',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 17,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Divider(
+                          color: Colors.grey[200],
                         ),
-                        recognizer: TapGestureRecognizer()
-                          // handle click event for the Login link
-                          ..onTap =
-                              () => navPush(context, const SignUpScreenRoute()),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        color: Colors.white,
+                        child: const Text(
+                          'or continue with',
+                          style: AppTextStyles.titleSmall,
+                        ),
                       ),
                     ],
                   ),
-                ),
-                addHeight(40),
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: Divider(),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      color: Colors.white,
-                      child: const Text(
-                        'or continue with',
-                        style: AppTextStyles.headlineSmall,
-                      ),
-                    ),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 30),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      LoginOptions(
-                        scale: 1,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 30),
+                    child: Center(
+                      child: LoginOptions(
                         onTap: () => loginWithGoogle(),
                         path: 'assets/images/google.svg',
                       ),
-                    ],
-                  ),
-                )
-              ],
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
         ),

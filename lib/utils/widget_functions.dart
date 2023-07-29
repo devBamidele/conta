@@ -1,10 +1,20 @@
 import 'package:conta/res/color.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 Widget addHeight(double height) => SizedBox(height: height);
 
 Widget addWidth(double width) => SizedBox(width: width);
+
+Widget displayLoading(BuildContext context) {
+  return Center(
+    child: LoadingAnimationWidget.prograssiveDots(
+      color: Colors.white,
+      size: 50,
+    ),
+  );
+}
 
 Widget doubleTick({double size = 20}) {
   return Icon(

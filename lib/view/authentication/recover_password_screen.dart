@@ -19,8 +19,6 @@ import '../../view_model/auth_provider.dart';
 class RecoverPasswordScreen extends StatefulWidget {
   const RecoverPasswordScreen({Key? key}) : super(key: key);
 
-  static const tag = '/forgot_password_screen';
-
   @override
   State<RecoverPasswordScreen> createState() => _RecoverPasswordScreenState();
 }
@@ -96,10 +94,10 @@ class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
     }
   }
 
-  void navigateToLogin(String email) {
+  void onAuthenticate(String email) {
     navReplaceAll(
       context,
-      [ResendResetEmailRoute(email: email)],
+      [UpdatePasswordScreenRoute(email: email)],
     );
   }
 
@@ -110,75 +108,78 @@ class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
       context: context,
       email: email,
       showSnackbar: showSnackbar,
-      onAuthenticate: navigateToLogin,
+      onAuthenticate: onAuthenticate,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus,
+      onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: false,
         body: SafeArea(
-          child: Padding(
-            padding: pagePadding,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const CustomBackButton(
-                  padding: EdgeInsets.only(left: 0, top: 25),
-                ),
-                addHeight(20),
-                const Text(
-                  'Recover your password',
-                  style: AppTextStyles.headlineLarge,
-                ),
-                addHeight(10),
-                Container(
-                  alignment: Alignment.topLeft,
-                  child: const Text(
-                    'Enter your email address',
-                    textAlign: TextAlign.left,
-                    style: AppTextStyles.headlineSmall,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: pagePadding,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const CustomBackButton(
+                    padding: EdgeInsets.only(left: 0, top: 25),
                   ),
-                ),
-                addHeight(55),
-                Form(
-                  key: formKey,
-                  child: ShakeWidget(
-                    key: shakeState,
-                    shakeCount: 3,
-                    shakeOffset: 6,
-                    child: CustomTextField(
-                      focusNode: emailFocusNode,
-                      textController: myEmailController,
-                      customFillColor: fillEmailColor,
-                      hintText: 'Email',
-                      prefixIcon: Icon(
-                        IconlyBold.message,
-                        color: emailColor,
-                      ),
-                      validation: (email) => email.validateEmail(),
-                    ),
+                  addHeight(20),
+                  const Text(
+                    'Recover your password',
+                    style: AppTextStyles.headlineLarge,
                   ),
-                ),
-                addHeight(67),
-                Container(
-                  decoration: BoxDecoration(
-                    boxShadow: [shadow],
-                  ),
-                  child: ElevatedButton(
-                    style: elevatedButton,
-                    onPressed: onContinuePressed,
+                  addHeight(10),
+                  Container(
+                    alignment: Alignment.topLeft,
                     child: const Text(
-                      'Send Recovery OTP',
-                      style: AppTextStyles.labelMedium,
+                      'Enter your email address',
+                      textAlign: TextAlign.left,
+                      style: AppTextStyles.headlineSmall,
                     ),
                   ),
-                ),
-              ],
+                  addHeight(55),
+                  Form(
+                    key: formKey,
+                    child: ShakeWidget(
+                      key: shakeState,
+                      child: CustomTextField(
+                        focusNode: emailFocusNode,
+                        textController: myEmailController,
+                        customFillColor: fillEmailColor,
+                        hintText: 'Email',
+                        prefixIcon: Icon(
+                          IconlyBold.message,
+                          color: emailColor,
+                        ),
+                        validation: (email) => email?.trim().validateEmail(),
+                      ),
+                    ),
+                  ),
+                  addHeight(37),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 30),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        boxShadow: [shadow],
+                      ),
+                      child: ElevatedButton(
+                        style: elevatedButton,
+                        onPressed: onContinuePressed,
+                        child: const Text(
+                          'Send Recovery OTP',
+                          style: AppTextStyles.labelMedium,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -21,29 +22,37 @@ class AuthProvider extends ChangeNotifier {
   String? password;
   File? profilePic;
 
-  setNameAndUserName(String name, String username) {
+  void setNameAndUserName(String name, String username) {
     this.name = name;
     this.username = username;
     notifyListeners();
   }
 
-  setEmailAndPassword(String email, String password) {
+  void clearAll() {}
+
+  void clearCachedPic() {
+    profilePic = null;
+  }
+
+  void setEmailAndPassword(String email, String password) {
     this.email = email;
     this.password = password;
     notifyListeners();
   }
 
-  // Todo : Check this out later
   // a method to check if the username already exists in Firestore
-  Future<bool> checkIfUsernameExists(String username) async {
-    // perform a query on the Firestore collection to check if the username already exists
+  Future<bool> isUnique(String username) async {
+    // perform a query on the Firestore collection to
+    // check if the username already exists
     var result = await _fireStore
         .collection('users')
         .where('username', isEqualTo: username)
         .get();
 
+    log('Query executed');
+
     // if the query returns any documents, it means the username already exists
-    return result.docs.isNotEmpty;
+    return result.docs.isEmpty;
   }
 
   Future<void> createNewUser(String userId, File? file) async {
@@ -91,6 +100,8 @@ class AuthProvider extends ChangeNotifier {
         email: email,
         password: password,
       );
+
+      await linkAnonymousUserWithEmailPassword(userCredential);
 
       final userId = userCredential.user!.uid;
 
@@ -156,6 +167,57 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  // Function to link the anonymous user with the new credentials
+  Future<void> linkAnonymousUserWithEmailPassword(
+    UserCredential newCredential,
+  ) async {
+    try {
+      // Get the currently signed-in anonymous user
+      User? anonymousUser = FirebaseAuth.instance.currentUser;
+
+      if (anonymousUser == null || newCredential.user == null) {
+        log('Anonymous user or new credentials not found');
+        return;
+      }
+
+      // Link the anonymous user with the new credentials
+      UserCredential linkedCredential =
+          await anonymousUser.linkWithCredential(newCredential.credential!);
+
+      // Use the linkedCredential to get the updated user information
+      User? user = linkedCredential.user;
+
+      if (user != null) {
+        // User successfully linked with new credentials
+        log('User linked successfully with new credentials');
+      } else {
+        // Linking failed
+        log('Linking with new credentials failed');
+      }
+    } catch (e) {
+      // Handle any errors that occur during linking
+      log('Error during linking: $e');
+    }
+  }
+
+  Future<void> anonymousSignIn() async {
+    try {
+      await FirebaseAuth.instance.signInAnonymously();
+
+      final uid = FirebaseAuth.instance.currentUser!;
+
+      log("Signed in with temporary account. Uid : $uid");
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case "operation-not-allowed":
+          log("Anonymous auth hasn't been enabled for this project.");
+          break;
+        default:
+          log("Unknown error.");
+      }
+    }
+  }
+
   Future<void> checkEmailAndPassword({
     required BuildContext context,
     required String email,
@@ -169,6 +231,9 @@ class AuthProvider extends ChangeNotifier {
       // Check if the email is already registered with Firebase
       final signInMethods =
           await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
+
+      // Sign in the user anonymously
+      await anonymousSignIn();
 
       if (signInMethods.isNotEmpty) {
         // Email is already registered with Firebase

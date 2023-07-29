@@ -52,6 +52,7 @@ class _SetNameScreenState extends State<SetNameScreen> {
   bool _isUserNameEmpty = true;
 
   Timer? _debounce;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -108,18 +109,24 @@ class _SetNameScreenState extends State<SetNameScreen> {
     });
   }
 
-  _onSearchChanged() {
+  _onSearchChanged() async {
     final text = myUserNameController.text;
     if (text.validateInput()) {
+      setState(() {
+        isLoading = true;
+        existingUserName = 'Checking ...';
+      });
+
       if (_debounce?.isActive ?? false) _debounce?.cancel();
       _debounce = Timer(
-        const Duration(milliseconds: 500),
+        const Duration(milliseconds: 1000),
         () async {
           // Perform the username availability check here
-          bool unique = await authProvider.checkIfUsernameExists(text);
+          bool unique = await authProvider.isUnique(text);
+
           setState(() {
-            existingUserName =
-                unique ? null : 'This username is already occupied';
+            existingUserName = unique ? null : 'Oops that username is taken';
+            isLoading = false;
           });
         },
       );
@@ -180,89 +187,96 @@ class _SetNameScreenState extends State<SetNameScreen> {
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: false,
         body: SafeArea(
-          child: Padding(
-            padding: pagePadding,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const CustomBackButton(
-                  padding: EdgeInsets.only(left: 0, top: 25),
-                ),
-                addHeight(20),
-                const Text(
-                  'What\'s your name?',
-                  style: AppTextStyles.headlineLarge,
-                ),
-                addHeight(10),
-                Container(
-                  alignment: Alignment.topLeft,
-                  child: const Text(
-                    'This will be displayed on your profile',
-                    textAlign: TextAlign.left,
-                    style: AppTextStyles.headlineSmall,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: pagePadding,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const CustomBackButton(
+                    padding: EdgeInsets.only(left: 0, top: 25),
                   ),
-                ),
-                addHeight(55),
-                Form(
-                  key: formKey1,
-                  child: ShakeWidget(
-                    key: shakeState1,
-                    shakeCount: 3,
-                    shakeOffset: 6,
-                    child: CustomTextField(
-                      focusNode: nameFocusNode,
-                      textController: myNameController,
-                      customFillColor: fillNameColor,
-                      hintText: 'Full Name',
-                      prefixIcon: Icon(
-                        IconlyBold.profile,
-                        color: nameColor,
-                      ),
-                      validation: (name) => name.validateName(),
+                  addHeight(20),
+                  const Text(
+                    'What\'s your name?',
+                    style: AppTextStyles.headlineLarge,
+                  ),
+                  addHeight(10),
+                  Container(
+                    alignment: Alignment.topLeft,
+                    child: const Text(
+                      'This will be displayed on your profile',
+                      textAlign: TextAlign.left,
+                      style: AppTextStyles.headlineSmall,
                     ),
                   ),
-                ),
-                Form(
-                  key: formKey2,
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      top: 20,
-                      bottom: 20,
-                    ),
+                  addHeight(55),
+                  Form(
+                    key: formKey1,
                     child: ShakeWidget(
-                      key: shakeState2,
+                      key: shakeState1,
                       shakeCount: 3,
                       shakeOffset: 6,
                       child: CustomTextField(
-                        focusNode: usernameFocusNode,
-                        textController: myUserNameController,
-                        customFillColor: fillUserNameColor,
-                        hintText: 'User Name',
+                        focusNode: nameFocusNode,
+                        textController: myNameController,
+                        customFillColor: fillNameColor,
+                        hintText: 'Full Name',
                         prefixIcon: Icon(
-                          Icons.alternate_email_rounded,
-                          color: usernameColor,
+                          IconlyBold.profile,
+                          color: nameColor,
                         ),
-                        validation: (username) =>
-                            username.validateUsername(existingUserName),
+                        validation: (name) => name?.trim().validateName(),
                       ),
                     ),
                   ),
-                ),
-                addHeight(40),
-                Container(
-                  decoration: BoxDecoration(
-                    boxShadow: [shadow],
-                  ),
-                  child: ElevatedButton(
-                    style: elevatedButton,
-                    onPressed: onContinuePressed,
-                    child: const Text(
-                      'Continue',
-                      style: AppTextStyles.labelMedium,
+                  Form(
+                    key: formKey2,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        top: 20,
+                        bottom: 20,
+                      ),
+                      child: ShakeWidget(
+                        key: shakeState2,
+                        shakeCount: 3,
+                        shakeOffset: 6,
+                        child: CustomTextField(
+                          focusNode: usernameFocusNode,
+                          textController: myUserNameController,
+                          customFillColor: fillUserNameColor,
+                          hintText: 'User Name',
+                          prefixIcon: Icon(
+                            Icons.alternate_email_rounded,
+                            color: usernameColor,
+                          ),
+                          validation: (username) =>
+                              username.validateUsername(existingUserName),
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ],
+                  addHeight(10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 30),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        boxShadow: [shadow],
+                      ),
+                      child: ElevatedButton(
+                        style: elevatedButton,
+                        onPressed: onContinuePressed,
+                        child: isLoading
+                            ? displayLoading(context)
+                            : const Text(
+                                'Continue',
+                                style: AppTextStyles.labelMedium,
+                              ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

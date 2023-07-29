@@ -21,7 +21,7 @@ import 'package:conta/view/account_setup/sign_up_screen.dart' as _i5;
 import 'package:conta/view/account_setup/verify_account_screen.dart' as _i4;
 import 'package:conta/view/authentication/login_screen.dart' as _i7;
 import 'package:conta/view/authentication/recover_password_screen.dart' as _i6;
-import 'package:conta/view/authentication/resend_reset_email.dart' as _i8;
+import 'package:conta/view/authentication/update_password_screen.dart' as _i8;
 import 'package:conta/view/home/persistent_tab.dart' as _i11;
 import 'package:conta/view/home/tab_views/message_view/chat_screen.dart'
     as _i12;
@@ -72,7 +72,7 @@ class AppRouter extends _i13.RootStackRouter {
         child: const _i5.SignUpScreen(),
       );
     },
-    ForgotPasswordScreenRoute.name: (routeData) {
+    RecoverPasswordScreenRoute.name: (routeData) {
       return _i13.AdaptivePage<dynamic>(
         routeData: routeData,
         child: const _i6.RecoverPasswordScreen(),
@@ -84,11 +84,11 @@ class AppRouter extends _i13.RootStackRouter {
         child: const _i7.LoginScreen(),
       );
     },
-    ResendResetEmailRoute.name: (routeData) {
-      final args = routeData.argsAs<ResendResetEmailRouteArgs>();
+    UpdatePasswordScreenRoute.name: (routeData) {
+      final args = routeData.argsAs<UpdatePasswordScreenRouteArgs>();
       return _i13.AdaptivePage<dynamic>(
         routeData: routeData,
-        child: _i8.ResendResetEmail(
+        child: _i8.UpdatePasswordScreen(
           key: args.key,
           email: args.email,
         ),
@@ -138,35 +138,35 @@ class AppRouter extends _i13.RootStackRouter {
         ),
         _i13.RouteConfig(
           SetNameScreenRoute.name,
-          path: '/set_name_screen',
+          path: '/set-name-screen',
         ),
         _i13.RouteConfig(
           SetPhotoScreenRoute.name,
-          path: '/set_photo_screen',
+          path: '/set-photo-screen',
         ),
         _i13.RouteConfig(
           VerifyAccountScreenRoute.name,
-          path: '/verify_account_screen',
+          path: '/verify-account-screen',
         ),
         _i13.RouteConfig(
           SignUpScreenRoute.name,
-          path: '/sign_up_screen',
+          path: '/sign-up-screen',
         ),
         _i13.RouteConfig(
-          ForgotPasswordScreenRoute.name,
-          path: '/forgot_password_screen',
+          RecoverPasswordScreenRoute.name,
+          path: '/recover-password-screen',
         ),
         _i13.RouteConfig(
           LoginScreenRoute.name,
-          path: '/login_screen',
+          path: '/login-screen',
         ),
         _i13.RouteConfig(
-          ResendResetEmailRoute.name,
-          path: '/resend-reset-email',
+          UpdatePasswordScreenRoute.name,
+          path: '/update-password-screen',
         ),
         _i13.RouteConfig(
           PreviewScreenRoute.name,
-          path: '/preview_screen',
+          path: '/preview-screen',
         ),
         _i13.RouteConfig(
           MediaPreviewScreenRoute.name,
@@ -201,7 +201,7 @@ class SetNameScreenRoute extends _i13.PageRouteInfo<void> {
   const SetNameScreenRoute()
       : super(
           SetNameScreenRoute.name,
-          path: '/set_name_screen',
+          path: '/set-name-screen',
         );
 
   static const String name = 'SetNameScreenRoute';
@@ -213,7 +213,7 @@ class SetPhotoScreenRoute extends _i13.PageRouteInfo<void> {
   const SetPhotoScreenRoute()
       : super(
           SetPhotoScreenRoute.name,
-          path: '/set_photo_screen',
+          path: '/set-photo-screen',
         );
 
   static const String name = 'SetPhotoScreenRoute';
@@ -228,7 +228,7 @@ class VerifyAccountScreenRoute
     required _i16.UserCredential userCredential,
   }) : super(
           VerifyAccountScreenRoute.name,
-          path: '/verify_account_screen',
+          path: '/verify-account-screen',
           args: VerifyAccountScreenRouteArgs(
             key: key,
             userCredential: userCredential,
@@ -260,7 +260,7 @@ class SignUpScreenRoute extends _i13.PageRouteInfo<void> {
   const SignUpScreenRoute()
       : super(
           SignUpScreenRoute.name,
-          path: '/sign_up_screen',
+          path: '/sign-up-screen',
         );
 
   static const String name = 'SignUpScreenRoute';
@@ -268,14 +268,14 @@ class SignUpScreenRoute extends _i13.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i6.RecoverPasswordScreen]
-class ForgotPasswordScreenRoute extends _i13.PageRouteInfo<void> {
-  const ForgotPasswordScreenRoute()
+class RecoverPasswordScreenRoute extends _i13.PageRouteInfo<void> {
+  const RecoverPasswordScreenRoute()
       : super(
-          ForgotPasswordScreenRoute.name,
-          path: '/forgot_password_screen',
+          RecoverPasswordScreenRoute.name,
+          path: '/recover-password-screen',
         );
 
-  static const String name = 'ForgotPasswordScreenRoute';
+  static const String name = 'RecoverPasswordScreenRoute';
 }
 
 /// generated route for
@@ -284,33 +284,33 @@ class LoginScreenRoute extends _i13.PageRouteInfo<void> {
   const LoginScreenRoute()
       : super(
           LoginScreenRoute.name,
-          path: '/login_screen',
+          path: '/login-screen',
         );
 
   static const String name = 'LoginScreenRoute';
 }
 
 /// generated route for
-/// [_i8.ResendResetEmail]
-class ResendResetEmailRoute
-    extends _i13.PageRouteInfo<ResendResetEmailRouteArgs> {
-  ResendResetEmailRoute({
+/// [_i8.UpdatePasswordScreen]
+class UpdatePasswordScreenRoute
+    extends _i13.PageRouteInfo<UpdatePasswordScreenRouteArgs> {
+  UpdatePasswordScreenRoute({
     _i15.Key? key,
     required String email,
   }) : super(
-          ResendResetEmailRoute.name,
-          path: '/resend-reset-email',
-          args: ResendResetEmailRouteArgs(
+          UpdatePasswordScreenRoute.name,
+          path: '/update-password-screen',
+          args: UpdatePasswordScreenRouteArgs(
             key: key,
             email: email,
           ),
         );
 
-  static const String name = 'ResendResetEmailRoute';
+  static const String name = 'UpdatePasswordScreenRoute';
 }
 
-class ResendResetEmailRouteArgs {
-  const ResendResetEmailRouteArgs({
+class UpdatePasswordScreenRouteArgs {
+  const UpdatePasswordScreenRouteArgs({
     this.key,
     required this.email,
   });
@@ -321,7 +321,7 @@ class ResendResetEmailRouteArgs {
 
   @override
   String toString() {
-    return 'ResendResetEmailRouteArgs{key: $key, email: $email}';
+    return 'UpdatePasswordScreenRouteArgs{key: $key, email: $email}';
   }
 }
 
@@ -331,7 +331,7 @@ class PreviewScreenRoute extends _i13.PageRouteInfo<void> {
   const PreviewScreenRoute()
       : super(
           PreviewScreenRoute.name,
-          path: '/preview_screen',
+          path: '/preview-screen',
         );
 
   static const String name = 'PreviewScreenRoute';

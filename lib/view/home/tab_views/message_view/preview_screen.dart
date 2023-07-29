@@ -21,8 +21,6 @@ import '../../../../utils/widget_functions.dart';
 class PreviewScreen extends StatefulWidget {
   const PreviewScreen({Key? key}) : super(key: key);
 
-  static const tag = '/preview_screen';
-
   @override
   State<PreviewScreen> createState() => _PreviewScreenState();
 }

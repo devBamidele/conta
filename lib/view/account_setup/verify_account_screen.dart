@@ -1,12 +1,13 @@
-import 'package:auto_route/auto_route.dart';
-import 'package:conta/res/style/app_text_style.dart';
 import 'package:conta/res/style/component_style.dart';
+import 'package:conta/utils/extensions.dart';
 import 'package:conta/utils/widget_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../res/color.dart';
 import '../../res/components/countdown_timer.dart';
+import '../../res/style/app_text_style.dart';
+import '../../utils/app_router/router.dart';
 import '../../utils/app_router/router.gr.dart';
 
 class VerifyAccountScreen extends StatefulWidget {
@@ -15,7 +16,6 @@ class VerifyAccountScreen extends StatefulWidget {
     required this.userCredential,
   }) : super(key: key);
 
-  static const tag = '/verify_account_screen';
   final UserCredential userCredential;
 
   @override
@@ -34,23 +34,18 @@ class _VerifyAccountScreenState extends State<VerifyAccountScreen> {
   Color buttonColor = AppColors.dividerColor;
   Color tappedColor = AppColors.dividerColor;
 
-  navigateToLogin() => context.router.replaceAll(
+  navigateToLogin() => navReplaceAll(
+        context,
         [const LoginScreenRoute()],
       );
 
-  navigateToHome() => context.router.replaceAll(
+  navigateToHome() => navReplaceAll(
+        context,
         [const PersistentTabRoute()],
       );
 
-  String shortenEmail(String email) {
-    String start = email.substring(0, 3);
-    String end = email.substring(email.indexOf('@') - 2);
-    String middle = '****';
-    return '$start$middle$end';
-  }
-
   setMail() {
-    email = shortenEmail(widget.userCredential.user!.email!);
+    email = widget.userCredential.user!.email!.shortenEmail();
   }
 
   resendEmail() async {

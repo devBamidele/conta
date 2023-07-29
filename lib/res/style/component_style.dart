@@ -21,7 +21,6 @@ final elevatedButton = ElevatedButton.styleFrom(
   ),
 );
 
-/// The
 const dialogShape = RoundedRectangleBorder(
   borderRadius: BorderRadius.all(
     Radius.circular(10),
@@ -81,13 +80,8 @@ ButtonStyle resendButtonStyle({
 final shadow = BoxShadow(
   color: AppColors.primaryColor.withOpacity(0.7),
   offset: const Offset(1, 4),
-  blurRadius: 18,
+  blurRadius: 15,
   spreadRadius: 1,
-);
-
-const photoContainerDecoration = BoxDecoration(
-  color: AppColors.photoContainerColor,
-  shape: BoxShape.circle,
 );
 
 const pagePadding = EdgeInsets.symmetric(horizontal: 20);

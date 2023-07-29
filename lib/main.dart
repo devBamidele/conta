@@ -3,6 +3,7 @@ import 'package:conta/view_model/auth_provider.dart';
 import 'package:conta/view_model/chat_messages_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
@@ -20,6 +21,11 @@ void main() async {
 
   // Get the application document directory
   await StorageManager.initialize();
+
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
 
   /*
   OneSignal.shared.setAppId(dotenv.env['APP_ID']!);

@@ -1,17 +1,19 @@
 import 'dart:developer';
 
-import 'package:auto_route/auto_route.dart';
+import 'package:conta/utils/extensions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../res/color.dart';
 import '../../res/components/countdown_timer.dart';
+import '../../res/style/app_text_style.dart';
 import '../../res/style/component_style.dart';
+import '../../utils/app_router/router.dart';
 import '../../utils/app_router/router.gr.dart';
 import '../../utils/widget_functions.dart';
 
-class ResendResetEmail extends StatefulWidget {
-  const ResendResetEmail({
+class UpdatePasswordScreen extends StatefulWidget {
+  const UpdatePasswordScreen({
     Key? key,
     required this.email,
   }) : super(key: key);
@@ -19,10 +21,10 @@ class ResendResetEmail extends StatefulWidget {
   final String email;
 
   @override
-  State<ResendResetEmail> createState() => _ResendResetEmailState();
+  State<UpdatePasswordScreen> createState() => _UpdatePasswordScreenState();
 }
 
-class _ResendResetEmailState extends State<ResendResetEmail> {
+class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
   final _countdownTimerKey = GlobalKey<CountdownTimerState>();
 
   late String email;
@@ -40,18 +42,12 @@ class _ResendResetEmailState extends State<ResendResetEmail> {
     setMail();
   }
 
-  navigateToLogin() => context.router.replaceAll(
+  navigateToLogin() => navReplaceAll(
+        context,
         [const LoginScreenRoute()],
       );
 
-  String shortenEmail(String email) {
-    String start = email.substring(0, 3);
-    String end = email.substring(email.indexOf('@') - 2);
-    String middle = '****';
-    return '$start$middle$end';
-  }
-
-  setMail() => email = shortenEmail(widget.email);
+  setMail() => email = widget.email.shortenEmail();
 
   onFinished() {
     setState(() {
@@ -95,11 +91,7 @@ class _ResendResetEmailState extends State<ResendResetEmail> {
                   addHeight(70),
                   const Text(
                     'Update password',
-                    style: TextStyle(
-                      height: 1.1,
-                      fontSize: 42,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: AppTextStyles.headlineLarge,
                   ),
                   addHeight(10),
                   Container(
@@ -107,13 +99,10 @@ class _ResendResetEmailState extends State<ResendResetEmail> {
                     child: Text(
                       'A password reset link has been sent to $email',
                       textAlign: TextAlign.left,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: AppColors.opaqueTextColor,
-                      ),
+                      style: AppTextStyles.headlineSmall,
                     ),
                   ),
-                  addHeight(60),
+                  addHeight(40),
                   Visibility(
                     visible: !activateResend,
                     child: Row(
@@ -126,9 +115,7 @@ class _ResendResetEmailState extends State<ResendResetEmail> {
                         addWidth(3),
                         CountdownTimer(
                           key: _countdownTimerKey,
-                          textStyle: const TextStyle(
-                            height: 1.4,
-                            fontSize: 18,
+                          textStyle: AppTextStyles.titleSmall.copyWith(
                             color: AppColors.primaryColor,
                           ),
                           durationInSeconds: countDownDuration,
@@ -158,10 +145,8 @@ class _ResendResetEmailState extends State<ResendResetEmail> {
                       onPressed: () => activateResend ? resendEmail() : null,
                       child: Text(
                         'Resend',
-                        style: TextStyle(
-                          fontSize: 18,
+                        style: AppTextStyles.labelMedium.copyWith(
                           color: buttonColor,
-                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
@@ -175,11 +160,7 @@ class _ResendResetEmailState extends State<ResendResetEmail> {
                         onPressed: () => navigateToLogin(),
                         child: const Text(
                           'Proceed to Login',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: AppTextStyles.labelMedium,
                         ),
                       ),
                     ),

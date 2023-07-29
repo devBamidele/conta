@@ -158,6 +158,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
+  void toggleVisibility() {
+    setState(
+      () => _passwordVisible = !_passwordVisible,
+    );
+  }
+
   gotoNext() => navPush(context, const SetNameScreenRoute());
 
   @override
@@ -168,171 +174,171 @@ class _SignUpScreenState extends State<SignUpScreen> {
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: false,
         body: SafeArea(
-          child: Padding(
-            padding: pagePadding,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const CustomBackButton(
-                  padding: EdgeInsets.only(left: 0, top: 25),
-                ),
-                addHeight(20),
-                const Text(
-                  'Create your Account',
-                  style: AppTextStyles.headlineLarge,
-                ),
-                addHeight(10),
-                Container(
-                  alignment: Alignment.topLeft,
-                  child: const Text(
-                    'Enter your email and password below',
-                    textAlign: TextAlign.left,
-                    style: AppTextStyles.headlineSmall,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: pagePadding,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const CustomBackButton(
+                    padding: EdgeInsets.only(left: 0, top: 25),
                   ),
-                ),
-                addHeight(55),
-                Form(
-                  key: formKey1,
-                  child: ShakeWidget(
-                    key: shakeState1,
-                    shakeCount: 3,
-                    shakeOffset: 6,
-                    child: CustomTextField(
-                      focusNode: emailFocusNode,
-                      textController: myEmailController,
-                      customFillColor: fillEmailColor,
-                      hintText: 'Email',
-                      prefixIcon: Icon(
-                        IconlyBold.message,
-                        color: emailColor,
-                      ),
-                      validation: (email) => email.validateEmail(),
+                  addHeight(20),
+                  const Text(
+                    'Create your Account',
+                    style: AppTextStyles.headlineLarge,
+                  ),
+                  addHeight(10),
+                  Container(
+                    alignment: Alignment.topLeft,
+                    child: const Text(
+                      'Enter your email and password below',
+                      textAlign: TextAlign.left,
+                      style: AppTextStyles.headlineSmall,
                     ),
                   ),
-                ),
-                Form(
-                  key: formKey2,
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      top: 20,
-                      bottom: 20,
-                    ),
+                  addHeight(55),
+                  Form(
+                    key: formKey1,
                     child: ShakeWidget(
-                      key: shakeState2,
+                      key: shakeState1,
                       shakeCount: 3,
                       shakeOffset: 6,
                       child: CustomTextField(
-                        focusNode: passwordFocusNode,
-                        textController: myPasswordController,
-                        customFillColor: fillPasswordColor,
-                        action: TextInputAction.done,
-                        hintText: 'Password',
-                        obscureText: _passwordVisible,
-                        validation: (value) => value.validatePassword(),
+                        focusNode: emailFocusNode,
+                        textController: myEmailController,
+                        customFillColor: fillEmailColor,
+                        hintText: 'Email',
                         prefixIcon: Icon(
-                          IconlyBold.lock,
-                          color: passwordColor,
+                          IconlyBold.message,
+                          color: emailColor,
                         ),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            // Based on passwordVisible state choose the icon
-                            _passwordVisible
-                                ? Icons.visibility_off
-                                : Icons.visibility,
+                        validation: (email) => email?.trim().validateEmail(),
+                      ),
+                    ),
+                  ),
+                  Form(
+                    key: formKey2,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        top: 20,
+                        bottom: 20,
+                      ),
+                      child: ShakeWidget(
+                        key: shakeState2,
+                        shakeCount: 3,
+                        shakeOffset: 6,
+                        child: CustomTextField(
+                          focusNode: passwordFocusNode,
+                          textController: myPasswordController,
+                          customFillColor: fillPasswordColor,
+                          action: TextInputAction.done,
+                          hintText: 'Password',
+                          obscureText: _passwordVisible,
+                          validation: (value) => value.validatePassword(),
+                          prefixIcon: Icon(
+                            IconlyBold.lock,
                             color: passwordColor,
                           ),
-                          onPressed: () {
-                            // Update the state i.e. toggle the state of passwordVisible variable
-                            setState(
-                              () => _passwordVisible = !_passwordVisible,
-                            );
-                          },
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              // Based on passwordVisible state choose the icon
+                              _passwordVisible
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              color: passwordColor,
+                            ),
+                            onPressed: toggleVisibility,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                addHeight(40),
-                Container(
-                  decoration: BoxDecoration(
-                    boxShadow: [shadow],
-                  ),
-                  child: ElevatedButton(
-                    style: elevatedButton,
-                    onPressed: validate,
-                    child: const Text(
-                      'Continue',
-                      style: AppTextStyles.labelMedium,
+                  addHeight(40),
+                  Container(
+                    decoration: BoxDecoration(
+                      boxShadow: [shadow],
+                    ),
+                    child: ElevatedButton(
+                      style: elevatedButton,
+                      onPressed: validate,
+                      child: const Text(
+                        'Continue',
+                        style: AppTextStyles.labelMedium,
+                      ),
                     ),
                   ),
-                ),
-                addHeight(28),
-                RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    style: AppTextStyles.labelSmall,
-                    children: [
-                      const TextSpan(
-                        text: 'Already have an account?',
-                      ),
-                      TextSpan(
-                        text: ' Login',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 17,
-                        ),
-                        recognizer: TapGestureRecognizer()
-                          // handle click event for the Login link
-                          ..onTap =
-                              () => navPush(context, const LoginScreenRoute()),
-                      ),
-                    ],
-                  ),
-                ),
-                addHeight(50),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
-                  child: RichText(
+                  addHeight(28),
+                  RichText(
                     textAlign: TextAlign.center,
                     text: TextSpan(
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.opaqueTextColor,
-                      ),
                       children: [
                         const TextSpan(
-                          text: 'By tapping Continue, you agree to our ',
+                          text: 'Already have an account? ',
+                          style: AppTextStyles.headlineSmall,
                         ),
                         TextSpan(
-                          text: 'Terms',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black,
+                          text: ' Login',
+                          style: AppTextStyles.labelSmall.copyWith(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 17,
                           ),
                           recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              // handle click event for the Terms link
-                            },
-                        ),
-                        const TextSpan(
-                          text: ' & ',
-                        ),
-                        TextSpan(
-                          text: 'Privacy policy',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black,
-                          ),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              // handle click event for the Privacy policy link
-                            },
+                            // handle click event for the Login link
+                            ..onTap = () =>
+                                navPush(context, const LoginScreenRoute()),
                         ),
                       ],
                     ),
                   ),
-                )
-              ],
+                  addHeight(20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 40,
+                      vertical: 30,
+                    ),
+                    child: RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: AppColors.opaqueTextColor,
+                        ),
+                        children: [
+                          const TextSpan(
+                            text: 'By tapping Continue, you agree to our ',
+                          ),
+                          TextSpan(
+                            text: 'Terms',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black,
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                // handle click event for the Terms link
+                              },
+                          ),
+                          const TextSpan(
+                            text: ' & ',
+                          ),
+                          TextSpan(
+                            text: 'Privacy policy',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black,
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                // handle click event for the Privacy policy link
+                              },
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
         ),
