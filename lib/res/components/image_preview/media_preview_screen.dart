@@ -1,11 +1,11 @@
-import 'dart:io' show File;
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conta/utils/extensions.dart';
 import 'package:flutter/material.dart';
 
 import '../../color.dart';
 import '../custom/custom_back_button.dart';
+import '../custom_value_color_anim.dart';
 
 class MediaPreviewScreen extends StatelessWidget {
   final List<String> media;
@@ -21,23 +21,6 @@ class MediaPreviewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget content;
-
-    if (media.length != 1) {
-      content = SingleChildScrollView(
-        child: Column(
-          children: List.generate(media.length, (index) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: ImagePreview(path: media[index]),
-            );
-          }),
-        ),
-      );
-    } else {
-      content = Center(child: ImagePreview(path: media[0]));
-    }
-
     return Scaffold(
       appBar: AppBar(
         leading: CustomBackButton(
@@ -64,7 +47,17 @@ class MediaPreviewScreen extends StatelessWidget {
           ],
         ),
       ),
-      body: SafeArea(child: content),
+      body: SafeArea(
+        child: ListView.builder(
+          itemCount: media.length,
+          itemBuilder: (__, int index) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: ImagePreview(path: media[index]),
+            );
+          },
+        ),
+      ),
     );
   }
 }
@@ -78,10 +71,24 @@ class ImagePreview extends StatelessWidget {
   Widget build(BuildContext context) {
     return Hero(
       tag: path,
-      child: Image.file(
-        File(path),
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
+      child: Image(
+        image: CachedNetworkImageProvider(path),
+        loadingBuilder: (context, child, progress) {
+          return progress == null
+              ? child
+              : Center(
+                  child: CircularProgressIndicator(
+                    valueColor: customValueColorAnim(),
+                    value: progress.cumulativeBytesLoaded /
+                        progress.expectedTotalBytes!,
+                  ),
+                );
+        },
+        errorBuilder: (context, object, trace) {
+          return const Center(
+            child: Text('Hello World'),
+          );
+        },
       ),
     );
   }

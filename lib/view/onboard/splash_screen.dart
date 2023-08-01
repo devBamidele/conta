@@ -39,7 +39,8 @@ class _SplashScreenState extends State<SplashScreen>
   void startTimer() => Timer(const Duration(seconds: 3), navigateNext);
 
   Future<void> checkCurrentUser() async {
-    if (FirebaseAuth.instance.currentUser != null) {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null && currentUser.emailVerified) {
       isAuth = true;
     }
   }

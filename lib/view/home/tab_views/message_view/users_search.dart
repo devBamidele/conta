@@ -3,7 +3,7 @@ import 'package:conta/models/Person.dart';
 import 'package:conta/res/components/search_tile.dart';
 import 'package:conta/res/components/user_tile.dart';
 import 'package:conta/view/home/tab_views/message_view/chat_screen.dart';
-import 'package:conta/view_model/chat_messages_provider.dart';
+import 'package:conta/view_model/chat_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
@@ -52,7 +52,7 @@ class UsersSearch extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    return Consumer<ChatMessagesProvider>(
+    return Consumer<ChatProvider>(
       builder: (_, data, Widget? child) {
         return StreamBuilder(
           stream: data.getSuggestionsStream(query),
@@ -92,7 +92,7 @@ class UsersSearch extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return Consumer<ChatMessagesProvider>(
+    return Consumer<ChatProvider>(
       builder: (_, data, Widget? child) {
         return query.isEmpty
             ? StreamBuilder(
@@ -282,8 +282,7 @@ class UsersSearch extends SearchDelegate {
     int index,
     List<SearchUser> searchChats,
   ) {
-    final chatProvider =
-        Provider.of<ChatMessagesProvider>(context, listen: false);
+    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
     final user = searchChats[index];
 
     // Remove the item from the list

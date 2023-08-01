@@ -1,7 +1,10 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+
+import '../color.dart';
 
 class MediaPreview extends StatelessWidget {
   const MediaPreview({
@@ -13,15 +16,36 @@ class MediaPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (file.extension == 'jpg' || file.extension == 'png') {
-      return Image.file(File(file.path!));
-    } else if (file.extension == 'mp4') {
-      // You can use a video player widget here to play videos
-      // Example: return VideoPlayerWidget(file.path);
-      return Text('Video: ${file.path}');
+    final ext = file.extension?.toLowerCase();
+
+    if (ext == 'jpg' || ext == 'png' || ext == 'jpeg') {
+      final imageFile = File(file.path!);
+
+      // Use FutureBuilder to asynchronously load the image
+      return FutureBuilder<Uint8List>(
+        future: imageFile.readAsBytes(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            // While waiting for the image to load, show a loading indicator
+            return const Center(
+              child: CircularProgressIndicator(
+                color: AppColors.replyMessageColor,
+              ),
+            );
+          } else if (snapshot.hasError) {
+            // If an error occurs while loading the image, show an error message
+            return Text('Error loading image: ${snapshot.error}');
+          } else {
+            // If the image is loaded successfully, display it
+            return Image.memory(snapshot.data!);
+          }
+        },
+      );
     } else {
-      // Handle other file types accordingly
-      return const Text('Unsupported file type');
+      return Center(
+        child: Text('File support coming soon : $ext'),
+      );
     }
   }
 }
+//

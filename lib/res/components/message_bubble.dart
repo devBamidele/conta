@@ -2,12 +2,13 @@ import 'package:blur/blur.dart';
 import 'package:conta/res/components/reply_bubble.dart';
 import 'package:conta/utils/widget_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:provider/provider.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 import '../../models/message.dart';
-import '../../view_model/chat_messages_provider.dart';
+import '../../view_model/chat_provider.dart';
 import '../color.dart';
 import 'bubble_painter.dart';
 import 'image_preview/image_preview.dart';
@@ -54,8 +55,7 @@ class MessageBubble extends StatefulWidget {
 }
 
 class _MessageBubbleState extends State<MessageBubble> {
-  late final chatProvider =
-      Provider.of<ChatMessagesProvider>(context, listen: false);
+  late final chatProvider = Provider.of<ChatProvider>(context, listen: false);
 
   late String? replyMessage;
 
@@ -149,6 +149,7 @@ void resetOverlayColor() {
  */
 
   void onLongTapMessage() {
+    Vibrate.feedback(FeedbackType.medium);
     update();
     chatProvider.onLongTapMessage(widget.message);
     chatProvider.updateMLPValue();
@@ -182,7 +183,7 @@ void resetOverlayColor() {
 
     return GestureDetector(
       onTap: onTapMessage,
-      onDoubleTap: onLongTapMessage,
+      onLongPress: onLongTapMessage,
       child: SwipeTo(
         offsetDx: 0.25,
         onRightSwipe: () => updateReply(),
@@ -259,7 +260,7 @@ void resetOverlayColor() {
                                       ? (replyMessage != null ? 0 : 4)
                                       : 4,
                                 ),
-                                child: Consumer<ChatMessagesProvider>(
+                                child: Consumer<ChatProvider>(
                                     builder: (_, data, child) {
                                   return Column(
                                     crossAxisAlignment:
@@ -285,8 +286,6 @@ void resetOverlayColor() {
                                               Radius.circular(11.5),
                                             ),
                                             child: ImagePreview(
-                                              isResized:
-                                                  widget.message.isResized,
                                               chatId: data.currentChat!.chatId!,
                                               sender: widget.isSender
                                                   ? 'You'

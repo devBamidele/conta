@@ -1,17 +1,11 @@
-import 'dart:async';
-import 'dart:developer';
-import 'dart:io' show Directory, File;
-
-import 'package:auto_route/auto_route.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conta/utils/app_router/router.gr.dart';
-import 'package:conta/utils/extensions.dart';
 import 'package:conta/utils/widget_functions.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
-import '../../../utils/services/storage_manager.dart';
+import '../../../utils/app_router/router.dart';
 import '../../color.dart';
 import '../custom_value_color_anim.dart';
 
@@ -28,7 +22,6 @@ class DynamicSizedImagePreview extends StatefulWidget {
   final String mediaUrl;
   final String sender;
   final Timestamp timeSent;
-  final bool isResized;
 
   /// Creates a [DynamicSizedImagePreview] widget.
   ///
@@ -38,7 +31,6 @@ class DynamicSizedImagePreview extends StatefulWidget {
     required this.mediaUrl,
     required this.sender,
     required this.timeSent,
-    required this.isResized,
   }) : super(key: key);
 
   @override
@@ -47,94 +39,49 @@ class DynamicSizedImagePreview extends StatefulWidget {
 }
 
 class _DynamicSizedImagePreviewState extends State<DynamicSizedImagePreview> {
-  String? localImagePath;
   late String storageDirectory;
-  late String fileName;
 
   Size? imageSize;
   bool networkError = false;
+  late double size;
 
   @override
   void initState() {
     super.initState();
 
-    if (widget.isResized) {
-      loadImage();
-    }
+    loadImageSize();
   }
 
   @override
-  void didUpdateWidget(DynamicSizedImagePreview oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.isResized && widget.isResized != oldWidget.isResized) {
-      loadImage();
-    }
-  }
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-  void loadImage() {
-    fileName = widget.mediaUrl.getFileName();
-
-    storageDirectory = StorageManager.storageDirectory!;
-
-    _checkLocalFile().then((value) => loadImageSize());
-  }
-
-  Future<void> _checkLocalFile() async {
-    final storageDir = Directory(storageDirectory);
-    final localFile = File('${storageDir.path}/$fileName');
-
-    if (await localFile.exists()) {
-      setState(() {
-        localImagePath = localFile.path;
-        log('The file exists locally at $localImagePath');
-      });
-    } else {
-      await _downloadAndSaveImage();
-    }
-  }
-
-  Future<void> _downloadAndSaveImage() async {
-    final response = await http.get(Uri.parse(widget.mediaUrl));
-
-    final storageDir =
-        await Directory(storageDirectory).create(recursive: true);
-
-    final localFile = await File('${storageDir.path}/$fileName')
-        .writeAsBytes(response.bodyBytes);
-    if (mounted) {
-      setState(() {
-        localImagePath = localFile.path;
-        log('Successfully downloaded and saved at $localImagePath');
-      });
-    }
+    // The preferred width of the message bubble
+    size = MediaQuery.of(context).size.width * .25;
   }
 
   void loadImageSize() {
-    if (localImagePath == null) {
-      log('The local image path is currently null');
-    } else {
-      log('The local image path is: $localImagePath');
-      Image.file(File(localImagePath!))
-          .image
-          .resolve(const ImageConfiguration())
-          .addListener(
-        ImageStreamListener((ImageInfo info, bool _) {
-          if (mounted) {
-            setState(() {
-              imageSize = Size(
-                info.image.width.toDouble(),
-                info.image.height.toDouble(),
-              );
-            });
-          }
-        }),
-      );
-    }
+    Image.network(widget.mediaUrl)
+        .image
+        .resolve(const ImageConfiguration())
+        .addListener(
+      ImageStreamListener((ImageInfo info, bool _) {
+        if (mounted) {
+          setState(() {
+            imageSize = Size(
+              info.image.width.toDouble(),
+              info.image.height.toDouble(),
+            );
+          });
+        }
+      }),
+    );
   }
 
-  void goToMediaPreview(BuildContext context) => context.router.push(
+  void goToMediaPreview(BuildContext context) => navPush(
+        context,
         MediaPreviewScreenRoute(
-          media: [localImagePath!],
+          media: [widget.mediaUrl],
           sender: widget.sender,
           timeSent: widget.timeSent,
         ),
@@ -171,24 +118,22 @@ class _DynamicSizedImagePreviewState extends State<DynamicSizedImagePreview> {
             height: desiredHeight,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: localImagePath != null
-                  ? GestureDetector(
-                      onTap: () => goToMediaPreview(context),
-                      child: Hero(
-                        tag: localImagePath!,
-                        child: Image.file(
-                          File(localImagePath!),
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              const Icon(Icons.error),
-                        ),
-                      ),
-                    )
-                  : Center(
+              child: GestureDetector(
+                onTap: () => goToMediaPreview(context),
+                child: Hero(
+                  tag: widget.mediaUrl,
+                  child: CachedNetworkImage(
+                    imageUrl: widget.mediaUrl,
+                    progressIndicatorBuilder:
+                        (context, url, downloadProgress) => Center(
                       child: CircularProgressIndicator(
                         valueColor: customValueColorAnim(),
+                        value: downloadProgress.progress,
                       ),
                     ),
+                  ),
+                ),
+              ),
             ),
           );
         },
@@ -208,7 +153,8 @@ class _DynamicSizedImagePreviewState extends State<DynamicSizedImagePreview> {
 
     // Placeholder widget while the image dimensions are being fetched
     return Container(
-      height: 90,
+      height: size,
+      width: size,
       color: Colors.transparent,
       child: Center(
         child: LoadingAnimationWidget.discreteCircle(

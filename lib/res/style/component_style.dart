@@ -30,7 +30,7 @@ const dialogShape = RoundedRectangleBorder(
 /// The border for the input fields
 InputBorder customBorder({
   required bool isReplying,
-  double curve = 22,
+  double curve = 20,
 }) {
   return OutlineInputBorder(
     borderSide: const BorderSide(
@@ -86,7 +86,7 @@ final shadow = BoxShadow(
 
 const pagePadding = EdgeInsets.symmetric(horizontal: 20);
 
-const chatFieldPadding = EdgeInsets.fromLTRB(10, 5, 10, 15);
+const chatFieldPadding = EdgeInsets.fromLTRB(10, 5, 10, 10);
 
 const scrollingDotsEffect = ScrollingDotsEffect(
   dotHeight: 11,

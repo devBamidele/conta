@@ -14,7 +14,6 @@ class ImagePreview extends StatelessWidget {
   final Timestamp timeSent;
   final String sender;
   final String chatId;
-  final bool isResized;
 
   const ImagePreview({
     Key? key,
@@ -22,7 +21,6 @@ class ImagePreview extends StatelessWidget {
     required this.timeSent,
     required this.sender,
     required this.chatId,
-    required this.isResized,
   }) : super(key: key);
 
   void goToMediaPreview(BuildContext context) => context.router.push(
@@ -87,7 +85,6 @@ class ImagePreview extends StatelessWidget {
         sender: sender,
         timeSent: timeSent,
         mediaUrl: media.first,
-        isResized: isResized,
       );
     }
   }

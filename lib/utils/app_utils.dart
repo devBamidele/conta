@@ -71,7 +71,7 @@ class AppUtils {
       builder: (context) => Center(
         child: LoadingAnimationWidget.staggeredDotsWave(
           color: AppColors.primaryShadeColor,
-          size: 60,
+          size: 55,
         ),
       ),
     );

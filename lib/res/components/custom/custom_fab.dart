@@ -16,22 +16,18 @@ class CustomFAB extends StatelessWidget {
   Widget build(BuildContext context) {
     return Visibility(
       visible: showIcon,
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 60),
-        child: SizedBox(
-          width: 35,
-          height: 35,
-          child: FittedBox(
-            child: FloatingActionButton(
-              elevation: 2,
-              backgroundColor: Colors.white,
-              onPressed: onPressed,
-              shape: const CircleBorder(),
-              child: const Icon(
-                Icons.keyboard_arrow_down_outlined,
-                size: 45,
-                color: AppColors.extraTextColor,
-              ),
+      child: SizedBox.square(
+        dimension: 32,
+        child: FittedBox(
+          child: FloatingActionButton(
+            elevation: 4,
+            backgroundColor: Colors.white,
+            onPressed: onPressed,
+            shape: const CircleBorder(),
+            child: const Icon(
+              Icons.keyboard_arrow_down_outlined,
+              size: 45,
+              color: AppColors.extraTextColor,
             ),
           ),
         ),

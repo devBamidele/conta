@@ -79,7 +79,6 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
     return true;
   }
 
-//
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -99,25 +98,8 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const CustomBackButton(
-                                padding: EdgeInsets.only(left: 0, top: 25),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 24),
-                                child: GestureDetector(
-                                  onTap: createUser,
-                                  child: const Text(
-                                    'Skip',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ),
-                              )
-                            ],
+                          const CustomBackButton(
+                            padding: EdgeInsets.only(left: 0, top: 25),
                           ),
                           addHeight(20),
                           const Text(
@@ -177,9 +159,7 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
                             style: elevatedButton,
                             onPressed: () => addPhoto(),
                             child: Text(
-                              data.profilePic == null
-                                  ? 'Add a photo'
-                                  : 'Continue',
+                              data.profilePic == null ? 'Skip' : 'Continue',
                               style: AppTextStyles.labelMedium,
                             ),
                           ),

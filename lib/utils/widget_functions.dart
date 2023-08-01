@@ -80,6 +80,22 @@ Widget replyIcon() {
   );
 }
 
+Widget sendIcon() {
+  return const Icon(
+    IconlyBold.send,
+    size: 23,
+    color: Colors.white,
+  );
+}
+
+Widget voiceIcon() {
+  return const Icon(
+    IconlyBold.voice,
+    size: 23,
+    color: Colors.white,
+  );
+}
+
 EdgeInsets getBubblePadding(
   bool isSender,
   bool stateTick,

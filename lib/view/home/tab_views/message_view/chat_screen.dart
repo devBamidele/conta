@@ -1,15 +1,14 @@
 import 'dart:developer';
 import 'dart:math' as math;
 
-import 'package:auto_route/auto_route.dart';
 import 'package:conta/res/components/chat_text_form_field.dart';
 import 'package:conta/res/components/custom/custom_app_bar.dart';
 import 'package:conta/res/style/component_style.dart';
+import 'package:conta/utils/app_router/router.dart';
 import 'package:conta/utils/widget_functions.dart';
-import 'package:conta/view_model/chat_messages_provider.dart';
+import 'package:conta/view_model/chat_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../res/color.dart';
@@ -31,7 +30,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late ChatMessagesProvider chatProvider;
+  late ChatProvider chatProvider;
 
   final messagesController = TextEditingController();
   final messagesFocusNode = FocusNode();
@@ -49,7 +48,7 @@ class _ChatScreenState extends State<ChatScreen>
       duration: const Duration(milliseconds: 300),
     );
 
-    chatProvider = Provider.of<ChatMessagesProvider>(context, listen: false);
+    chatProvider = Provider.of<ChatProvider>(context, listen: false);
     messagesController.addListener(_updateIcon);
     _scrollToBottom();
     _showScrollToBottomIcon();
@@ -132,15 +131,13 @@ class _ChatScreenState extends State<ChatScreen>
       final result = await chatProvider.chooseFiles();
       if (result) {
         navigateToPreview();
-      } else {
-        // AppUtils.showToast('Unable to pick file(s)');
       }
     } catch (e) {
       AppUtils.showToast(e.toString());
     }
   }
 
-  void navigateToPreview() => context.router.push(const PreviewScreenRoute());
+  void navigateToPreview() => navPush(context, const PreviewScreenRoute());
 
   @override
   Widget build(BuildContext context) {
@@ -150,104 +147,99 @@ class _ChatScreenState extends State<ChatScreen>
         child: Column(
           children: [
             Expanded(
-              child: MessagesStream(
-                //
-                scrollController: scrollController,
-              ),
-            ),
-            Padding(
-              padding: chatFieldPadding,
               child: Stack(
-                clipBehavior: Clip.none,
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Expanded(
-                        child: Consumer<ChatMessagesProvider>(
-                          builder: (_, data, Widget? child) {
-                            bool isReplying = data.replyChat;
-                            if (isReplying) {
-                              _controller.forward();
-                            } else {
-                              _controller.reverse();
-                            }
-                            return Column(
-                              children: [
-                                if (isReplying && data.replyMessage != null)
-                                  SlideTransition(
-                                    position: Tween<Offset>(
-                                      begin: const Offset(0, 1),
-                                      end: Offset.zero,
-                                    ).animate(_controller),
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                        left: 1,
-                                        right: 1,
-                                      ),
-                                      child: ReplyMessage(
-                                        isYou: data.currentUser!.uid ==
-                                            data.replyMessage!.senderId,
-                                        message: data.replyMessage!,
-                                        senderName: data.currentChat?.username,
-                                        onCancelReply: onCancelMessageReply,
-                                      ),
-                                    ),
-                                  ),
-                                ConstrainedBox(
-                                  constraints: const BoxConstraints(
-                                    maxHeight: 5 * 16 * 1.4,
-                                  ),
-                                  child: SingleChildScrollView(
-                                    scrollDirection: Axis.vertical,
-                                    reverse: true,
-                                    child: ChatTextFormField(
-                                      node: messagesFocusNode,
-                                      controller: messagesController,
-                                      onPrefixIconTap: _onPrefixIconTap,
-                                      isReplying: isReplying,
-                                    ),
-                                  ),
-                                ), //
-                              ],
-                            );
-                          },
-                        ),
-                      ),
-                      addWidth(8),
-                      CircleAvatar(
-                        radius: 25,
-                        backgroundColor: AppColors.primaryColor,
-                        child: typing
-                            ? GestureDetector(
-                                onTap: _onSendMessageTap,
-                                child: Transform.rotate(
-                                  angle: math.pi / 4,
-                                  child: const Icon(
-                                    IconlyBold.send,
-                                    size: 23,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              )
-                            : GestureDetector(
-                                onTap: () {},
-                                child: const Icon(
-                                  IconlyBold.voice,
-                                  size: 23,
-                                  color: Colors.white,
-                                ),
-                              ),
-                      )
-                    ],
+                  MessagesStream(
+                    scrollController: scrollController,
                   ),
                   Positioned(
-                    right: 0,
-                    top: 0,
+                    bottom: 10,
+                    right: 20,
                     child: CustomFAB(
                       showIcon: showIcon,
                       onPressed: _scrollToBottom,
                     ),
+                  )
+                ],
+              ),
+            ),
+            Padding(
+              padding: chatFieldPadding,
+              child: Row(
+                children: [
+                  // Text field for chatting
+                  Expanded(
+                    child: Consumer<ChatProvider>(
+                      builder: (_, data, Widget? child) {
+                        bool isReplying = data.replyChat;
+                        if (isReplying) {
+                          _controller.forward();
+                        } else {
+                          _controller.reverse();
+                        }
+                        return Column(
+                          children: [
+                            if (isReplying && data.replyMessage != null)
+                              SlideTransition(
+                                position: Tween<Offset>(
+                                  begin: const Offset(0, 1),
+                                  end: Offset.zero,
+                                ).animate(_controller),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 1,
+                                    right: 1,
+                                  ),
+                                  child: ReplyMessage(
+                                    isYou: data.currentUser!.uid ==
+                                        data.replyMessage!.senderId,
+                                    message: data.replyMessage!,
+                                    senderName: data.currentChat?.username,
+                                    onCancelReply: onCancelMessageReply,
+                                  ),
+                                ),
+                              ),
+                            ConstrainedBox(
+                              constraints: const BoxConstraints(
+                                maxHeight: 5 * 16 * 1.4,
+                              ),
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.vertical,
+                                reverse: true,
+                                child: ChatTextFormField(
+                                  node: messagesFocusNode,
+                                  controller: messagesController,
+                                  onPrefixIconTap: _onPrefixIconTap,
+                                  isReplying: isReplying,
+                                ),
+                              ),
+                            ), //
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+
+                  // Some horizontal spacing
+                  addWidth(8),
+
+                  // Record audio / Send message button
+                  CircleAvatar(
+                    radius: 20,
+                    backgroundColor: AppColors.primaryColor,
+                    child: typing
+                        ? GestureDetector(
+                            onTap: _onSendMessageTap,
+                            child: Transform.rotate(
+                              angle: math.pi / 4,
+                              child: sendIcon(),
+                            ),
+                          )
+                        : GestureDetector(
+                            onTap: () => AppUtils.showToast(
+                                'That feature is not yet available'),
+                            child: voiceIcon(),
+                          ),
                   )
                 ],
               ),
@@ -258,6 +250,3 @@ class _ChatScreenState extends State<ChatScreen>
     );
   }
 }
-
-// Todo : FAB Scroll to bottom isn't working, I don't think the
-// CustomFAB is receiving callbacks

@@ -17,7 +17,7 @@ import '../models/message.dart';
 import '../models/search_user.dart';
 import '../utils/services/file_picker_service.dart';
 
-class ChatMessagesProvider extends ChangeNotifier {
+class ChatProvider extends ChangeNotifier {
   Map<String, Message> selectedMessages = {};
   List<Message> deletedMessages = [];
 
@@ -42,6 +42,8 @@ class ChatMessagesProvider extends ChangeNotifier {
 
   void removeFileFromPicker(int index) {
     pickerResult.removeAt(index);
+
+    log('Removed the file');
 
     notifyListeners();
   }
@@ -118,21 +120,17 @@ class ChatMessagesProvider extends ChangeNotifier {
   List<String> generateUniqueIds(int number) {
     final List<String> uniqueIds = [];
 
-    if (number > 0) {
-      if (number == 1) {
-        uniqueIds.add(const Uuid().v4());
-      } else if (number >= 2 && number <= 3) {
-        for (int i = 0; i < number; i++) {
-          final String uniqueId = const Uuid().v4();
-          if (!uniqueIds.contains(uniqueId)) {
-            uniqueIds.add(uniqueId);
-          }
-        }
-      } else if (number >= 4) {
+    if (number == 1) {
+      uniqueIds.add(const Uuid().v4());
+    } else if (number >= 2 && number <= 3) {
+      for (int i = 0; i < number; i++) {
         uniqueIds.add(const Uuid().v4());
       }
+    } else if (number > 3) {
+      uniqueIds.add(const Uuid().v4());
     }
 
+    log('$uniqueIds');
     return uniqueIds;
   }
 
@@ -144,7 +142,7 @@ class ChatMessagesProvider extends ChangeNotifier {
     final uIds = generateUniqueIds(photoPaths.length);
 
     try {
-      final results = await filePickerService.uploadPhotosToStorage(
+      final results = await filePickerService.getDownloadUrls(
         chatId: currentChat!.chatId!,
         photoPaths: photoPaths,
         uIds: uIds,
@@ -180,10 +178,12 @@ class ChatMessagesProvider extends ChangeNotifier {
     final filePickerService = FilePickerService();
     final id = currentChat!.chatId!;
     try {
-      final result = await filePickerService.checkPermissionAndPickFile(id);
+      final result = await filePickerService.pickImages(id);
 
       if (result != null && result.isNotEmpty) {
-        pickerResult = result;
+        pickerResult.addAll(result);
+
+        notifyListeners();
         return true;
       }
     } catch (e) {
@@ -483,7 +483,6 @@ class ChatMessagesProvider extends ChangeNotifier {
           timestamp: Timestamp.now(),
           messageType: MessageType.media.name,
           media: [media[i]],
-          isResized: false,
         );
 
         batch.set(
@@ -504,7 +503,6 @@ class ChatMessagesProvider extends ChangeNotifier {
         replySenderId: cacheReplyMessage?.senderId,
         messageType: type.name,
         media: media,
-        isResized: media != null ? false : true,
       );
 
       batch.set(

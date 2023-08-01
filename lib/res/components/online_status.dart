@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:conta/res/components/shimmer/shimmer_widget.dart';
 import 'package:conta/utils/extensions.dart';
-import 'package:conta/view_model/chat_messages_provider.dart';
+import 'package:conta/view_model/chat_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:conta/res/components/shimmer/shimmer_widget.dart';
 
 import '../color.dart';
 
@@ -13,7 +13,7 @@ class OnlineStatus extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    return Consumer<ChatMessagesProvider>(
+    return Consumer<ChatProvider>(
       builder: (_, data, Widget? child) {
         return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
           stream: data.getOnlineStatusStream(),

@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:auto_route/auto_route.dart';
 import 'package:conta/res/components/chat_list_tile.dart';
 import 'package:conta/view/home/tab_views/message_view/chat_screen.dart';
-import 'package:conta/view_model/chat_messages_provider.dart';
+import 'package:conta/view_model/chat_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -24,7 +24,7 @@ class _ChatListViewState extends State<ChatListView> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ChatMessagesProvider>(
+    return Consumer<ChatProvider>(
       builder: (_, data, Widget? child) {
         return StreamBuilder(
           stream: data.getChatTilesStream(),
@@ -78,7 +78,7 @@ class _ChatListViewState extends State<ChatListView> {
     }
   }
 
-  void onTileTap(ChatMessagesProvider data, ChatTileData tile, bool sameUser) {
+  void onTileTap(ChatProvider data, ChatTileData tile, bool sameUser) {
     data.resetUnread(tile.chatId);
     data.setCurrentChat(
       username: sameUser ? tile.recipientName : tile.senderName,

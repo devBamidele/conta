@@ -1,6 +1,7 @@
 import 'package:conta/utils/services/storage_manager.dart';
 import 'package:conta/view_model/auth_provider.dart';
-import 'package:conta/view_model/chat_messages_provider.dart';
+import 'package:conta/view_model/chat_provider.dart';
+import 'package:conta/view_model/photo_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -40,8 +41,9 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ChatMessagesProvider()),
+        ChangeNotifierProvider(create: (_) => ChatProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => PhotoProvider()),
       ],
       child: const MyApp(),
     ),

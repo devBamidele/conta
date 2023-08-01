@@ -18,7 +18,6 @@ class Message {
   final String? replyMessage;
   final String? replySenderId;
   final List<String>? media;
-  final bool isResized;
   bool selected = false;
 
   /// Constructs a [Message] object.
@@ -44,7 +43,6 @@ class Message {
     this.media,
     this.replyMessage,
     this.replySenderId,
-    this.isResized = false,
   });
 
   /// Deserialize the JSON data received from Firestore into a [Message] object.
@@ -61,7 +59,6 @@ class Message {
         reply = json['reply'] ?? false,
         replyMessage = json['message'],
         replySenderId = json['replySenderId'],
-        isResized = json['isResized'] ?? false,
         messageType = json['messageType'] ?? MessageType.text.name,
         media = json['media'] != null ? List<String>.from(json['media']) : null;
 
@@ -78,7 +75,6 @@ class Message {
         'message': replyMessage,
         'replySenderId': replySenderId,
         'messageType': messageType,
-        'isResized': isResized,
         'media': media,
       };
 
