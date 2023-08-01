@@ -1,5 +1,6 @@
 import 'package:conta/res/components/message_bubble.dart';
 import 'package:conta/utils/extensions.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -31,6 +32,7 @@ class _MessagesStreamState extends State<MessagesStream> {
   bool showTail = true;
   bool showDate = true;
   bool showTopSpacing = false;
+  final currentUser = FirebaseAuth.instance.currentUser;
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +41,7 @@ class _MessagesStreamState extends State<MessagesStream> {
       builder: (_, data, __) {
         return StreamBuilder(
           stream: data.getChatMessagesStream(
-            currentUserUid: data.currentUser!.uid,
+            currentUserUid: currentUser!.uid,
             otherUserUid: data.currentChat!.uidUser2,
           ),
           builder: (_, AsyncSnapshot<List<Message>> snapshot) {
@@ -59,7 +61,7 @@ class _MessagesStreamState extends State<MessagesStream> {
                 itemCount: messages.length,
                 itemBuilder: (context, index) {
                   final message = messages[index];
-                  final sameUser = message.senderId == data.currentUser!.uid;
+                  final sameUser = message.senderId == currentUser!.uid;
 
                   showDate = index == 0
                       ? true

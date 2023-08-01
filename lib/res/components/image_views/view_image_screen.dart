@@ -5,14 +5,14 @@ import 'package:flutter/material.dart';
 
 import '../../color.dart';
 import '../custom/custom_back_button.dart';
-import '../custom_value_color_anim.dart';
+import '../custom/custom_value_color_anim.dart';
 
-class MediaPreviewScreen extends StatelessWidget {
+class ViewImageScreen extends StatelessWidget {
   final List<String> media;
   final String sender;
   final Timestamp timeSent;
 
-  const MediaPreviewScreen({
+  const ViewImageScreen({
     Key? key,
     required this.media,
     required this.sender,
@@ -23,10 +23,9 @@ class MediaPreviewScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: CustomBackButton(
-          padding: const EdgeInsets.only(left: 15),
+        leading: const CustomBackButton(
+          padding: EdgeInsets.only(left: 15),
           color: AppColors.extraTextColor,
-          onPressed: () => {},
         ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,15 +47,17 @@ class MediaPreviewScreen extends StatelessWidget {
         ),
       ),
       body: SafeArea(
-        child: ListView.builder(
-          itemCount: media.length,
-          itemBuilder: (__, int index) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: ImagePreview(path: media[index]),
-            );
-          },
-        ),
+        child: media.length == 1
+            ? Center(child: ImagePreview(path: media[0]))
+            : ListView.builder(
+                itemCount: media.length,
+                itemBuilder: (__, int index) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: ImagePreview(path: media[index]),
+                  );
+                },
+              ),
       ),
     );
   }
@@ -85,9 +86,7 @@ class ImagePreview extends StatelessWidget {
                 );
         },
         errorBuilder: (context, object, trace) {
-          return const Center(
-            child: Text('Hello World'),
-          );
+          return const Center(child: Text('Error fetching data'));
         },
       ),
     );

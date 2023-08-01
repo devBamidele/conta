@@ -1,22 +1,18 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-import '../../../utils/services/storage_manager.dart';
-import '../custom_value_color_anim.dart';
+import '../custom/custom_value_color_anim.dart';
 
-class ImageGridTile extends StatelessWidget {
+class GridImageTile extends StatelessWidget {
   final String mediaUrl;
 
-  ImageGridTile({
+  const GridImageTile({
     Key? key,
     required this.mediaUrl,
   }) : super(key: key);
 
-  final dir = StorageManager.storageDirectory!;
-
   @override
   Widget build(BuildContext context) {
-    //
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child: CachedNetworkImage(

@@ -23,7 +23,7 @@ class ChatProvider extends ChangeNotifier {
 
   List<PlatformFile> pickerResult = [];
 
-  final currentUser = FirebaseAuth.instance.currentUser;
+  //final currentUser = FirebaseAuth.instance.currentUser;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   //late final MessagingService _messagingService = MessagingService();
@@ -142,13 +142,12 @@ class ChatProvider extends ChangeNotifier {
     final uIds = generateUniqueIds(photoPaths.length);
 
     try {
-      final results = await filePickerService.getDownloadUrls(
+      final urls = await filePickerService.getDownloadUrls(
         chatId: currentChat!.chatId!,
         photoPaths: photoPaths,
-        uIds: uIds,
       );
       await uploadChat(caption,
-          type: MessageType.media, media: results, uIds: uIds);
+          type: MessageType.media, media: urls, uIds: uIds);
     } catch (e) {
       rethrow;
     }
@@ -240,9 +239,11 @@ class ChatProvider extends ChangeNotifier {
   }
 
   Stream<List<ChatTileData>> getChatTilesStream() {
-    final userId = currentUser!.uid;
+    final userId = FirebaseAuth.instance.currentUser!.uid;
     final CollectionReference<Map<String, dynamic>> tileRef =
         firestore.collection('users').doc(userId).collection('chat_tile_data');
+
+    log(tileRef.toString());
 
     return tileRef
         .orderBy('lastMessageTimestamp', descending: true)
@@ -283,7 +284,7 @@ class ChatProvider extends ChangeNotifier {
     final userQuery = await FirebaseFirestore.instance
         .collection('recent_searches')
         .where('username', isEqualTo: person.username)
-        .where('uidUser', isEqualTo: currentUser!.uid)
+        .where('uidUser', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
         .get();
 
     if (userQuery.docs.isEmpty) {
@@ -291,7 +292,7 @@ class ChatProvider extends ChangeNotifier {
       final search = SearchUser(
         timestamp: Timestamp.now(),
         name: person.name,
-        uidUser: currentUser!.uid,
+        uidUser: FirebaseAuth.instance.currentUser!.uid,
         username: person.username,
         uidSearch: person.id,
         profilePicUrl: person.profilePicUrl,
@@ -309,7 +310,7 @@ class ChatProvider extends ChangeNotifier {
   Future<void> clearRecentSearch() async {
     final querySnapshot = await FirebaseFirestore.instance
         .collection('recent_searches')
-        .where('uidUser', isEqualTo: currentUser!.uid)
+        .where('uidUser', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
         .get();
 
     final batch = FirebaseFirestore.instance.batch();
@@ -321,7 +322,7 @@ class ChatProvider extends ChangeNotifier {
   }
 
   void deleteFromRecentSearch({required String username}) async {
-    final uid = currentUser!.uid;
+    final uid = FirebaseAuth.instance.currentUser!.uid;
     final querySnapshot = await FirebaseFirestore.instance
         .collection('recent_searches')
         .where('username', isEqualTo: username)
@@ -335,7 +336,7 @@ class ChatProvider extends ChangeNotifier {
   Stream<List<SearchUser>> getRecentSearches() {
     return FirebaseFirestore.instance
         .collection('recent_searches')
-        .where('uidUser', isEqualTo: currentUser!.uid)
+        .where('uidUser', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
         .orderBy('timestamp', descending: true)
         .limit(10)
         .snapshots()
@@ -457,6 +458,7 @@ class ChatProvider extends ChangeNotifier {
     List<String>? uIds,
   }) async {
     String messageId = '';
+    final currentUser = FirebaseAuth.instance.currentUser;
 
     if (media == null) {
       messageId = const Uuid().v4();
@@ -529,6 +531,7 @@ class ChatProvider extends ChangeNotifier {
   // Todo : Look at the efficiency of this function
   Future<void> resetUnread(String chatId) async {
     final batch = firestore.batch();
+    final currentUser = FirebaseAuth.instance.currentUser;
 
     final chatTileDataRef = firestore
         .collection('users')
@@ -540,7 +543,7 @@ class ChatProvider extends ChangeNotifier {
     final chatTileData = chatTileDataSnapshot.data() as Map<String, dynamic>;
     final lastMessageSenderId = chatTileData['lastMessageSenderId'] as String?;
 
-    if (lastMessageSenderId != currentUser!.uid) {
+    if (lastMessageSenderId != currentUser.uid) {
       batch.update(chatTileDataRef, {'recipientUnreadMessages': 0});
     }
 
@@ -551,9 +554,9 @@ class ChatProvider extends ChangeNotifier {
     final user1Id = chatData['user1Id'] as String?;
     final user2Id = chatData['user2Id'] as String?;
 
-    if (currentUser!.uid == user1Id) {
+    if (currentUser.uid == user1Id) {
       batch.update(chatRef, {'user1Unread': 0});
-    } else if (currentUser!.uid == user2Id) {
+    } else if (currentUser.uid == user2Id) {
       batch.update(chatRef, {'user2Unread': 0});
     }
 
@@ -570,6 +573,7 @@ class ChatProvider extends ChangeNotifier {
     List<String>? media,
     List<String>? uIds,
   }) async {
+    final currentUser = FirebaseAuth.instance.currentUser;
     final chatId = currentChat?.chatId == null
         ? generateChatId(currentUser!.uid, currentChat!.uidUser2)
         : currentChat!.chatId!;

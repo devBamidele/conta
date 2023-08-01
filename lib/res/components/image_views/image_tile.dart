@@ -1,21 +1,21 @@
 import 'dart:ui';
 
-import 'package:auto_route/auto_route.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conta/res/style/component_style.dart';
+import 'package:conta/utils/app_router/router.dart';
 import 'package:flutter/material.dart';
 
 import '../../../utils/app_router/router.gr.dart';
-import 'dynamic_sized_image_preview.dart';
-import 'image_grid_tile.dart';
+import 'grid_image_tile.dart';
+import 'single_image_tile.dart';
 
-class ImagePreview extends StatelessWidget {
+class ImageTile extends StatelessWidget {
   final List<String> media;
   final Timestamp timeSent;
   final String sender;
   final String chatId;
 
-  const ImagePreview({
+  const ImageTile({
     Key? key,
     required this.media,
     required this.timeSent,
@@ -23,8 +23,9 @@ class ImagePreview extends StatelessWidget {
     required this.chatId,
   }) : super(key: key);
 
-  void goToMediaPreview(BuildContext context) => context.router.push(
-        MediaPreviewScreenRoute(
+  void goToMediaPreview(BuildContext context) => navPush(
+        context,
+        ViewImageScreenRoute(
           media: media,
           sender: sender,
           timeSent: timeSent,
@@ -47,7 +48,7 @@ class ImagePreview extends StatelessWidget {
               return Stack(
                 fit: StackFit.expand,
                 children: [
-                  ImageGridTile(
+                  GridImageTile(
                     mediaUrl: media[index],
                   ),
                   Positioned.fill(
@@ -73,7 +74,7 @@ class ImagePreview extends StatelessWidget {
                 ],
               );
             } else {
-              return ImageGridTile(
+              return GridImageTile(
                 mediaUrl: media[index],
               );
             }
@@ -81,7 +82,7 @@ class ImagePreview extends StatelessWidget {
         ),
       );
     } else {
-      return DynamicSizedImagePreview(
+      return SingleImageTile(
         sender: sender,
         timeSent: timeSent,
         mediaUrl: media.first,

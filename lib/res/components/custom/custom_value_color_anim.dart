@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
-import '../color.dart';
+import '../../color.dart';
 
 /// Generates a custom `Animation<Color?>` for the valueColor of an animation.
 Animation<Color?> customValueColorAnim() {

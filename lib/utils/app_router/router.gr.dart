@@ -13,7 +13,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:auto_route/auto_route.dart' as _i13;
 import 'package:cloud_firestore/cloud_firestore.dart' as _i17;
-import 'package:conta/res/components/image_preview/media_preview_screen.dart'
+import 'package:conta/res/components/image_views/view_image_screen.dart'
     as _i10;
 import 'package:conta/view/account_setup/set_name_screen.dart' as _i2;
 import 'package:conta/view/account_setup/set_photo_page.dart' as _i3;
@@ -100,11 +100,11 @@ class AppRouter extends _i13.RootStackRouter {
         child: const _i9.PreviewScreen(),
       );
     },
-    MediaPreviewScreenRoute.name: (routeData) {
-      final args = routeData.argsAs<MediaPreviewScreenRouteArgs>();
+    ViewImageScreenRoute.name: (routeData) {
+      final args = routeData.argsAs<ViewImageScreenRouteArgs>();
       return _i13.AdaptivePage<dynamic>(
         routeData: routeData,
-        child: _i10.MediaPreviewScreen(
+        child: _i10.ViewImageScreen(
           key: args.key,
           media: args.media,
           sender: args.sender,
@@ -169,8 +169,8 @@ class AppRouter extends _i13.RootStackRouter {
           path: '/preview-screen',
         ),
         _i13.RouteConfig(
-          MediaPreviewScreenRoute.name,
-          path: '/media-preview-screen',
+          ViewImageScreenRoute.name,
+          path: '/view-image-screen',
         ),
         _i13.RouteConfig(
           PersistentTabRoute.name,
@@ -338,18 +338,18 @@ class PreviewScreenRoute extends _i13.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i10.MediaPreviewScreen]
-class MediaPreviewScreenRoute
-    extends _i13.PageRouteInfo<MediaPreviewScreenRouteArgs> {
-  MediaPreviewScreenRoute({
+/// [_i10.ViewImageScreen]
+class ViewImageScreenRoute
+    extends _i13.PageRouteInfo<ViewImageScreenRouteArgs> {
+  ViewImageScreenRoute({
     _i15.Key? key,
     required List<String> media,
     required String sender,
     required _i17.Timestamp timeSent,
   }) : super(
-          MediaPreviewScreenRoute.name,
-          path: '/media-preview-screen',
-          args: MediaPreviewScreenRouteArgs(
+          ViewImageScreenRoute.name,
+          path: '/view-image-screen',
+          args: ViewImageScreenRouteArgs(
             key: key,
             media: media,
             sender: sender,
@@ -357,11 +357,11 @@ class MediaPreviewScreenRoute
           ),
         );
 
-  static const String name = 'MediaPreviewScreenRoute';
+  static const String name = 'ViewImageScreenRoute';
 }
 
-class MediaPreviewScreenRouteArgs {
-  const MediaPreviewScreenRouteArgs({
+class ViewImageScreenRouteArgs {
+  const ViewImageScreenRouteArgs({
     this.key,
     required this.media,
     required this.sender,
@@ -378,7 +378,7 @@ class MediaPreviewScreenRouteArgs {
 
   @override
   String toString() {
-    return 'MediaPreviewScreenRouteArgs{key: $key, media: $media, sender: $sender, timeSent: $timeSent}';
+    return 'ViewImageScreenRouteArgs{key: $key, media: $media, sender: $sender, timeSent: $timeSent}';
   }
 }
 

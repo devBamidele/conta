@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 
 import '../../res/color.dart';
 import '../../res/components/custom/custom_back_button.dart';
-import '../../res/components/custom_text_field.dart';
+import '../../res/components/custom/custom_text_field.dart';
 import '../../res/style/app_text_style.dart';
 import '../../res/style/component_style.dart';
 import '../../utils/app_utils.dart';

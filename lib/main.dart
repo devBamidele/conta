@@ -1,4 +1,3 @@
-import 'package:conta/utils/services/storage_manager.dart';
 import 'package:conta/view_model/auth_provider.dart';
 import 'package:conta/view_model/chat_provider.dart';
 import 'package:conta/view_model/photo_provider.dart';
@@ -19,9 +18,6 @@ void main() async {
   // Activate app check
   // await FirebaseAppCheck.instance
   //   .activate(androidProvider: AndroidProvider.debug);
-
-  // Get the application document directory
-  await StorageManager.initialize();
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

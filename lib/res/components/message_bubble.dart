@@ -1,6 +1,7 @@
 import 'package:blur/blur.dart';
 import 'package:conta/res/components/reply_bubble.dart';
 import 'package:conta/utils/widget_functions.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:provider/provider.dart';
@@ -11,7 +12,7 @@ import '../../models/message.dart';
 import '../../view_model/chat_provider.dart';
 import '../color.dart';
 import 'bubble_painter.dart';
-import 'image_preview/image_preview.dart';
+import 'image_views/image_tile.dart';
 
 ///iMessage's chat bubble type
 ///
@@ -56,6 +57,7 @@ class MessageBubble extends StatefulWidget {
 
 class _MessageBubbleState extends State<MessageBubble> {
   late final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+  final currentUser = FirebaseAuth.instance.currentUser;
 
   late String? replyMessage;
 
@@ -272,7 +274,7 @@ void resetOverlayColor() {
                                               widget.message.replyMessage!,
                                           messageSender:
                                               widget.message.replySenderId! ==
-                                                      data.currentUser!.uid
+                                                      currentUser!.uid
                                                   ? 'You'
                                                   : data.currentChat!.username,
                                         ),
@@ -285,7 +287,7 @@ void resetOverlayColor() {
                                                 const BorderRadius.all(
                                               Radius.circular(11.5),
                                             ),
-                                            child: ImagePreview(
+                                            child: ImageTile(
                                               chatId: data.currentChat!.chatId!,
                                               sender: widget.isSender
                                                   ? 'You'

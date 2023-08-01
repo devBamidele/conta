@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:conta/res/components/custom/custom_back_button.dart';
-import 'package:conta/res/components/login_options.dart';
 import 'package:conta/res/style/app_text_style.dart';
 import 'package:conta/res/style/component_style.dart';
 import 'package:conta/utils/app_router/router.gr.dart';
@@ -9,12 +8,14 @@ import 'package:conta/utils/extensions.dart';
 import 'package:conta/view_model/auth_provider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
+import '../../data/logins.dart';
 import '../../res/color.dart';
-import '../../res/components/custom_text_field.dart';
+import '../../res/components/custom/custom_text_field.dart';
 import '../../res/components/shake_error.dart';
 import '../../utils/app_router/router.dart';
 import '../../utils/app_utils.dart';
@@ -137,6 +138,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void onContinuePressed() {
+    useFirstLogin(myEmailController, myPasswordController);
+
     final email = formKey1.currentState?.validate();
     final password = formKey2.currentState?.validate();
 
@@ -175,7 +178,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void onAuthenticate() {
-    _authService.updateUserOnlineStatus(true).then((_) => gotoHome());
+    gotoHome();
+    _authService.updateUserOnlineStatus(true);
   }
 
   void toggleVisibility() {
@@ -322,9 +326,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             fontSize: 17,
                           ),
                           recognizer: TapGestureRecognizer()
-                            // handle click event for the Login link
+                            // handle click event for the Signup link
                             ..onTap = () =>
-                                navPush(context, const SignUpScreenRoute()),
+                                navReplace(context, const SignUpScreenRoute()),
                         ),
                       ],
                     ),
@@ -363,6 +367,31 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class LoginOptions extends StatelessWidget {
+  const LoginOptions({
+    Key? key,
+    required this.onTap,
+    required this.path,
+    this.scale = 1,
+  }) : super(key: key);
+
+  final VoidCallback onTap;
+  final String path;
+  final double scale;
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton(
+      onPressed: onTap,
+      style: loginOptionsStyle,
+      child: Transform.scale(
+        scale: scale,
+        child: SvgPicture.asset(path),
       ),
     );
   }

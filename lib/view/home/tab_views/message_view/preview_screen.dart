@@ -1,8 +1,11 @@
+import 'dart:io';
 import 'dart:math' as math;
+import 'dart:typed_data';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:conta/res/style/component_style.dart';
 import 'package:conta/view_model/chat_provider.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -13,7 +16,6 @@ import '../../../../res/color.dart';
 import '../../../../res/components/app_bar_icon.dart';
 import '../../../../res/components/chat_text_form_field.dart';
 import '../../../../res/components/custom/custom_back_button.dart';
-import '../../../../res/components/media_preview.dart';
 import '../../../../utils/app_utils.dart';
 import '../../../../utils/widget_functions.dart';
 
@@ -185,6 +187,52 @@ class _PreviewScreenState extends State<PreviewScreen> {
       await chatProvider.chooseFiles();
     } catch (e) {
       AppUtils.showToast('Hello World');
+    }
+  }
+}
+
+class MediaPreview extends StatelessWidget {
+  const MediaPreview({
+    Key? key,
+    required this.file,
+  }) : super(key: key);
+
+  final PlatformFile file;
+
+  @override
+  Widget build(BuildContext context) {
+    final ext = file.extension?.toLowerCase();
+
+    if (ext == 'jpg' ||
+        ext == 'png' ||
+        ext == 'jpeg' ||
+        ext == 'gif' ||
+        ext == 'bmp' ||
+        ext == 'webp' ||
+        ext == 'webp_animated' ||
+        ext == 'ico') {
+      // Use FutureBuilder to asynchronously load the image
+      return FutureBuilder<Uint8List>(
+        future: File(file.path!).readAsBytes(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            // While waiting for the image to load, show a loading indicator
+            return const Center(
+              child: CircularProgressIndicator(
+                color: AppColors.replyMessageColor,
+              ),
+            );
+          } else if (snapshot.hasError) {
+            return Text('Error loading image: ${snapshot.error}');
+          } else {
+            return Image.memory(snapshot.data!);
+          }
+        },
+      );
+    } else {
+      return Center(
+        child: Text('File support coming soon : $ext'),
+      );
     }
   }
 }

@@ -12,8 +12,7 @@ import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
-import '../../res/components/custom/custom_back_button.dart';
-import '../../res/components/custom_text_field.dart';
+import '../../res/components/custom/custom_text_field.dart';
 import '../../res/style/app_text_style.dart';
 import '../../utils/app_utils.dart';
 
@@ -180,10 +179,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const CustomBackButton(
-                    padding: EdgeInsets.only(left: 0, top: 25),
-                  ),
-                  addHeight(20),
+                  addHeight(70),
                   const Text(
                     'Create your Account',
                     style: AppTextStyles.headlineLarge,
@@ -286,7 +282,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           recognizer: TapGestureRecognizer()
                             // handle click event for the Login link
                             ..onTap = () =>
-                                navPush(context, const LoginScreenRoute()),
+                                navReplace(context, const LoginScreenRoute()),
                         ),
                       ],
                     ),

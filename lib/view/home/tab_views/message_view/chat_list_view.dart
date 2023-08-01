@@ -1,9 +1,10 @@
 import 'dart:developer';
 
-import 'package:auto_route/auto_route.dart';
 import 'package:conta/res/components/chat_list_tile.dart';
-import 'package:conta/view/home/tab_views/message_view/chat_screen.dart';
+import 'package:conta/utils/app_router/router.dart';
+import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:conta/view_model/chat_provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -21,6 +22,7 @@ class ChatListView extends StatefulWidget {
 
 class _ChatListViewState extends State<ChatListView> {
   bool isNavigating = false;
+  final currentUser = FirebaseAuth.instance.currentUser;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +45,7 @@ class _ChatListViewState extends State<ChatListView> {
                 itemCount: tileData.length,
                 itemBuilder: (context, index) {
                   ChatTileData tile = tileData[index];
-                  bool sameUser = tile.senderId == data.currentUser!.uid;
+                  bool sameUser = tile.senderId == currentUser!.uid;
                   return ChatListTile(
                     tileData: tile,
                     onTileTap: () => onTileTap(data, tile, sameUser),
@@ -71,7 +73,7 @@ class _ChatListViewState extends State<ChatListView> {
   void navigateToNextScreen(BuildContext context) {
     if (!isNavigating) {
       isNavigating = true;
-      context.router.pushNamed(ChatScreen.tag).then((_) {
+      navPush(context, const ChatScreenRoute()).then((_) {
         // Reset the flag when the navigation is complete
         isNavigating = false;
       });
@@ -86,6 +88,8 @@ class _ChatListViewState extends State<ChatListView> {
       uidUser2: sameUser ? tile.recipientId : tile.senderId,
       profilePicUrl: sameUser ? tile.recipientPicUrl : tile.senderPicUrl,
     );
+
+    data.cancelReplyAndClearCache();
     navigateToNextScreen(context);
   }
 }

@@ -15,7 +15,7 @@ class AuthService {
   Future<void> updateUserOnlineStatus(bool isOnline) async {
     final user = _auth.currentUser;
 
-    if (user != null) {
+    if (user != null && user.emailVerified) {
       try {
         final docRef = _firestore.doc('users/${user.uid}');
 

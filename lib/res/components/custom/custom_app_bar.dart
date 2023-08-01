@@ -47,10 +47,9 @@ class _CustomAppBarState extends State<CustomAppBar> {
           child: !data.isMessageLongPressed
               ? AppBar(
                   key: const Key('not-longPressed'),
-                  leading: CustomBackButton(
-                    padding: const EdgeInsets.only(left: 15),
+                  leading: const CustomBackButton(
+                    padding: EdgeInsets.only(left: 15),
                     color: AppColors.extraTextColor,
-                    onPressed: () => data.cancelReplyAndClearCache(),
                   ),
                   actions: [
                     Padding(

@@ -1,5 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:conta/res/components/image_preview/media_preview_screen.dart';
 import 'package:conta/view/account_setup/sign_up_screen.dart';
 import 'package:conta/view/account_setup/verify_account_screen.dart';
 import 'package:conta/view/authentication/login_screen.dart';
@@ -10,6 +9,7 @@ import 'package:conta/view/home/tab_views/message_view/chat_screen.dart';
 import 'package:conta/view/home/tab_views/message_view/preview_screen.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../../res/components/image_views/view_image_screen.dart';
 import '../../view/account_setup/set_name_screen.dart';
 import '../../view/account_setup/set_photo_page.dart';
 import '../../view/onboard/splash_screen.dart';
@@ -29,7 +29,7 @@ import '../../view/onboard/splash_screen.dart';
     AutoRoute(page: UpdatePasswordScreen),
     AutoRoute(page: PreviewScreen),
 
-    AutoRoute(page: MediaPreviewScreen),
+    AutoRoute(page: ViewImageScreen),
     AutoRoute(page: PersistentTab, path: PersistentTab.tag),
     CustomRoute(
       path: ChatScreen.tag,
@@ -41,8 +41,9 @@ import '../../view/onboard/splash_screen.dart';
 )
 class $AppRouter {}
 
-void navPush(BuildContext context, PageRouteInfo<dynamic>? route) {
-  context.router.push(route!);
+Future<void> navPush(
+    BuildContext context, PageRouteInfo<dynamic>? route) async {
+  await context.router.push(route!);
 }
 
 bool isRoot(BuildContext context) => context.router.isRoot;

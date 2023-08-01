@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../res/components/custom_value_color_anim.dart';
+import '../../../res/components/custom/custom_value_color_anim.dart';
 
 class CallScreen extends StatelessWidget {
   const CallScreen({Key? key}) : super(key: key);
