@@ -138,7 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void onContinuePressed() {
-    useFirstLogin(myEmailController, myPasswordController);
+    AppLogins.useFirstLogin(myEmailController, myPasswordController);
 
     final email = formKey1.currentState?.validate();
     final password = formKey2.currentState?.validate();

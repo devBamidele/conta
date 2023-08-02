@@ -4,7 +4,6 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conta/models/chat.dart';
 import 'package:conta/utils/enums.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,8 +20,6 @@ class ChatProvider extends ChangeNotifier {
   Map<String, Message> selectedMessages = {};
   List<Message> deletedMessages = [];
 
-  List<PlatformFile> pickerResult = [];
-
   //final currentUser = FirebaseAuth.instance.currentUser;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -38,27 +35,6 @@ class ChatProvider extends ChangeNotifier {
       isMessageLongPressed = true;
     }
     notifyListeners();
-  }
-
-  void removeFileFromPicker(int index) {
-    pickerResult.removeAt(index);
-
-    log('Removed the file');
-
-    notifyListeners();
-  }
-
-  void clearPickerResult() async {
-    pickerResult.clear();
-    final success = await FilePicker.platform.clearTemporaryFiles();
-    String message = '';
-
-    if (success != null && success == true) {
-      message = 'Successfully able to clear cache';
-    } else {
-      message = 'Unable to clear cache';
-    }
-    log(message);
   }
 
   /// Holds the profile information of the current selected chat
@@ -115,80 +91,6 @@ class ChatProvider extends ChangeNotifier {
       selectedMessages[message.id] = message;
     }
     notifyListeners();
-  }
-
-  List<String> generateUniqueIds(int number) {
-    final List<String> uniqueIds = [];
-
-    if (number == 1) {
-      uniqueIds.add(const Uuid().v4());
-    } else if (number >= 2 && number <= 3) {
-      for (int i = 0; i < number; i++) {
-        uniqueIds.add(const Uuid().v4());
-      }
-    } else if (number > 3) {
-      uniqueIds.add(const Uuid().v4());
-    }
-
-    log('$uniqueIds');
-    return uniqueIds;
-  }
-
-  Future<void> uploadImagesAndCaption(String caption) async {
-    final filePickerService = FilePickerService();
-    final photoPaths =
-        pickerResult.map((file) => file.path).whereType<String>().toList();
-
-    final uIds = generateUniqueIds(photoPaths.length);
-
-    try {
-      final urls = await filePickerService.getDownloadUrls(
-        chatId: currentChat!.chatId!,
-        photoPaths: photoPaths,
-      );
-      await uploadChat(caption,
-          type: MessageType.media, media: urls, uIds: uIds);
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  Future<void> deleteFilesFromStorage() async {
-    final filePickerService = FilePickerService();
-    final fileUrls = <String>[];
-
-    try {
-      // Extract media URLs from each message in deletedMessages
-      for (final message in deletedMessages) {
-        final media = message.media;
-        if (media != null) {
-          fileUrls.addAll(media);
-        }
-      }
-
-      // Delete the files from storage
-      await filePickerService.deleteFilesFromStorage(fileUrls);
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  Future<bool> chooseFiles() async {
-    final filePickerService = FilePickerService();
-    final id = currentChat!.chatId!;
-    try {
-      final result = await filePickerService.pickImages(id);
-
-      if (result != null && result.isNotEmpty) {
-        pickerResult.addAll(result);
-
-        notifyListeners();
-        return true;
-      }
-    } catch (e) {
-      rethrow;
-    }
-    return false;
   }
 
   void clearCache() {
@@ -403,6 +305,26 @@ class ChatProvider extends ChangeNotifier {
 
       // Commit the batch operation
       await batch.commit();
+    }
+  }
+
+  Future<void> deleteFilesFromStorage() async {
+    final filePickerService = FilePickerService();
+    final fileUrls = <String>[];
+
+    try {
+      // Extract media URLs from each message in deletedMessages
+      for (final message in deletedMessages) {
+        final media = message.media;
+        if (media != null) {
+          fileUrls.addAll(media);
+        }
+      }
+
+      // Delete the files from storage
+      await filePickerService.deleteFilesFromStorage(fileUrls);
+    } catch (e) {
+      rethrow;
     }
   }
 

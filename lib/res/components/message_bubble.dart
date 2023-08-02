@@ -177,10 +177,12 @@ void resetOverlayColor() {
     // Update the state icon depending on the state of 'seen' and 'sent'
     if (widget.message.sent) {
       stateIcon = sentIcon(stateIconColor);
-    } else if (widget.message.seen) {
-      stateIcon = seenIcon(stateIconColor);
     } else {
       stateIcon = offlineIcon(stateIconColor);
+    }
+
+    if (widget.message.seen) {
+      stateIcon = seenIcon(stateIconColor);
     }
 
     return GestureDetector(

@@ -92,7 +92,7 @@ class AuthProvider extends ChangeNotifier {
     final email = this.email!;
     final password = this.password!;
 
-    AppUtils.showLoadingDialog(context);
+    AppUtils.showLoadingDialog1(context);
 
     try {
       UserCredential userCredential =
@@ -134,7 +134,7 @@ class AuthProvider extends ChangeNotifier {
     required void Function(String) showSnackbar,
     required void Function(String) onAuthenticate,
   }) async {
-    AppUtils.showLoadingDialog(context);
+    AppUtils.showLoadingDialog1(context);
 
     try {
       // Check if the email is registered with the app
@@ -225,7 +225,7 @@ class AuthProvider extends ChangeNotifier {
     required void Function(String) showSnackbar,
     required VoidCallback onAuthenticate,
   }) async {
-    AppUtils.showLoadingDialog(context);
+    AppUtils.showLoadingDialog1(context);
 
     try {
       // Check if the email is already registered with Firebase
@@ -260,7 +260,7 @@ class AuthProvider extends ChangeNotifier {
     required void Function(String) showSnackbar,
     required VoidCallback onAuthenticate,
   }) async {
-    AppUtils.showLoadingDialog(context);
+    AppUtils.showLoadingDialog1(context);
 
     try {
       UserCredential userCredential =

@@ -7,6 +7,7 @@ import 'package:conta/res/style/component_style.dart';
 import 'package:conta/utils/app_router/router.dart';
 import 'package:conta/utils/widget_functions.dart';
 import 'package:conta/view_model/chat_provider.dart';
+import 'package:conta/view_model/photo_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -32,6 +33,7 @@ class _ChatScreenState extends State<ChatScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late ChatProvider chatProvider;
+  late PhotoProvider photoProvider;
 
   final messagesController = TextEditingController();
   final messagesFocusNode = FocusNode();
@@ -51,6 +53,8 @@ class _ChatScreenState extends State<ChatScreen>
     );
 
     chatProvider = Provider.of<ChatProvider>(context, listen: false);
+    photoProvider = Provider.of<PhotoProvider>(context, listen: false);
+
     messagesController.addListener(_updateIcon);
     _scrollToBottom();
     _showScrollToBottomIcon();
@@ -96,8 +100,6 @@ class _ChatScreenState extends State<ChatScreen>
     }
   }
 
-  onCancelMessageReply() => chatProvider.cancelReplyAndClearCache();
-
   // Todo : Make the page scroll to the bottom (automatically) and add pagination
   _scrollToBottom() {
     log('I was clicked');
@@ -128,14 +130,15 @@ class _ChatScreenState extends State<ChatScreen>
   }
 
   void _onPrefixIconTap() async {
-    chatProvider.clearPickerResult();
-    try {
-      final result = await chatProvider.chooseFiles();
-      if (result) {
-        navigateToPreview();
-      }
-    } catch (e) {
-      AppUtils.showToast(e.toString());
+    photoProvider.getImages(
+      onPick: navigateToPreview,
+      showToast: showToast,
+    );
+  }
+
+  void showToast(String message) {
+    if (mounted) {
+      AppUtils.showToast(message);
     }
   }
 
@@ -204,7 +207,8 @@ class _ChatScreenState extends State<ChatScreen>
                                           data.replyMessage!.senderId,
                                       message: data.replyMessage!,
                                       senderName: data.currentChat?.username,
-                                      onCancelReply: onCancelMessageReply,
+                                      onCancelReply: () =>
+                                          data.cancelReplyAndClearCache(),
                                     ),
                                   ),
                                 ),

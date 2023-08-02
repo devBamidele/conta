@@ -190,14 +190,14 @@ void confirmDelete(BuildContext context, ChatProvider data) {
         onConfirmPressed: () {
           data.deleteMessage();
           Navigator.of(context).pop();
-          _showSnackbar(data);
+          _showSnackbar(data, context);
         },
       );
     },
   );
 }
 
-void _showSnackbar(ChatProvider data) {
+void _showSnackbar(ChatProvider data, BuildContext context) {
   AppUtils.showSnackbar(
     'Successfully deleted message',
     delay: const Duration(seconds: 3),

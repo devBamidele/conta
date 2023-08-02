@@ -11,7 +11,7 @@ class FilePickerService {
   /// Allows the user to pick media files and returns the selected files as a list of [PlatformFile] objects.
   ///
   /// Throws an error if there is any issue during the file picking process.
-  Future<List<PlatformFile>?> pickImages(String chatId) async {
+  Future<List<PlatformFile>?> pickImages() async {
     try {
       final result = await FilePicker.platform.pickFiles(
         allowMultiple: true,

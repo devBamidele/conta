@@ -1,7 +1,16 @@
+import 'dart:developer';
+
+import 'package:conta/view_model/chat_provider.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
+
+import '../utils/app_utils.dart';
+import '../utils/enums.dart';
+import '../utils/services/file_picker_service.dart';
 
 class PhotoProvider extends ChangeNotifier {
-  /*
   List<PlatformFile> pickerResult = [];
 
   List<String> generateUniqueIds(int number) {
@@ -25,51 +34,90 @@ class PhotoProvider extends ChangeNotifier {
     return uniqueIds;
   }
 
-  Future<void> uploadImagesAndCaption(String caption) async {
+  void removeFileFromPicker(int index) {
+    pickerResult.removeAt(index);
+    notifyListeners();
+  }
+
+  void clearPickerResult() async {
+    pickerResult.clear();
+    final success = await FilePicker.platform.clearTemporaryFiles();
+
+    if (success != null && success == true) {
+      log('Successfully able to clear cache');
+    } else {
+      log('Unable to clear cache');
+    }
+  }
+
+  Future<void> sendImagesAndCaption({
+    required BuildContext context,
+    required String caption,
+    required void Function(String) showSnackbar,
+    required VoidCallback onUpload,
+  }) async {
+    AppUtils.showLoadingDialog2(context);
+    try {
+      await uploadImagesAndCaption(caption, context);
+    } catch (e) {
+      showSnackbar(e.toString());
+    } finally {
+      clearPickerResult();
+      onUpload();
+    }
+  }
+
+  Future<void> uploadImagesAndCaption(
+    String caption,
+    BuildContext context,
+  ) async {
     final filePickerService = FilePickerService();
     final photoPaths =
-    pickerResult.map((file) => file.path).whereType<String>().toList();
+        pickerResult.map((file) => file.path).whereType<String>().toList();
 
     final uIds = generateUniqueIds(photoPaths.length);
+    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+    final chatId = chatProvider.currentChat!.chatId!;
 
     try {
-      final results = await filePickerService.uploadPhotosToStorage(
-        chatId: currentChat!.chatId!,
+      final urls = await filePickerService.getDownloadUrls(
+        chatId: chatId,
         photoPaths: photoPaths,
+      );
+
+      await chatProvider.uploadChat(
+        caption,
+        type: MessageType.media,
+        media: urls,
         uIds: uIds,
       );
-      await uploadChat(caption,
-          type: MessageType.media, media: results, uIds: uIds);
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<void> deleteFilesFromStorage() async {
-    final filePickerService = FilePickerService();
-    final fileUrls = <String>[];
+  void getImages({
+    required VoidCallback onPick,
+    required void Function(String) showToast,
+  }) async {
+    // Clear picker result first
+    clearPickerResult();
 
     try {
-      // Extract media URLs from each message in deletedMessages
-      for (final message in deletedMessages) {
-        final media = message.media;
-        if (media != null) {
-          fileUrls.addAll(media);
-        }
+      final result = await chooseFiles();
+      if (result) {
+        onPick();
       }
-
-      // Delete the files from storage
-      await filePickerService.deleteFilesFromStorage(fileUrls);
+      return;
     } catch (e) {
-      rethrow;
+      showToast(e.toString());
     }
-  }
+  } //
 
   Future<bool> chooseFiles() async {
     final filePickerService = FilePickerService();
-    final id = currentChat!.chatId!;
     try {
-      final result = await filePickerService.pickImages(id);
+      final result = await filePickerService.pickImages();
 
       if (result != null && result.isNotEmpty) {
         pickerResult.addAll(result);
@@ -82,5 +130,4 @@ class PhotoProvider extends ChangeNotifier {
     }
     return false;
   }
-   */
 }

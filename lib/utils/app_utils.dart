@@ -65,11 +65,24 @@ class AppUtils {
   /// Shows a centered loading dialog with a staggered dots wave animation.
   ///
   /// The dialog blocks user interaction until it is dismissed.
-  static void showLoadingDialog(BuildContext context) {
+  static void showLoadingDialog1(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Center(
+        child: LoadingAnimationWidget.staggeredDotsWave(
+          color: AppColors.primaryShadeColor,
+          size: 55,
+        ),
+      ),
+    );
+  }
+
+  static void showLoadingDialog2(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) => Center(
-        child: LoadingAnimationWidget.staggeredDotsWave(
+        child: LoadingAnimationWidget.waveDots(
           color: AppColors.primaryShadeColor,
           size: 55,
         ),

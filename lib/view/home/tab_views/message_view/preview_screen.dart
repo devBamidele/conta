@@ -4,11 +4,9 @@ import 'dart:typed_data';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:conta/res/style/component_style.dart';
-import 'package:conta/view_model/chat_provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -18,6 +16,7 @@ import '../../../../res/components/chat_text_form_field.dart';
 import '../../../../res/components/custom/custom_back_button.dart';
 import '../../../../utils/app_utils.dart';
 import '../../../../utils/widget_functions.dart';
+import '../../../../view_model/photo_provider.dart';
 
 class PreviewScreen extends StatefulWidget {
   const PreviewScreen({Key? key}) : super(key: key);
@@ -27,7 +26,7 @@ class PreviewScreen extends StatefulWidget {
 }
 
 class _PreviewScreenState extends State<PreviewScreen> {
-  late ChatProvider chatProvider;
+  late PhotoProvider photoProvider;
   final _controller = PageController();
 
   final messagesFocusNode = FocusNode();
@@ -37,24 +36,27 @@ class _PreviewScreenState extends State<PreviewScreen> {
   void initState() {
     super.initState();
 
-    chatProvider = Provider.of<ChatProvider>(context, listen: false);
+    photoProvider = Provider.of<PhotoProvider>(context, listen: false);
   }
 
   onDeleteTap(int length) {
+    final page = _controller.page!.round();
+
     if (length == 1) {
       context.router.pop();
     }
-    chatProvider.removeFileFromPicker(_controller.page!.round());
+
+    photoProvider.removeFileFromPicker(page);
   }
 
   Future<bool> onScreenPop() async {
-    chatProvider.clearPickerResult();
+    photoProvider.clearPickerResult();
     return true;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ChatProvider>(
+    return Consumer<PhotoProvider>(
       builder: (_, data, __) {
         final mediaFiles = data.pickerResult;
         return WillPopScope(
@@ -87,7 +89,9 @@ class _PreviewScreenState extends State<PreviewScreen> {
                       controller: _controller,
                       itemCount: mediaFiles.length,
                       itemBuilder: (_, int index) {
-                        return MediaPreview(file: mediaFiles[index]);
+                        return MediaPreview(
+                          file: mediaFiles[index],
+                        );
                       },
                     ),
                   ),
@@ -135,7 +139,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                                   radius: 20,
                                   backgroundColor: AppColors.primaryColor,
                                   child: GestureDetector(
-                                    onTap: () => _onSendMessageTap(data),
+                                    onTap: () => onSendMessageTap(),
                                     child: Transform.rotate(
                                       angle: math.pi / 4,
                                       child: sendIcon(),
@@ -158,35 +162,32 @@ class _PreviewScreenState extends State<PreviewScreen> {
     );
   }
 
-  void _onSendMessageTap(ChatProvider chatProvider) async {
-    final caption = messagesController.value.text;
-
-    showDialog(
-      context: context,
-      builder: (context) => Center(
-        child: LoadingAnimationWidget.waveDots(
-          color: AppColors.primaryShadeColor,
-          size: 55,
-        ),
-      ),
-    );
-
-    try {
-      await chatProvider.uploadImagesAndCaption(caption);
-    } catch (e) {
-      AppUtils.showToast(e.toString());
-    } finally {
-      // Clear the result and pop 2 stacks back
-      chatProvider.clearPickerResult();
-      context.router.popUntilRouteWithName('ChatScreenRoute');
+  void showSnackbar(String message) {
+    if (mounted) {
+      AppUtils.showSnackbar(message);
     }
+  }
+
+  void onUpload() {
+    context.router.popUntilRouteWithName('ChatScreenRoute');
+  }
+
+  void onSendMessageTap() async {
+    final caption = messagesController.text.trim();
+
+    await photoProvider.sendImagesAndCaption(
+      context: context,
+      caption: caption,
+      showSnackbar: showSnackbar,
+      onUpload: onUpload,
+    );
   }
 
   Future<void> _onPrefixIconTap() async {
     try {
-      await chatProvider.chooseFiles();
+      await photoProvider.chooseFiles();
     } catch (e) {
-      AppUtils.showToast('Hello World');
+      AppUtils.showSnackbar(e.toString());
     }
   }
 }
