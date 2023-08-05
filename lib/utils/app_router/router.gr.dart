@@ -174,11 +174,11 @@ class AppRouter extends _i13.RootStackRouter {
         ),
         _i13.RouteConfig(
           PersistentTabRoute.name,
-          path: '/persistent_tab_screen',
+          path: '/persistent-tab',
         ),
         _i13.RouteConfig(
           ChatScreenRoute.name,
-          path: '/chat_screen',
+          path: '/chat-screen',
         ),
       ];
 }
@@ -388,7 +388,7 @@ class PersistentTabRoute extends _i13.PageRouteInfo<void> {
   const PersistentTabRoute()
       : super(
           PersistentTabRoute.name,
-          path: '/persistent_tab_screen',
+          path: '/persistent-tab',
         );
 
   static const String name = 'PersistentTabRoute';
@@ -400,7 +400,7 @@ class ChatScreenRoute extends _i13.PageRouteInfo<void> {
   const ChatScreenRoute()
       : super(
           ChatScreenRoute.name,
-          path: '/chat_screen',
+          path: '/chat-screen',
         );
 
   static const String name = 'ChatScreenRoute';

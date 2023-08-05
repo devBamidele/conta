@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:math' as math;
 
 import 'package:conta/res/components/chat_text_form_field.dart';
@@ -22,8 +21,6 @@ import 'messages_stream.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
-
-  static const tag = '/chat_screen';
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -56,7 +53,6 @@ class _ChatScreenState extends State<ChatScreen>
     photoProvider = Provider.of<PhotoProvider>(context, listen: false);
 
     messagesController.addListener(_updateIcon);
-    _scrollToBottom();
     _showScrollToBottomIcon();
   }
 
@@ -73,8 +69,7 @@ class _ChatScreenState extends State<ChatScreen>
 
   void _showScrollToBottomIcon() {
     scrollController.addListener(() {
-      if (scrollController.position.maxScrollExtent - scrollController.offset >
-          30) {
+      if (scrollController.offset > 30) {
         setState(() => showIcon = true);
       } else {
         setState(() => showIcon = false);
@@ -84,47 +79,31 @@ class _ChatScreenState extends State<ChatScreen>
 
   void _updateIcon() {
     if (messagesController.text.isNotEmpty) {
-      setState(
-        () => typing = true,
-      );
+      setState(() => typing = true);
     } else {
-      setState(
-        () => typing = false,
-      );
+      setState(() => typing = false);
     }
   }
 
-  void showSnackbar(String message) {
-    if (mounted) {
-      AppUtils.showSnackbar(message);
-    }
-  }
-
-  // Todo : Make the page scroll to the bottom (automatically) and add pagination
-  _scrollToBottom() {
-    log('I was clicked');
-    // Scroll to the bottom of the list
+  void _scrollToBottom() {
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      log('Well I got executed');
       if (scrollController.hasClients) {
-        scrollController.animateTo(
-          scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 600),
-          curve: Curves.fastOutSlowIn,
-        );
+        scrollController
+            .animateTo(0,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.fastOutSlowIn)
+            .then((value) {
+          if (scrollController.offset > 20) {
+            // If not close to the bottom, trigger the function
+            _scrollToBottom();
+          }
+        });
       }
     });
   }
 
-  // Upload the chat
-  // Scroll to the bottom
-  // Clear the text field
-  _onSendMessageTap() {
-    chatProvider.uploadChat(messagesController.text.trim());
-
-    setState(() => _scrollToBottom());
-
-    chatProvider.clearReply();
+  void sendMessage(String message) {
+    chatProvider.uploadChat(message);
 
     messagesController.clear();
   }
@@ -180,6 +159,7 @@ class _ChatScreenState extends State<ChatScreen>
                 child: Row(
                   children: [
                     // Text field for chatting
+
                     Expanded(
                       child: Consumer<ChatProvider>(
                         builder: (_, data, Widget? child) {
@@ -224,6 +204,7 @@ class _ChatScreenState extends State<ChatScreen>
                                     controller: messagesController,
                                     onPrefixIconTap: _onPrefixIconTap,
                                     isReplying: isReplying,
+                                    onFieldSubmitted: sendMessage,
                                   ),
                                 ),
                               ), //
@@ -242,7 +223,8 @@ class _ChatScreenState extends State<ChatScreen>
                       backgroundColor: AppColors.primaryColor,
                       child: typing
                           ? GestureDetector(
-                              onTap: _onSendMessageTap,
+                              onTap: () =>
+                                  sendMessage(messagesController.text.trim()),
                               child: Transform.rotate(
                                 angle: math.pi / 4,
                                 child: sendIcon(),

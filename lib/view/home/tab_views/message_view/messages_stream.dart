@@ -1,8 +1,11 @@
+import 'dart:developer';
+
 import 'package:conta/res/components/message_bubble.dart';
 import 'package:conta/utils/extensions.dart';
+import 'package:conta/utils/widget_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter/rendering.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -29,55 +32,75 @@ class MessagesStream extends StatefulWidget {
 }
 
 class _MessagesStreamState extends State<MessagesStream> {
+  final currentUser = FirebaseAuth.instance.currentUser;
+
+  bool showTopSpacing = false;
   bool showTail = true;
   bool showDate = true;
-  bool showTopSpacing = false;
-  final currentUser = FirebaseAuth.instance.currentUser;
+
+  int messageLimit = 10;
+
+  @override
+  void initState() {
+    super.initState();
+
+    widget.scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    final scroll = widget.scrollController;
+    // Check if the user has reached the end of the list by scrolling up
+    if (scroll.position.atEdge &&
+        scroll.position.pixels != 0 &&
+        scroll.position.userScrollDirection == ScrollDirection.reverse) {
+      // Load the next batch of messages
+      setState(() {
+        messageLimit += 10;
+        log('Loaded Message Count $messageLimit');
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    double desiredSize = MediaQuery.of(context).size.width * 0.5;
+    double size = MediaQuery.of(context).size.width * 0.5;
     return Consumer<ChatProvider>(
       builder: (_, data, __) {
         return StreamBuilder(
           stream: data.getChatMessagesStream(
             currentUserUid: currentUser!.uid,
             otherUserUid: data.currentChat!.uidUser2,
+            limit: messageLimit,
           ),
           builder: (_, AsyncSnapshot<List<Message>> snapshot) {
             if (snapshot.hasData) {
               List<Message> messages = snapshot.data!;
-              if (messages.isEmpty) {
-                return Center(
-                  child: SvgPicture.asset(
-                    'assets/images/empty.svg',
-                    width: desiredSize,
-                    height: desiredSize,
-                  ),
-                );
-              }
+
+              if (messages.isEmpty) emptyMessages(size);
+
               return ListView.builder(
+                reverse: true,
                 controller: widget.scrollController,
                 itemCount: messages.length,
                 itemBuilder: (context, index) {
                   final message = messages[index];
                   final sameUser = message.senderId == currentUser!.uid;
 
-                  showDate = index == 0
+                  showDate = index == messages.length - 1
                       ? true
-                      : !messages[index - 1]
+                      : !messages[index + 1]
                           .timestamp
                           .isSameDay(message.timestamp);
 
-                  showTopSpacing = index == 0
+                  showTopSpacing = index == messages.length - 1
                       ? false
                       : !showDate &&
-                          message.senderId != messages[index - 1].senderId;
+                          message.senderId != messages[index + 1].senderId;
 
-                  showTail = index < messages.length - 1
+                  showTail = index > 0
                       ? message.timestamp
-                              .isSameDay(messages[index + 1].timestamp)
-                          ? message.senderId != messages[index + 1].senderId
+                              .isSameDay(messages[index - 1].timestamp)
+                          ? message.senderId != messages[index - 1].senderId
                           : true
                       : true;
 

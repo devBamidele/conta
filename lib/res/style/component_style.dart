@@ -80,7 +80,7 @@ ButtonStyle resendButtonStyle({
 final shadow = BoxShadow(
   color: AppColors.primaryColor.withOpacity(0.7),
   offset: const Offset(1, 4),
-  blurRadius: 15,
+  blurRadius: 20,
   spreadRadius: 1,
 );
 

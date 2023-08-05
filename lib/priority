@@ -14,24 +14,3 @@ results to some unintended errors (Icons)
 3 images, I see no updates to the data in firebase, but it gets sent
 
 4 images, client-side error
-
-
-useFirstLogin() {
-    myEmailController.text = 'bamideledavid.ajewole@gmail.com';
-    myPasswordController.text = 'bamideledavid';
-  }
-
-  useSecondLogin() {
-    myEmailController.text = 'bamideledavid.femi@gmail.com';
-    myPasswordController.text = 'Olorunfemi005';
-  }
-
-  useThirdLogin() {
-    myEmailController.text = 'ajewole.bamidele@stu.cu.edu.ng';
-    myPasswordController.text = 'dele004';
-  }
-
-   useFourthLogin() {
-      myEmailController.text = 'bickerstethdemilade@gmail.com';
-      myPasswordController.text = 'demilade';
-    }

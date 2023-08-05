@@ -1,5 +1,6 @@
 import 'package:conta/res/color.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:iconly/iconly.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
@@ -12,6 +13,17 @@ Widget displayLoading(BuildContext context) {
     child: LoadingAnimationWidget.prograssiveDots(
       color: Colors.white,
       size: 50,
+    ),
+  );
+}
+
+// Todo : Change the asset for empty
+Widget emptyMessages(double size) {
+  return Center(
+    child: SvgPicture.asset(
+      'assets/images/empty.svg',
+      width: size,
+      height: size,
     ),
   );
 }

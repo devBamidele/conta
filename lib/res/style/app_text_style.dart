@@ -47,6 +47,12 @@ class AppTextStyles {
     letterSpacing: 0.2,
     color: AppColors.continueWithColor,
   );
+
+  static const TextStyle formText = TextStyle(
+    fontSize: 16,
+    height: 1.4,
+    letterSpacing: 0.2,
+  );
 }
 
 /*

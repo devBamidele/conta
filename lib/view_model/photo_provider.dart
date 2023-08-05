@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:conta/view_model/chat_provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -41,13 +39,9 @@ class PhotoProvider extends ChangeNotifier {
 
   void clearPickerResult() async {
     pickerResult.clear();
-    final success = await FilePicker.platform.clearTemporaryFiles();
+    await FilePicker.platform.clearTemporaryFiles();
 
-    if (success != null && success == true) {
-      log('Successfully able to clear cache');
-    } else {
-      log('Unable to clear cache');
-    }
+    notifyListeners();
   }
 
   Future<void> sendImagesAndCaption({
@@ -112,7 +106,7 @@ class PhotoProvider extends ChangeNotifier {
     } catch (e) {
       showToast(e.toString());
     }
-  } //
+  }
 
   Future<bool> chooseFiles() async {
     final filePickerService = FilePickerService();

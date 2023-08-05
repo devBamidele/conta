@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conta/models/chat.dart';
@@ -130,22 +129,24 @@ class ChatProvider extends ChangeNotifier {
   Stream<List<Message>> getChatMessagesStream({
     required String currentUserUid,
     required String otherUserUid,
+    required int limit,
   }) {
     String chatId = generateChatId(currentUserUid, otherUserUid);
     CollectionReference<Map<String, dynamic>> messageRef =
         firestore.collection('chats').doc(chatId).collection('messages');
 
-    return messageRef.orderBy('timestamp', descending: false).snapshots().map(
-        (snapshot) =>
-            snapshot.docs.map((doc) => Message.fromJson(doc.data())).toList());
+    // Use the limit method to fetch a specific number of messages
+    Query<Map<String, dynamic>> query =
+        messageRef.orderBy('timestamp', descending: true).limit(limit);
+
+    return query.snapshots().map((snapshot) =>
+        snapshot.docs.map((doc) => Message.fromJson(doc.data())).toList());
   }
 
   Stream<List<ChatTileData>> getChatTilesStream() {
     final userId = FirebaseAuth.instance.currentUser!.uid;
     final CollectionReference<Map<String, dynamic>> tileRef =
         firestore.collection('users').doc(userId).collection('chat_tile_data');
-
-    log(tileRef.toString());
 
     return tileRef
         .orderBy('lastMessageTimestamp', descending: true)
@@ -517,12 +518,20 @@ class ChatProvider extends ChangeNotifier {
     }
 
     // Increment the unread message count
-    // await updateUnreadCount(chatId, currentUser!.uid);
+    updateUnreadCount(chatId, currentUser!.uid);
 
-    // Add the new message to the 'messages' sub-collection of the chat document
-    // in Firestore
+    // Clear the reply
+    clearReply();
+
+    // Add the new message to the 'messages'
+    // sub-collection of the chat document in Firestore
     await addNewMessageToChat(chatId, content,
         type: type, media: media, uIds: uIds);
+  }
+
+  Future<void> updateUnreadCount(String chatId, String userId) async {
+    final DocumentSnapshot<Map<String, dynamic>> tileRef =
+        await firestore.collection('chats').doc(chatId).get();
   }
 
   Stream<DocumentSnapshot<Map<String, dynamic>>> getOnlineStatusStream() {
@@ -550,3 +559,41 @@ class ChatProvider extends ChangeNotifier {
     return controller.stream;
   }
 }
+
+/*
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+// Function to update 'chat_tile_data' for the sender and recipient when a message is sent
+void updateChatTileData(String senderId, String recipientId, String lastMessage, Timestamp lastMessageTimestamp) {
+  try {
+    // Firestore instance
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    // Define the data to be updated in 'chat_tile_data'
+    final Map<String, dynamic> updateData = {
+      'lastMessage': lastMessage,
+      'lastMessageTimestamp': lastMessageTimestamp,
+      'hasUnreadMessages': true, // Assuming a new message means unread messages
+    };
+
+    // Update 'chat_tile_data' for the sender
+    firestore
+        .collection('chat_tile_data')
+        .doc(senderId)
+        .update(updateData)
+        .then((_) => print('Chat tile data updated for sender'))
+        .catchError((error) => print('Error updating chat tile data for sender: $error'));
+
+    // Update 'chat_tile_data' for the recipient
+    firestore
+        .collection('chat_tile_data')
+        .doc(recipientId)
+        .update(updateData)
+        .then((_) => print('Chat tile data updated for recipient'))
+        .catchError((error) => print('Error updating chat tile data for recipient: $error'));
+  } catch (e) {
+    print('Error updating chat tile data: $e');
+  }
+}
+
+ */

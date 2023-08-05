@@ -130,6 +130,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                                             Icons.add_photo_alternate_rounded,
                                         onPrefixIconTap: _onPrefixIconTap,
                                         hintText: 'Add a caption',
+                                        onFieldSubmitted: sendMessage,
                                       ),
                                     ),
                                   ),
@@ -139,7 +140,8 @@ class _PreviewScreenState extends State<PreviewScreen> {
                                   radius: 20,
                                   backgroundColor: AppColors.primaryColor,
                                   child: GestureDetector(
-                                    onTap: () => onSendMessageTap(),
+                                    onTap: () => sendMessage(
+                                        messagesController.text.trim()),
                                     child: Transform.rotate(
                                       angle: math.pi / 4,
                                       child: sendIcon(),
@@ -172,12 +174,10 @@ class _PreviewScreenState extends State<PreviewScreen> {
     context.router.popUntilRouteWithName('ChatScreenRoute');
   }
 
-  void onSendMessageTap() async {
-    final caption = messagesController.text.trim();
-
+  void sendMessage(String message) async {
     await photoProvider.sendImagesAndCaption(
       context: context,
-      caption: caption,
+      caption: message,
       showSnackbar: showSnackbar,
       onUpload: onUpload,
     );

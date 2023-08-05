@@ -1,8 +1,8 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:conta/models/Person.dart';
 import 'package:conta/res/components/search_tile.dart';
 import 'package:conta/res/components/user_tile.dart';
-import 'package:conta/view/home/tab_views/message_view/chat_screen.dart';
+import 'package:conta/utils/app_router/router.dart';
+import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:conta/view_model/chat_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -248,7 +248,7 @@ class UsersSearch extends SearchDelegate {
   }
 
   navigateToChat(BuildContext context) {
-    context.router.pushNamed(ChatScreen.tag);
+    navPush(context, const ChatScreenRoute());
   }
 
   Widget buildSlideTransition({

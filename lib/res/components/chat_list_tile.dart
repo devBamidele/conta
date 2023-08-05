@@ -25,7 +25,7 @@ class ChatListTile extends StatelessWidget {
     return ListTile(
       onTap: onTileTap,
       leading: CircleAvatar(
-        radius: 27,
+        radius: 25,
         backgroundColor: Colors.white,
         child: isSameUser
             ? tileData.recipientPicUrl != null

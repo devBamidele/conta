@@ -30,9 +30,8 @@ import '../../view/onboard/splash_screen.dart';
     AutoRoute(page: PreviewScreen),
 
     AutoRoute(page: ViewImageScreen),
-    AutoRoute(page: PersistentTab, path: PersistentTab.tag),
+    AutoRoute(page: PersistentTab),
     CustomRoute(
-      path: ChatScreen.tag,
       page: ChatScreen,
       transitionsBuilder: TransitionsBuilders.slideLeft,
       durationInMilliseconds: 150,

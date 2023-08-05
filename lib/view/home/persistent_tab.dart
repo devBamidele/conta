@@ -10,8 +10,6 @@ import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 class PersistentTab extends StatefulWidget {
   const PersistentTab({Key? key}) : super(key: key);
 
-  static const tag = '/persistent_tab_screen';
-
   @override
   State<PersistentTab> createState() => _PersistentTabState();
 }

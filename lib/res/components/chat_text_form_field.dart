@@ -1,3 +1,4 @@
+import 'package:conta/res/style/app_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 
@@ -14,9 +15,11 @@ class ChatTextFormField extends StatelessWidget {
     this.prefixIcon = IconlyBold.image,
     this.prefixIconSize = 26,
     this.hintText = 'Message',
+    required this.onFieldSubmitted,
   }) : super(key: key);
 
   final FocusNode node;
+  final void Function(String) onFieldSubmitted;
   final TextEditingController controller;
   final VoidCallback? onPrefixIconTap;
   final IconData prefixIcon;
@@ -27,15 +30,13 @@ class ChatTextFormField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      style: const TextStyle(
-        fontSize: 16, // Also change the value in the constrains on this widget
-        height: 1.4,
-        letterSpacing: 0.2,
-      ),
+      style: AppTextStyles.formText,
       maxLines: null,
       cursorColor: Colors.black,
       focusNode: node,
+      textInputAction: TextInputAction.done,
       controller: controller,
+      onFieldSubmitted: onFieldSubmitted,
       decoration: InputDecoration(
         enabledBorder: customBorder(isReplying: isReplying),
         focusedBorder: customBorder(isReplying: isReplying),
