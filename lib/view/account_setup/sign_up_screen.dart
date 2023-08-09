@@ -222,8 +222,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       child: ShakeWidget(
                         key: shakeState2,
-                        shakeCount: 3,
-                        shakeOffset: 6,
                         child: CustomTextField(
                           focusNode: passwordFocusNode,
                           textController: myPasswordController,
@@ -232,18 +230,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           hintText: 'Password',
                           obscureText: _passwordVisible,
                           validation: (value) => value.validatePassword(),
-                          prefixIcon: Icon(
-                            IconlyBold.lock,
-                            color: passwordColor,
-                          ),
+                          onFieldSubmitted: (password) => validate(),
+                          prefixIcon: lockIcon(passwordColor),
                           suffixIcon: IconButton(
-                            icon: Icon(
-                              // Based on passwordVisible state choose the icon
-                              _passwordVisible
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
-                              color: passwordColor,
-                            ),
+                            icon:
+                                visibilityIcon(_passwordVisible, passwordColor),
                             onPressed: toggleVisibility,
                           ),
                         ),

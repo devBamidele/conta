@@ -48,6 +48,13 @@ class AppTextStyles {
     color: AppColors.continueWithColor,
   );
 
+  // Text for the 'Recent Search' for the search screen
+  static const TextStyle headlineMedium = TextStyle(
+    fontSize: 17,
+    fontWeight: FontWeight.w600,
+    height: 1.5,
+  );
+
   static const TextStyle formText = TextStyle(
     fontSize: 16,
     height: 1.4,
@@ -56,33 +63,6 @@ class AppTextStyles {
 }
 
 /*
-
-  static const TextStyle labelMedium = TextStyle(
-    color: Colors.white,
-    fontSize: 16,
-    fontWeight: FontWeight.w500,
-  );
-
-  static const TextStyle labelSmall = TextStyle(
-    //color: AppColors.textColor2,
-    fontWeight: FontWeight.w400,
-    fontSize: 16,
-    height: 1.4,
-    letterSpacing: 0.2,
-  );
-
-  static const TextStyle headlineMedium = TextStyle(
-    color: Colors.white,
-    fontSize: 19.5,
-    fontWeight: FontWeight.w600,
-  );
-
-  static const TextStyle titleSmall = TextStyle(
-    fontSize: 16,
-    fontWeight: FontWeight.w500,
-    // color: AppColors.textColor1,
-  );
-
  static const TextStyle bodyLarge = TextStyle(
     // color: AppColors.textColor1,
     fontSize: 18,

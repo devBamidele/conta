@@ -158,6 +158,7 @@ class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
                           color: emailColor,
                         ),
                         validation: (email) => email?.trim().validateEmail(),
+                        onFieldSubmitted: (email) => onContinuePressed(),
                       ),
                     ),
                   ),

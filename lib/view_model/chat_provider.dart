@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conta/models/chat.dart';
 import 'package:conta/utils/enums.dart';
+import 'package:conta/utils/extensions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,17 +14,15 @@ import '../models/Person.dart';
 import '../models/chat_tile_data.dart';
 import '../models/current_chat.dart';
 import '../models/message.dart';
-import '../models/search_user.dart';
+import '../utils/app_utils.dart';
 import '../utils/services/file_picker_service.dart';
+import '../utils/widget_functions.dart';
 
 class ChatProvider extends ChangeNotifier {
   Map<String, Message> selectedMessages = {};
   List<Message> deletedMessages = [];
 
-  //final currentUser = FirebaseAuth.instance.currentUser;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-  //late final MessagingService _messagingService = MessagingService();
 
   // Check if any message is currently long pressed
   bool isMessageLongPressed = false;
@@ -151,101 +151,28 @@ class ChatProvider extends ChangeNotifier {
     return tileRef
         .orderBy('lastMessageTimestamp', descending: true)
         .snapshots()
-        .map(
-          (snapshot) => snapshot.docs
-              .map((doc) => ChatTileData.fromJson({
-                    ...doc.data(),
-                    'chatId': doc.id, // add document ID to the data map
-                  }))
-              .toList(),
-        );
+        .map((snapshot) => snapshot.docs
+            .map((doc) =>
+                ChatTileData.fromJson({...doc.data(), 'chatId': doc.id}))
+            .toList());
   }
 
-  /// Generate unique chat id's for each Dm
+  getChatStream() async {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final CollectionReference<Map<String, dynamic>> collectionReference =
+        FirebaseFirestore.instance.collection('chats');
+
+    // Return the list of documents matching the query
+    return collectionReference
+        .where('participants', arrayContains: userId)
+        .snapshots();
+  }
+
   String generateChatId(String currentUserUid, String otherUserUid) {
     // Sort the userId in ascending order to generate a consistent chat id
     // regardless of the order in which the uids are passed
     List<String> userId = [currentUserUid, otherUserUid]..sort();
     return '${userId[0]}_${userId[1]}';
-  }
-
-  Stream<List<Person>> getSuggestionsStream(String filter) {
-    return FirebaseFirestore.instance
-        .collection('users')
-        .limit(10)
-        .snapshots()
-        .map((querySnapshot) {
-      return querySnapshot.docs
-          .map((doc) => Person.fromJson(doc.data()))
-          .where((person) =>
-              person.username.toLowerCase().contains(filter.toLowerCase()))
-          .toList();
-    });
-  }
-
-  void addToRecentSearch({required Person person}) async {
-    final userQuery = await FirebaseFirestore.instance
-        .collection('recent_searches')
-        .where('username', isEqualTo: person.username)
-        .where('uidUser', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-        .get();
-
-    if (userQuery.docs.isEmpty) {
-      // If the user doesn't exist, add them as a new user
-      final search = SearchUser(
-        timestamp: Timestamp.now(),
-        name: person.name,
-        uidUser: FirebaseAuth.instance.currentUser!.uid,
-        username: person.username,
-        uidSearch: person.id,
-        profilePicUrl: person.profilePicUrl,
-      ).toMap();
-      await FirebaseFirestore.instance
-          .collection('recent_searches')
-          .add(search);
-    } else {
-      // If the user exists, update their timestamp
-      final userDoc = userQuery.docs.first;
-      await userDoc.reference.update({'timestamp': Timestamp.now()});
-    }
-  }
-
-  Future<void> clearRecentSearch() async {
-    final querySnapshot = await FirebaseFirestore.instance
-        .collection('recent_searches')
-        .where('uidUser', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-        .get();
-
-    final batch = FirebaseFirestore.instance.batch();
-    for (final doc in querySnapshot.docs) {
-      batch.delete(doc.reference);
-    }
-
-    await batch.commit();
-  }
-
-  void deleteFromRecentSearch({required String username}) async {
-    final uid = FirebaseAuth.instance.currentUser!.uid;
-    final querySnapshot = await FirebaseFirestore.instance
-        .collection('recent_searches')
-        .where('username', isEqualTo: username)
-        .where('uidUser', isEqualTo: uid)
-        .get();
-    for (var doc in querySnapshot.docs) {
-      doc.reference.delete();
-    }
-  }
-
-  Stream<List<SearchUser>> getRecentSearches() {
-    return FirebaseFirestore.instance
-        .collection('recent_searches')
-        .where('uidUser', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-        .orderBy('timestamp', descending: true)
-        .limit(10)
-        .snapshots()
-        .map((querySnapshot) => querySnapshot.docs
-            .map((doc) => SearchUser.fromMap(doc.data()))
-            .toList());
   }
 
   /// This function transfers the critical values useful
@@ -258,24 +185,34 @@ class ChatProvider extends ChangeNotifier {
   }) {
     final chatId = generateChatId(uidUser1, uidUser2);
 
-    final chat = CurrentChat(
+    currentChat = CurrentChat(
       chatId: chatId,
       username: username,
       uidUser1: uidUser1,
       uidUser2: uidUser2,
       profilePicUrl: profilePicUrl,
     );
-    currentChat = chat;
   }
 
   Future<void> updateMessageSeen(String messageId) async {
-    final id = currentChat!.chatId;
-    await firestore
+    final batch = FirebaseFirestore.instance.batch();
+    final chatId = currentChat!.chatId;
+
+    final messageRef = firestore
         .collection('chats')
-        .doc(id)
+        .doc(chatId)
         .collection('messages')
-        .doc(messageId)
-        .update({'seen': true});
+        .doc(messageId);
+
+    // Update the 'seen' field of the message document to true
+    batch.update(messageRef, {'seen': true});
+
+    // Decrement the unreadCount field in the chat document by 1
+    final chatRef = FirebaseFirestore.instance.collection('chats').doc(chatId);
+    batch.update(chatRef, {'unreadCount': FieldValue.increment(-1)});
+
+    // Commit the batch
+    await batch.commit();
   }
 
   Future<void> deleteMessage() async {
@@ -330,36 +267,31 @@ class ChatProvider extends ChangeNotifier {
   }
 
   Future<void> undoDelete() async {
-    // Get the chat ID
     final chatId = currentChat!.chatId;
 
-    // Get the reference to the messages collection for the current chat
-    CollectionReference<Map<String, dynamic>> messageRef =
+    final messageRef =
         firestore.collection('chats').doc(chatId).collection('messages');
 
-    // Create a copy of the deleted messages list
+    final batch = firestore.batch();
+
     final deletedMessagesCopy = List.from(deletedMessages);
 
-    // Iterate over the deleted messages and re-insert them into Firestore
     for (var deletedMessage in deletedMessagesCopy) {
       final messageId = deletedMessage.id;
 
-      // Create a new document reference for the message
       final messageDocRef = messageRef.doc(messageId);
 
-      // Check if the message already exists in Firestore
-      final messageDocSnapshot = await messageDocRef.get();
-      if (messageDocSnapshot.exists) {
-        // The message already exists, update it with the deleted message data
-        await messageDocRef.set(deletedMessage.toJson());
-      } else {
-        // The message doesn't exist, create a new document with the deleted message data
-        await messageDocRef.set(deletedMessage.toJson());
-      }
+      batch.set(messageDocRef, deletedMessage.toJson());
     }
 
-    // Clear the deletedMessages list
-    deletedMessages.clear();
+    try {
+      await batch.commit();
+      deletedMessages.clear();
+    } catch (error) {
+      log('Error restoring deleted messages: $error');
+
+      AppUtils.showToast('Error restoring deleted massages');
+    }
   }
 
   Future<void> clearDeletedMessages() async {
@@ -369,19 +301,35 @@ class ChatProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Uploads a new chat message to Firestore, adding it to the 'messages'
-  /// sub-collection of the specified chat document.
-  ///
-  /// The [content] parameter is the text of the message to add.
+  Future<void> updateChatInfo(
+    String newLastMessage,
+    WriteBatch batch,
+  ) async {
+    final chatId = currentChat!.chatId!;
+    final chatRef = FirebaseFirestore.instance.collection('chats').doc(chatId);
+
+    final data = {
+      'unreadCount': FieldValue.increment(1),
+      'lastMessage': newLastMessage,
+      'lastMessageTimestamp': Timestamp.now(),
+    };
+    // Update the fields in the document
+    batch.update(chatRef, data);
+  }
+
+  /// Adds a new chat message to the 'messages' sub-collection of the specified chat document.
   Future<void> addNewMessageToChat(
-    String chatId,
     String content, {
     required MessageType type,
     List<String>? media,
     List<String>? uIds,
+    bool updateInfo = true,
   }) async {
+    final currentUser = FirebaseAuth.instance.currentUser!.uid;
+    final secondUser = currentChat!.uidUser2;
+    final chatId = currentChat!.chatId!;
+    final batch = FirebaseFirestore.instance.batch();
     String messageId = '';
-    final currentUser = FirebaseAuth.instance.currentUser;
 
     if (media == null) {
       messageId = const Uuid().v4();
@@ -389,211 +337,100 @@ class ChatProvider extends ChangeNotifier {
       messageId = uIds![0];
     }
 
-    final messagesCollection =
-        firestore.collection('chats').doc(chatId).collection('messages');
+    final messagesCollection = FirebaseFirestore.instance
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages');
 
-    final batch = firestore.batch();
+    final lastMessage =
+        content.isEmpty ? media!.length.formattedPhotos() : content;
 
-    if (media != null && (media.length >= 2 && media.length <= 3)) {
-      // Create individual media messages for each URL in the list if they are
-      // between 2 and 3 inclusive
+    if (media != null && (2 <= media.length && media.length <= 3)) {
       for (int i = 0; i < media.length; i++) {
         final id = uIds![i];
 
-        final imageMessage = Message(
-          id: id,
-          senderId: currentUser!.uid,
-          recipientId: currentChat!.uidUser2,
-          content: i == media.length - 1 ? content : '',
-          timestamp: Timestamp.now(),
-          messageType: MessageType.media.name,
-          media: [media[i]],
-        );
+        final text = i == media.length - 1 ? content : '';
 
-        batch.set(
-          messagesCollection.doc(id),
-          imageMessage.toJson(),
-        );
+        final imageMessage =
+            createMediaMessage(id, currentUser, secondUser, text, media[i]);
+
+        batch.set(messagesCollection.doc(id), imageMessage.toJson());
+      }
+
+      if (updateInfo) {
+        updateChatInfo(lastMessage, batch);
       }
     } else {
-      // Create a single message with the provided content
-      final newMessage = Message(
-        id: messageId,
-        senderId: currentUser!.uid,
-        recipientId: currentChat!.uidUser2,
-        content: content,
-        timestamp: Timestamp.now(),
-        reply: cacheReplyChat,
-        replyMessage: cacheReplyMessage?.content,
-        replySenderId: cacheReplyMessage?.senderId,
-        messageType: type.name,
-        media: media,
-      );
+      final reply = cacheReplyChat;
+      final replyMessage = cacheReplyMessage?.content;
+      final replyId = cacheReplyMessage?.senderId;
 
-      batch.set(
-        messagesCollection.doc(messageId),
-        newMessage.toJson(),
-      );
+      final newMessage = createSingleMessage(messageId, currentUser, secondUser,
+          content, type, media, reply, replyMessage, replyId);
+
+      batch.set(messagesCollection.doc(messageId), newMessage.toJson());
+
+      if (updateInfo) {
+        updateChatInfo(lastMessage, batch);
+      }
     }
 
     clearCache();
-
-    await batch.commit();
-
-    // _messagingService.sendNotification(
-
-    /*
-    await functions.httpsCallable('sendNotification')({
-      recipientIds: [currentChat!.uidUser2],
-      message: content,
-      senderName: currentUser!.displayName!,
-    });
-    */
-  }
-
-  // Todo : Look at the efficiency of this function
-  Future<void> resetUnread(String chatId) async {
-    final batch = firestore.batch();
-    final currentUser = FirebaseAuth.instance.currentUser;
-
-    final chatTileDataRef = firestore
-        .collection('users')
-        .doc(currentUser!.uid)
-        .collection('chat_tile_data')
-        .doc(chatId);
-
-    final chatTileDataSnapshot = await chatTileDataRef.get();
-    final chatTileData = chatTileDataSnapshot.data() as Map<String, dynamic>;
-    final lastMessageSenderId = chatTileData['lastMessageSenderId'] as String?;
-
-    if (lastMessageSenderId != currentUser.uid) {
-      batch.update(chatTileDataRef, {'recipientUnreadMessages': 0});
-    }
-
-    final chatRef = firestore.collection('chats').doc(chatId);
-    final chatSnapshot = await chatRef.get();
-    final chatData = chatSnapshot.data() as Map<String, dynamic>;
-
-    final user1Id = chatData['user1Id'] as String?;
-    final user2Id = chatData['user2Id'] as String?;
-
-    if (currentUser.uid == user1Id) {
-      batch.update(chatRef, {'user1Unread': 0});
-    } else if (currentUser.uid == user2Id) {
-      batch.update(chatRef, {'user2Unread': 0});
-    }
-
     await batch.commit();
   }
 
-  /// Uploads a new chat message to Firestore, creating a new chat document if
-  /// necessary.
-  ///
-  /// The [content] parameter is the text of the message to add.
+  /// Uploads a new chat message to Firestore, creating a new chat document if necessary.
   Future<void> uploadChat(
     String content, {
     MessageType type = MessageType.text,
     List<String>? media,
     List<String>? uIds,
   }) async {
-    final currentUser = FirebaseAuth.instance.currentUser;
-    final chatId = currentChat?.chatId == null
-        ? generateChatId(currentUser!.uid, currentChat!.uidUser2)
-        : currentChat!.chatId!;
+    final currentUser = FirebaseAuth.instance.currentUser!.uid;
+    final secondUser = currentChat!.uidUser2;
+    final user2PicUrl = currentChat!.profilePicUrl;
+    final chatId =
+        currentChat?.chatId ?? generateChatId(currentUser, secondUser);
 
-    // Check if the chat already exists in Firestore
-    final chatSnapshot = await firestore.collection('chats').doc(chatId).get();
+    final lastMessage =
+        content.isEmpty ? media!.length.formattedPhotos() : content;
 
-    if (!chatSnapshot.exists) {
-      // Chat doesn't exist, create new chat document
-      Chat newChat = Chat(
-        id: chatId,
-        user1Unread: 0,
-        user2Unread: 0,
-        user1Id: currentUser!.uid,
-        user2Id: currentChat!.uidUser2,
+    final chatRef = firestore.collection('chats').doc(chatId);
+
+    final chatSnapshot = await chatRef.get();
+    final shouldCreateNewChat = !chatSnapshot.exists;
+
+    if (shouldCreateNewChat) {
+      final newChat = Chat(
+        unreadCount: type == MessageType.text ? 1 : uIds!.length,
+        participants: [currentUser, secondUser],
+        lastMessage: lastMessage,
+        lastMessageTimestamp: Timestamp.now(),
+        lastMessageSenderId: currentUser,
+        user1PicUrl: null,
+        user2PicUrl: user2PicUrl,
       );
 
-      await firestore.collection('chats').doc(chatId).set(newChat.toJson());
+      await chatRef.set(newChat.toJson());
     }
 
-    // Increment the unread message count
-    updateUnreadCount(chatId, currentUser!.uid);
-
-    // Clear the reply
     clearReply();
 
-    // Add the new message to the 'messages'
-    // sub-collection of the chat document in Firestore
-    await addNewMessageToChat(chatId, content,
-        type: type, media: media, uIds: uIds);
+    await addNewMessageToChat(
+      content,
+      type: type,
+      media: media,
+      uIds: uIds,
+      updateInfo: chatSnapshot.exists,
+    );
   }
 
-  Future<void> updateUnreadCount(String chatId, String userId) async {
-    final DocumentSnapshot<Map<String, dynamic>> tileRef =
-        await firestore.collection('chats').doc(chatId).get();
-  }
+  Stream<Person> getOnlineStatusStream() async* {
+    final userDocRef = firestore.doc('users/${currentChat!.uidUser2}');
 
-  Stream<DocumentSnapshot<Map<String, dynamic>>> getOnlineStatusStream() {
-    final DocumentReference userDocRef =
-        firestore.doc('users/${currentChat!.uidUser2}');
-
-    // Add a listener to the user's online status document
-    final StreamController<DocumentSnapshot<Map<String, dynamic>>> controller =
-        StreamController();
-
-    StreamSubscription<DocumentSnapshot<Map<String, dynamic>>> subscription =
-        userDocRef
-            .snapshots()
-            .map((snapshot) =>
-                snapshot as DocumentSnapshot<Map<String, dynamic>>)
-            .listen((DocumentSnapshot<Map<String, dynamic>> snapshot) {
-      controller.add(snapshot);
-    });
-
-    // When the stream is cancelled, remove the listener
-    controller.onCancel = () {
-      subscription.cancel();
-    };
-
-    return controller.stream;
+    await for (DocumentSnapshot<Map<String, dynamic>> snapshot
+        in userDocRef.snapshots()) {
+      yield Person.fromJson(snapshot.data()!);
+    }
   }
 }
-
-/*
-import 'package:cloud_firestore/cloud_firestore.dart';
-
-// Function to update 'chat_tile_data' for the sender and recipient when a message is sent
-void updateChatTileData(String senderId, String recipientId, String lastMessage, Timestamp lastMessageTimestamp) {
-  try {
-    // Firestore instance
-    final FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-    // Define the data to be updated in 'chat_tile_data'
-    final Map<String, dynamic> updateData = {
-      'lastMessage': lastMessage,
-      'lastMessageTimestamp': lastMessageTimestamp,
-      'hasUnreadMessages': true, // Assuming a new message means unread messages
-    };
-
-    // Update 'chat_tile_data' for the sender
-    firestore
-        .collection('chat_tile_data')
-        .doc(senderId)
-        .update(updateData)
-        .then((_) => print('Chat tile data updated for sender'))
-        .catchError((error) => print('Error updating chat tile data for sender: $error'));
-
-    // Update 'chat_tile_data' for the recipient
-    firestore
-        .collection('chat_tile_data')
-        .doc(recipientId)
-        .update(updateData)
-        .then((_) => print('Chat tile data updated for recipient'))
-        .catchError((error) => print('Error updating chat tile data for recipient: $error'));
-  } catch (e) {
-    print('Error updating chat tile data: $e');
-  }
-}
-
- */

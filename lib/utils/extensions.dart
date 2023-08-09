@@ -36,18 +36,6 @@ extension TimeStampExtensions on Timestamp {
 }
 
 extension StringExtentions on String? {
-  /// Returns the file name from a URL
-  String getFileName() {
-    RegExp regExp = RegExp(r'2Fresized%2F(.+)_600x600\?alt');
-    Match? match = regExp.firstMatch(this!);
-
-    if (match != null && match.groupCount > 0) {
-      return match.group(1)!;
-    } else {
-      return '';
-    }
-  }
-
   /// Validate the input value (length should be at least 6 characters)
   String? validatePassword() {
     if (this == null) {
@@ -118,5 +106,15 @@ extension StringExtentions on String? {
     final end = this!.substring(this!.indexOf('@') - 2);
     const middle = '****';
     return '$start$middle$end';
+  }
+}
+
+extension IntExtension on int {
+  String formattedPhotos() {
+    if (this == 1) {
+      return '1 photo';
+    } else {
+      return '$this photos';
+    }
   }
 }

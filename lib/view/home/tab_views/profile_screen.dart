@@ -1,4 +1,4 @@
-import 'package:auto_route/auto_route.dart';
+import 'package:conta/utils/app_router/router.dart';
 import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:flutter/material.dart';
 
@@ -19,7 +19,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   logout() {
     _authService.signOutFromApp();
-    context.router.replaceAll([const LoginScreenRoute()]);
+    navReplaceAll(
+      context,
+      [const LoginScreenRoute()],
+    );
   }
 
   @override

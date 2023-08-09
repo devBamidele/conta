@@ -1,8 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conta/res/color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:iconly/iconly.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+
+import '../models/message.dart';
+import 'enums.dart';
 
 Widget addHeight(double height) => SizedBox(height: height);
 
@@ -25,6 +29,21 @@ Widget emptyMessages(double size) {
       width: size,
       height: size,
     ),
+  );
+}
+
+Icon visibilityIcon(bool isVisible, Color passwordColor) {
+  return Icon(
+    // Based on passwordVisible state choose the icon
+    isVisible ? Icons.visibility_off : Icons.visibility,
+    color: passwordColor,
+  );
+}
+
+Icon lockIcon(Color iconColor) {
+  return Icon(
+    IconlyBold.lock,
+    color: iconColor,
   );
 }
 
@@ -108,6 +127,65 @@ Widget voiceIcon() {
   );
 }
 
+Widget returnArrow() {
+  return const Icon(
+    IconlyLight.arrow_left,
+    size: 24,
+    color: AppColors.opaqueTextColor,
+  );
+}
+
+Widget clearIcon() {
+  return const Icon(
+    Icons.clear_rounded,
+    size: 24,
+    color: AppColors.opaqueTextColor,
+  );
+}
+
+Message createSingleMessage(
+  String messageId,
+  String currentUser,
+  String secondUser,
+  String content,
+  MessageType type,
+  List<String>? media,
+  bool reply,
+  String? replyMessage,
+  String? replyId,
+) {
+  return Message(
+    id: messageId,
+    senderId: currentUser,
+    recipientId: secondUser,
+    content: content,
+    timestamp: Timestamp.now(),
+    reply: reply,
+    replyMessage: replyMessage,
+    replySenderId: replyId,
+    messageType: type.name,
+    media: media,
+  );
+}
+
+Message createMediaMessage(
+  String id,
+  String currentUser,
+  String secondUser,
+  String content,
+  String mediaUrl,
+) {
+  return Message(
+    id: id,
+    senderId: currentUser,
+    recipientId: secondUser,
+    content: content,
+    timestamp: Timestamp.now(),
+    messageType: MessageType.media.name,
+    media: [mediaUrl],
+  );
+}
+
 EdgeInsets getBubblePadding(
   bool isSender,
   bool stateTick,
@@ -145,5 +223,40 @@ EdgeInsets getContentPadding(
   return EdgeInsets.only(
     left: replyMessage || hasMedia ? 8 : 0,
     top: replyMessage || hasMedia ? 3 : 0,
+  );
+}
+
+Widget buildSlideTransition({
+  required Animation<double> animation,
+  required Widget child,
+}) {
+  return SlideTransition(
+    position: Tween<Offset>(
+      begin: const Offset(1, 0),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeInOut,
+      ),
+    ),
+    child: FadeTransition(
+      opacity: Tween<double>(begin: 0, end: 1).animate(
+        CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeInOut,
+        ),
+      ),
+      child: child,
+    ),
+  );
+}
+
+Widget loadRotatingDots({double size = 50}) {
+  return Center(
+    child: LoadingAnimationWidget.fourRotatingDots(
+      color: AppColors.primaryShadeColor,
+      size: size,
+    ),
   );
 }

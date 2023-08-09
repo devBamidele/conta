@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 /// The class representing a person.
 ///
@@ -13,6 +14,7 @@ class Person {
   final String bio;
   final Timestamp lastSeen;
   final bool online;
+  final String? token;
 
   /// Constructs a [Person] object.
   ///
@@ -33,6 +35,7 @@ class Person {
     this.bio = 'Hello there, I\'m a new user.',
     required this.lastSeen,
     this.online = false,
+    this.token,
   });
 
   /// Deserialize the JSON data received from Firestore into a [Person] object.
@@ -46,7 +49,8 @@ class Person {
         profilePicUrl = json['profilePicUrl'],
         bio = json['bio'],
         lastSeen = json['lastSeen'],
-        online = json['online'];
+        online = json['online'],
+        token = json['token'];
 
   /// Serialize the [Person] object into a JSON object for storage in Firestore.
   Map<String, dynamic> toJson() => {
@@ -58,5 +62,26 @@ class Person {
         'bio': bio,
         'lastSeen': lastSeen,
         'online': online,
+        'token': token,
       };
+
+  String formatLastSeen(Timestamp currentTime) {
+    final time = lastSeen.toDate();
+    final currentDateTime = currentTime.toDate();
+    final difference = currentDateTime.difference(time);
+
+    if (difference.inHours >= 48 || (currentDateTime.day - time.day >= 2)) {
+      final formatter = DateFormat('MMM dd, yyyy');
+      return 'Last seen ${formatter.format(time)}';
+    } else if (difference.inHours >= 24) {
+      final formatter = DateFormat("h:mm a");
+      return 'Yesterday at ${formatter.format(time)}';
+    } else if (difference.inHours >= 1) {
+      return 'Last seen ${difference.inHours} hour${difference.inHours == 1 ? '' : 's'} ago';
+    } else if (difference.inMinutes >= 1) {
+      return 'Last seen ${difference.inMinutes} minute${difference.inMinutes == 1 ? '' : 's'} ago';
+    } else {
+      return 'Last seen just now';
+    }
+  }
 }

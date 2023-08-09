@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -12,10 +13,6 @@ import '../models/person.dart';
 import '../utils/app_utils.dart';
 
 class AuthProvider extends ChangeNotifier {
-  // Instantiate Firebase Firestore and Firebase Authentication
-  final _fireStore = FirebaseFirestore.instance;
-  final _storage = FirebaseStorage.instance;
-
   String? username;
   String? name;
   String? email;
@@ -27,8 +24,6 @@ class AuthProvider extends ChangeNotifier {
     this.username = username;
     notifyListeners();
   }
-
-  void clearAll() {}
 
   void clearCachedPic() {
     profilePic = null;
@@ -44,12 +39,10 @@ class AuthProvider extends ChangeNotifier {
   Future<bool> isUnique(String username) async {
     // perform a query on the Firestore collection to
     // check if the username already exists
-    var result = await _fireStore
+    var result = await FirebaseFirestore.instance
         .collection('users')
         .where('username', isEqualTo: username)
         .get();
-
-    log('Query executed');
 
     // if the query returns any documents, it means the username already exists
     return result.docs.isEmpty;
@@ -57,7 +50,10 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> createNewUser(String userId, File? file) async {
     try {
-      final ref = _storage.ref().child("profile_pictures").child(userId);
+      final ref = FirebaseStorage.instance
+          .ref()
+          .child("profile_pictures")
+          .child(userId);
       String? photoUrl;
 
       // Upload the image to firebase cloud storage
@@ -76,10 +72,47 @@ class AuthProvider extends ChangeNotifier {
         lastSeen: Timestamp.now(),
       ).toJson();
 
-      await _fireStore.collection('users').doc(userId).set(person);
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .set(person);
     } catch (e) {
       throw 'An error occurred while uploading the image';
     }
+  }
+
+  Future<void> updateUserToken(String userId) async {
+    final token = await FirebaseMessaging.instance.getToken();
+
+    final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
+
+    try {
+      final userDoc = await userRef.get();
+
+      // Check if the user document exists
+      if (userDoc.exists) {
+        final currentToken = userDoc.data()?['token'];
+
+        // If the 'token' field is null or different from the new token, update it
+        if (currentToken == null || currentToken != token) {
+          await userRef.update({'token': token});
+          log('User token updated successfully.');
+        } else {
+          log('User token is up to date.');
+        }
+      } else {
+        log('User document does not exist.');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<bool> checkUserExists(String userId) async {
+    final userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
+
+    return userDoc.exists;
   }
 
   Future<void> createUser({
@@ -273,8 +306,8 @@ class AuthProvider extends ChangeNotifier {
 
       // User is authenticated and email is verified
       if (user != null && user.emailVerified) {
-        // Set One Signal id for the User
-        //_messagingService.setExternalUserId(user.uid);
+        // Set up token for the user
+        updateUserToken(user.uid);
 
         onAuthenticate();
       } else {
@@ -300,12 +333,16 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> loginWithGoogle({
+    required BuildContext context,
     required void Function(String) showSnackbar,
     required VoidCallback onAuthenticate,
   }) async {
+    AppUtils.showLoadingDialog1(context);
+
     try {
       // Sign in with Google and get user credential
       UserCredential userCredential = await handleGoogleLogin();
+
       User? user = userCredential.user;
 
       // Check if user is authenticated and email is verified
@@ -314,8 +351,15 @@ class AuthProvider extends ChangeNotifier {
         return;
       }
 
-      // Set One Signal id for the User
-      //_messagingService.setExternalUserId(user.uid);
+      bool userExists = await checkUserExists(user.uid);
+
+      if (!userExists) {
+        showSnackbar('Account not registered with app');
+        return;
+      }
+
+      // Set up token for the user
+      updateUserToken(user.uid);
 
       onAuthenticate();
     } on FirebaseAuthException catch (e) {
@@ -330,6 +374,9 @@ class AuthProvider extends ChangeNotifier {
       showSnackbar('No internet connection');
     } catch (_) {
       showSnackbar('An error occurred, please try again later');
+    } finally {
+      // Close the loading dialog when login attempt is finished
+      Navigator.of(context).pop();
     }
   }
 

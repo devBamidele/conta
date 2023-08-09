@@ -1,39 +1,52 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 /// Represents a chat conversation between two users.
 class Chat {
-  final String id;
-  final String user1Id;
-  final String user2Id;
-  final num user1Unread;
-  final num user2Unread;
+  final List<String> participants;
+  final String? user1PicUrl;
+  final String? user2PicUrl;
+  final String lastMessage;
+  final String lastMessageSenderId;
+  final Timestamp lastMessageTimestamp;
+  final num unreadCount;
+  final bool user1Muted;
+  final bool user2Muted;
 
   /// Creates a new instance of the [Chat] class.
   Chat({
-    required this.id,
-    required this.user1Id,
-    required this.user2Id,
-    required this.user1Unread,
-    required this.user2Unread,
+    required this.participants,
+    required this.user1PicUrl,
+    required this.user2PicUrl,
+    required this.lastMessage,
+    required this.lastMessageSenderId,
+    required this.lastMessageTimestamp,
+    required this.unreadCount,
+    this.user1Muted = false,
+    this.user2Muted = false,
   });
 
   /// Creates a [Chat] object from a JSON representation.
   Chat.fromJson(Map<String, dynamic> json)
-      : id = json['id'],
-        user1Id = json['user1Id'],
-        user2Id = json['user2Id'],
-        user1Unread = json['user1Unread'],
-        user2Unread = json['user2Unread'];
+      : participants = List<String>.from(json['participants']),
+        user1PicUrl = json['user1PicUrl'],
+        user2PicUrl = json['user2PicUrl'],
+        lastMessage = json['lastMessage'],
+        lastMessageSenderId = json['lastMessageSenderId'],
+        lastMessageTimestamp = json['lastMessageTimestamp'],
+        unreadCount = json['unreadCount'],
+        user1Muted = json['user1Muted'],
+        user2Muted = json['user2Muted'];
 
   /// Converts the [Chat] object to a JSON representation.
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'user1Id': user1Id,
-        'user2Id': user2Id,
-        'user1Unread': user1Unread,
-        'user2Unread': user2Unread,
+        'participants': participants,
+        'user1PicUrl': user1PicUrl,
+        'user2PicUrl': user2PicUrl,
+        'lastMessage': lastMessage,
+        'lastMessageSenderId': lastMessageSenderId,
+        'lastMessageTimestamp': lastMessageTimestamp,
+        'unreadCount': unreadCount,
+        'user1Muted': user1Muted,
+        'user2Muted': user2Muted,
       };
-
-  /// Returns the ID of the user in the chat that is not [userId].
-  String getOtherUserId(String userId) {
-    return userId == user1Id ? user2Id : user1Id;
-  }
 }

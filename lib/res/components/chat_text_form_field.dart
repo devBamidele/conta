@@ -15,11 +15,11 @@ class ChatTextFormField extends StatelessWidget {
     this.prefixIcon = IconlyBold.image,
     this.prefixIconSize = 26,
     this.hintText = 'Message',
-    required this.onFieldSubmitted,
+    this.onFieldSubmitted,
   }) : super(key: key);
 
   final FocusNode node;
-  final void Function(String) onFieldSubmitted;
+  final void Function(String)? onFieldSubmitted;
   final TextEditingController controller;
   final VoidCallback? onPrefixIconTap;
   final IconData prefixIcon;
@@ -34,7 +34,7 @@ class ChatTextFormField extends StatelessWidget {
       maxLines: null,
       cursorColor: Colors.black,
       focusNode: node,
-      textInputAction: TextInputAction.done,
+      textInputAction: TextInputAction.send,
       controller: controller,
       onFieldSubmitted: onFieldSubmitted,
       decoration: InputDecoration(

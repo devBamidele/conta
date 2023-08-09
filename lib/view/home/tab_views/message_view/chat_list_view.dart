@@ -81,13 +81,15 @@ class _ChatListViewState extends State<ChatListView> {
   }
 
   void onTileTap(ChatProvider data, ChatTileData tile, bool sameUser) {
-    data.resetUnread(tile.chatId);
+    //data.resetUnread(tile.chatId);
     data.setCurrentChat(
       username: sameUser ? tile.recipientName : tile.senderName,
       uidUser1: sameUser ? tile.senderId : tile.recipientId,
       uidUser2: sameUser ? tile.recipientId : tile.senderId,
       profilePicUrl: sameUser ? tile.recipientPicUrl : tile.senderPicUrl,
     );
+
+    //data.getChatsForUser('Bamidele');
 
     data.cancelReplyAndClearCache();
     navigateToNextScreen(context);

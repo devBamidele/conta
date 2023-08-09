@@ -12,10 +12,12 @@ class CustomTextField extends StatelessWidget {
     this.suffixIcon,
     this.obscureText = false,
     this.action = TextInputAction.next,
+    this.onFieldSubmitted,
   }) : super(key: key);
 
   final FocusNode focusNode;
   final TextEditingController textController;
+  final void Function(String)? onFieldSubmitted;
   final Color customFillColor;
   final String hintText;
   final Widget? prefixIcon;
@@ -34,7 +36,9 @@ class CustomTextField extends StatelessWidget {
       obscureText: obscureText,
       textInputAction: action,
       validator: validation,
+      onFieldSubmitted: onFieldSubmitted,
       decoration: InputDecoration(
+        isDense: true,
         fillColor: customFillColor.withOpacity(0.5),
         hintText: hintText,
         contentPadding: const EdgeInsets.all(18),

@@ -159,6 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> loginWithGoogle() async {
     await authProvider.loginWithGoogle(
+      context: context,
       showSnackbar: showSnackbar,
       onAuthenticate: onAuthenticate,
     );
@@ -260,18 +261,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           hintText: 'Password',
                           obscureText: _passwordVisible,
                           validation: (value) => value.validatePassword(),
-                          prefixIcon: Icon(
-                            IconlyBold.lock,
-                            color: passwordColor,
-                          ),
+                          prefixIcon: lockIcon(passwordColor),
+                          onFieldSubmitted: (password) => onContinuePressed(),
                           suffixIcon: IconButton(
-                            icon: Icon(
-                              // Based on passwordVisible state choose the icon
-                              _passwordVisible
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
-                              color: passwordColor,
-                            ),
+                            icon:
+                                visibilityIcon(_passwordVisible, passwordColor),
                             onPressed: toggleVisibility,
                           ),
                         ),
