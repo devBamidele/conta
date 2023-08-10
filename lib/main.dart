@@ -3,6 +3,7 @@ import 'package:conta/view_model/auth_provider.dart';
 import 'package:conta/view_model/chat_provider.dart';
 import 'package:conta/view_model/photo_provider.dart';
 import 'package:conta/view_model/search_provider.dart';
+import 'package:conta/view_model/user_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,10 +26,16 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ChatProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => PhotoProvider()),
         ChangeNotifierProvider(create: (_) => SearchProvider()),
+        ChangeNotifierProxyProvider<UserProvider, ChatProvider>(
+          create: (_) => ChatProvider(),
+          update: (_, userData, chatProvider) {
+            return chatProvider!..updateUserData(userData);
+          },
+        )
       ],
       child: const MyApp(),
     ),

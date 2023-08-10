@@ -7,7 +7,7 @@ class UnReadIdentifier extends StatelessWidget {
     required this.unread,
   }) : super(key: key);
 
-  final int unread;
+  final num unread;
 
   @override
   Widget build(BuildContext context) {

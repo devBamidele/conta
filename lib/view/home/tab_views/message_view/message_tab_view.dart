@@ -1,10 +1,11 @@
-import 'package:conta/utils/app_utils.dart';
 import 'package:conta/view/home/tab_views/message_view/chat_list_view.dart';
 import 'package:conta/view/home/tab_views/message_view/story_screen.dart';
 import 'package:conta/view/home/tab_views/message_view/users_search.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:conta/view_model/chat_provider.dart';
+import 'package:conta/view_model/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../res/color.dart';
 import '../../../../res/components/custom/custom_icon_button.dart';
@@ -20,14 +21,18 @@ class MessageTabView extends StatefulWidget {
 class _MessageTabViewState extends State<MessageTabView>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  late UserProvider _userProvider;
 
   final _selectedColor = AppColors.primaryShadeColor;
 
   @override
   void initState() {
     super.initState();
-    _tabController =
-        TabController(length: 2, vsync: this); // set the number of tabs
+    _tabController = TabController(length: 2, vsync: this);
+
+    _userProvider = Provider.of<UserProvider>(context, listen: false);
+
+    _userProvider.getUserInfo();
   }
 
   @override
@@ -99,17 +104,17 @@ class _MessageTabViewState extends State<MessageTabView>
                     ),
                   ),
                   addWidth(20),
-                  CustomIconButton(
-                    onTap: () {
-                      // Todo : Reverse the changes
-                      final id = FirebaseAuth.instance.currentUser!.uid;
-                      AppUtils.showToast(id);
+                  Consumer<ChatProvider>(
+                    builder: (_, data, Widget? child) {
+                      return CustomIconButton(
+                        onTap: () {},
+                        child: const Icon(
+                          IconlyLight.edit,
+                          size: 24,
+                          color: AppColors.opaqueTextColor,
+                        ),
+                      );
                     },
-                    child: const Icon(
-                      IconlyLight.edit,
-                      size: 24,
-                      color: AppColors.opaqueTextColor,
-                    ),
                   ),
                 ],
               ),

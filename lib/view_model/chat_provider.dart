@@ -1,17 +1,16 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conta/models/chat.dart';
 import 'package:conta/utils/enums.dart';
 import 'package:conta/utils/extensions.dart';
+import 'package:conta/view_model/user_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:uuid/uuid.dart';
 
 import '../models/Person.dart';
-import '../models/chat_tile_data.dart';
 import '../models/current_chat.dart';
 import '../models/message.dart';
 import '../utils/app_utils.dart';
@@ -23,6 +22,7 @@ class ChatProvider extends ChangeNotifier {
   List<Message> deletedMessages = [];
 
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  Person? personData;
 
   // Check if any message is currently long pressed
   bool isMessageLongPressed = false;
@@ -143,29 +143,14 @@ class ChatProvider extends ChangeNotifier {
         snapshot.docs.map((doc) => Message.fromJson(doc.data())).toList());
   }
 
-  Stream<List<ChatTileData>> getChatTilesStream() {
+  Stream<List<Chat>> getChatStream() {
     final userId = FirebaseAuth.instance.currentUser!.uid;
-    final CollectionReference<Map<String, dynamic>> tileRef =
-        firestore.collection('users').doc(userId).collection('chat_tile_data');
-
-    return tileRef
-        .orderBy('lastMessageTimestamp', descending: true)
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) =>
-                ChatTileData.fromJson({...doc.data(), 'chatId': doc.id}))
-            .toList());
-  }
-
-  getChatStream() async {
-    final userId = FirebaseAuth.instance.currentUser!.uid;
-    final CollectionReference<Map<String, dynamic>> collectionReference =
+    final CollectionReference<Map<String, dynamic>> chatRef =
         FirebaseFirestore.instance.collection('chats');
 
-    // Return the list of documents matching the query
-    return collectionReference
-        .where('participants', arrayContains: userId)
-        .snapshots();
+    return chatRef.where('participants', arrayContains: userId).snapshots().map(
+        (snapshot) =>
+            snapshot.docs.map((doc) => Chat.fromJson(doc.data())).toList());
   }
 
   String generateChatId(String currentUserUid, String otherUserUid) {
@@ -192,6 +177,10 @@ class ChatProvider extends ChangeNotifier {
       uidUser2: uidUser2,
       profilePicUrl: profilePicUrl,
     );
+  }
+
+  void updateUserData(UserProvider userData) {
+    personData = userData.userData;
   }
 
   Future<void> updateMessageSeen(String messageId) async {
@@ -288,17 +277,33 @@ class ChatProvider extends ChangeNotifier {
       await batch.commit();
       deletedMessages.clear();
     } catch (error) {
-      log('Error restoring deleted messages: $error');
-
       AppUtils.showToast('Error restoring deleted massages');
     }
   }
 
   Future<void> clearDeletedMessages() async {
+    updateUnreadOnDelete();
+
     await deleteFilesFromStorage().then(
       (value) => deletedMessages.clear(),
     );
     notifyListeners();
+  }
+
+  Future<void> updateUnreadOnDelete() async {
+    final deletedMessagesCopy = List<Message>.from(deletedMessages);
+
+    final chatId = currentChat!.chatId;
+    final batch = FirebaseFirestore.instance.batch();
+    final chatRef = FirebaseFirestore.instance.collection('chats').doc(chatId);
+
+    for (final message in deletedMessagesCopy) {
+      if (!message.seen) {
+        batch.update(chatRef, {'unreadCount': FieldValue.increment(-1)});
+      }
+    }
+
+    await batch.commit();
   }
 
   Future<void> updateChatInfo(
@@ -389,6 +394,7 @@ class ChatProvider extends ChangeNotifier {
     final currentUser = FirebaseAuth.instance.currentUser!.uid;
     final secondUser = currentChat!.uidUser2;
     final user2PicUrl = currentChat!.profilePicUrl;
+    final user2name = currentChat!.username;
     final chatId =
         currentChat?.chatId ?? generateChatId(currentUser, secondUser);
 
@@ -406,9 +412,10 @@ class ChatProvider extends ChangeNotifier {
         participants: [currentUser, secondUser],
         lastMessage: lastMessage,
         lastMessageTimestamp: Timestamp.now(),
-        lastMessageSenderId: currentUser,
-        user1PicUrl: null,
-        user2PicUrl: user2PicUrl,
+        lastSenderUserId: currentUser,
+        userNames: [personData?.username ?? 'noName', user2name],
+        profilePicUrls: [personData?.profilePicUrl, user2PicUrl],
+        lastMessageStatus: MessageStatus.undelivered,
       );
 
       await chatRef.set(newChat.toJson());

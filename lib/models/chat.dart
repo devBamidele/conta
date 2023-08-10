@@ -1,52 +1,50 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-/// Represents a chat conversation between two users.
+import '../utils/enums.dart';
+
 class Chat {
   final List<String> participants;
-  final String? user1PicUrl;
-  final String? user2PicUrl;
+  final List<String> userNames;
+  final List<String?> profilePicUrls;
   final String lastMessage;
-  final String lastMessageSenderId;
+  final String lastSenderUserId;
   final Timestamp lastMessageTimestamp;
   final num unreadCount;
-  final bool user1Muted;
-  final bool user2Muted;
+  final List<bool> userMuted;
+  final MessageStatus lastMessageStatus;
 
-  /// Creates a new instance of the [Chat] class.
   Chat({
     required this.participants,
-    required this.user1PicUrl,
-    required this.user2PicUrl,
+    required this.userNames,
+    required this.profilePicUrls,
     required this.lastMessage,
-    required this.lastMessageSenderId,
+    required this.lastSenderUserId,
     required this.lastMessageTimestamp,
     required this.unreadCount,
-    this.user1Muted = false,
-    this.user2Muted = false,
-  });
+    required this.lastMessageStatus,
+    List<bool>? userMuted,
+  }) : userMuted = userMuted ?? List.filled(2, false);
 
-  /// Creates a [Chat] object from a JSON representation.
   Chat.fromJson(Map<String, dynamic> json)
       : participants = List<String>.from(json['participants']),
-        user1PicUrl = json['user1PicUrl'],
-        user2PicUrl = json['user2PicUrl'],
+        profilePicUrls = List<String?>.from(json['profilePicUrls']),
+        userNames = List<String>.from(json['names']),
         lastMessage = json['lastMessage'],
-        lastMessageSenderId = json['lastMessageSenderId'],
+        lastSenderUserId = json['lastSenderUserId'],
         lastMessageTimestamp = json['lastMessageTimestamp'],
         unreadCount = json['unreadCount'],
-        user1Muted = json['user1Muted'],
-        user2Muted = json['user2Muted'];
+        userMuted = List<bool>.from(json['userMuted']),
+        lastMessageStatus = MessageStatus.sent;
 
-  /// Converts the [Chat] object to a JSON representation.
   Map<String, dynamic> toJson() => {
         'participants': participants,
-        'user1PicUrl': user1PicUrl,
-        'user2PicUrl': user2PicUrl,
+        'profilePicUrls': profilePicUrls,
+        'names': userNames,
         'lastMessage': lastMessage,
-        'lastMessageSenderId': lastMessageSenderId,
+        'lastSenderUserId': lastSenderUserId,
         'lastMessageTimestamp': lastMessageTimestamp,
         'unreadCount': unreadCount,
-        'user1Muted': user1Muted,
-        'user2Muted': user2Muted,
+        'userMuted': userMuted,
+        'lastMessageStatus': lastMessageStatus.toString(),
       };
 }

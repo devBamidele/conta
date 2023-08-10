@@ -38,7 +38,9 @@ class ViewImageScreen extends StatelessWidget {
               ),
             ),
             Text(
-              timeSent.toStringForSinglePic(),
+              media.length > 1
+                  ? timeSent.toStringForMultiplePics()
+                  : timeSent.toStringForSinglePic(),
               style: const TextStyle(
                 fontSize: 14,
               ),

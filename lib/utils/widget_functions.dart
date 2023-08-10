@@ -6,6 +6,7 @@ import 'package:iconly/iconly.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import '../models/message.dart';
+import '../res/components/shimmer/shimmer_tile.dart';
 import 'enums.dart';
 
 Widget addHeight(double height) => SizedBox(height: height);
@@ -95,6 +96,16 @@ Icon offlineIcon(Color color, {double size = 14}) {
   );
 }
 
+Widget messageStatus(MessageStatus status) {
+  if (status == MessageStatus.sent) {
+    return singleTick();
+  } else if (status == MessageStatus.seen) {
+    return doubleTick();
+  } else {
+    return offlineIcon(Colors.black);
+  }
+}
+
 Icon seenIcon(Color color) {
   return Icon(
     Icons.done_all,
@@ -140,6 +151,15 @@ Widget clearIcon() {
     Icons.clear_rounded,
     size: 24,
     color: AppColors.opaqueTextColor,
+  );
+}
+
+Widget shimmerTiles() {
+  return ListView.builder(
+    itemCount: 10,
+    itemBuilder: (context, index) {
+      return const ShimmerTile();
+    },
   );
 }
 

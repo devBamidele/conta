@@ -103,3 +103,5 @@ const customGridDelegate = SliverGridDelegateWithFixedCrossAxisCount(
   mainAxisSpacing: 5.0,
   crossAxisSpacing: 5.0,
 );
+
+const tileContentPadding = EdgeInsets.symmetric(vertical: 2, horizontal: 18);

@@ -84,4 +84,19 @@ class Person {
       return 'Last seen just now';
     }
   }
+
+  @override
+  String toString() {
+    return 'Person(\n'
+        '  id: $id,\n'
+        '  name: $name,\n'
+        '  username: $username,\n'
+        '  email: $email,\n'
+        '  profilePicUrl: $profilePicUrl,\n'
+        '  bio: $bio,\n'
+        '  lastSeen: $lastSeen,\n'
+        '  online: $online,\n'
+        '  token: $token\n'
+        ')';
+  }
 }

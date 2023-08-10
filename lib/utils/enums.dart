@@ -12,3 +12,9 @@ enum MessageType {
   /// File message.
   file,
 }
+
+enum MessageStatus {
+  sent,
+  seen,
+  undelivered,
+}
