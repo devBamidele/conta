@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conta/models/chat.dart';
@@ -148,9 +149,13 @@ class ChatProvider extends ChangeNotifier {
     final CollectionReference<Map<String, dynamic>> chatRef =
         FirebaseFirestore.instance.collection('chats');
 
-    return chatRef.where('participants', arrayContains: userId).snapshots().map(
-        (snapshot) =>
-            snapshot.docs.map((doc) => Chat.fromJson(doc.data())).toList());
+    return chatRef
+        .where('participants', arrayContains: userId)
+        .orderBy('lastMessageTimestamp', descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => Chat.fromJson({...doc.data(), 'id': doc.id}))
+            .toList());
   }
 
   String generateChatId(String currentUserUid, String otherUserUid) {
@@ -183,6 +188,26 @@ class ChatProvider extends ChangeNotifier {
     personData = userData.userData;
   }
 
+  Future<void> toggleMutedStatus({
+    required String chatId,
+    required int index,
+    required bool newValue,
+  }) async {
+    final chatRef = FirebaseFirestore.instance.collection('chats').doc(chatId);
+    final chatSnapshot = await chatRef.get();
+
+    if (chatSnapshot.exists) {
+      List<bool> userMuted = List<bool>.from(chatSnapshot.data()!['userMuted']);
+
+      userMuted[index] = newValue;
+
+      await chatRef.update({'userMuted': userMuted});
+      log('User muted status updated successfully.');
+    } else {
+      log('Chat not found.');
+    }
+  }
+
   Future<void> updateMessageSeen(String messageId) async {
     final batch = FirebaseFirestore.instance.batch();
     final chatId = currentChat!.chatId;
@@ -198,7 +223,13 @@ class ChatProvider extends ChangeNotifier {
 
     // Decrement the unreadCount field in the chat document by 1
     final chatRef = FirebaseFirestore.instance.collection('chats').doc(chatId);
-    batch.update(chatRef, {'unreadCount': FieldValue.increment(-1)});
+
+    final data = {
+      'unreadCount': FieldValue.increment(-1),
+      'lastMessageStatus': 'seen',
+    };
+
+    batch.update(chatRef, data);
 
     // Commit the batch
     await batch.commit();
@@ -306,6 +337,20 @@ class ChatProvider extends ChangeNotifier {
     await batch.commit();
   }
 
+  Future<void> updateLastMessageId(
+    String id,
+    WriteBatch batch,
+  ) async {
+    final chatId = currentChat!.chatId!;
+    final chatRef = FirebaseFirestore.instance.collection('chats').doc(chatId);
+
+    final data = {
+      'lastMessageId': id,
+    };
+    // Update the fields in the document
+    batch.update(chatRef, data);
+  }
+
   Future<void> updateChatInfo(
     String newLastMessage,
     WriteBatch batch,
@@ -317,6 +362,7 @@ class ChatProvider extends ChangeNotifier {
       'unreadCount': FieldValue.increment(1),
       'lastMessage': newLastMessage,
       'lastMessageTimestamp': Timestamp.now(),
+      'lastSenderUserId': currentChat!.uidUser1,
     };
     // Update the fields in the document
     batch.update(chatRef, data);
@@ -362,6 +408,8 @@ class ChatProvider extends ChangeNotifier {
         batch.set(messagesCollection.doc(id), imageMessage.toJson());
       }
 
+      updateLastMessageId(uIds!.last, batch);
+
       if (updateInfo) {
         updateChatInfo(lastMessage, batch);
       }
@@ -374,6 +422,8 @@ class ChatProvider extends ChangeNotifier {
           content, type, media, reply, replyMessage, replyId);
 
       batch.set(messagesCollection.doc(messageId), newMessage.toJson());
+
+      updateLastMessageId(messageId, batch);
 
       if (updateInfo) {
         updateChatInfo(lastMessage, batch);
@@ -415,7 +465,7 @@ class ChatProvider extends ChangeNotifier {
         lastSenderUserId: currentUser,
         userNames: [personData?.username ?? 'noName', user2name],
         profilePicUrls: [personData?.profilePicUrl, user2PicUrl],
-        lastMessageStatus: MessageStatus.undelivered,
+        lastMessageId: '',
       );
 
       await chatRef.set(newChat.toJson());

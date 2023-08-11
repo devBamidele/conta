@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:intl/intl.dart';
 
+import 'enums.dart';
+
 extension TimeStampExtensions on Timestamp {
   String customFormat() => DateFormat.jm().format(toDate());
 
@@ -99,6 +101,22 @@ extension IntExtension on int {
       return '1 photo';
     } else {
       return '$this photos';
+    }
+  }
+}
+
+extension MessageStatusExtension on MessageStatus {
+  // Converts a string to the corresponding MessageStatus enum value
+  static MessageStatus fromString(String value) {
+    switch (value) {
+      case 'sent':
+        return MessageStatus.sent;
+      case 'seen':
+        return MessageStatus.seen;
+      case 'undelivered':
+        return MessageStatus.undelivered;
+      default:
+        throw ArgumentError('Invalid MessageStatus value: $value');
     }
   }
 }

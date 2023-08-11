@@ -6,7 +6,6 @@ class AppColors {
   static const Color iconColor = Color(0xFFACACAC);
   static const Color inputBackGround = Color(0xFFFAFAFA);
   static const Color hintTextColor = Color(0xFF9E9E9E);
-  static const Color darkIconColor = Color(0xFF858585);
   static const Color photoContainerColor = Color(0xFFF2F2F2);
   static const Color dateChipColor = Color(0x558AD3D5);
 
@@ -25,7 +24,6 @@ class AppColors {
   static const Color selectedBackgroundColor = Color(0xFFFFEEEB);
 
   // Main App Colors
-  static const Color appBarColor = Color(0xFFFFCBC2);
   static const Color bubbleColor = Color(0xFFFD9787);
   static const Color primaryColor = Color(0xFFFC7F6C);
   static const Color primaryShadeColor = Color(0xFFF67C69);

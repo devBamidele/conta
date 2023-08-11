@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../utils/enums.dart';
+import '../utils/extensions.dart';
 
 class Chat {
+  final String? id;
   final List<String> participants;
   final List<String> userNames;
   final List<String?> profilePicUrls;
@@ -12,8 +14,10 @@ class Chat {
   final num unreadCount;
   final List<bool> userMuted;
   final MessageStatus lastMessageStatus;
+  final String lastMessageId;
 
   Chat({
+    this.id,
     required this.participants,
     required this.userNames,
     required this.profilePicUrls,
@@ -21,12 +25,14 @@ class Chat {
     required this.lastSenderUserId,
     required this.lastMessageTimestamp,
     required this.unreadCount,
-    required this.lastMessageStatus,
+    this.lastMessageStatus = MessageStatus.undelivered,
+    required this.lastMessageId,
     List<bool>? userMuted,
   }) : userMuted = userMuted ?? List.filled(2, false);
 
   Chat.fromJson(Map<String, dynamic> json)
-      : participants = List<String>.from(json['participants']),
+      : id = json['id'],
+        participants = List<String>.from(json['participants']),
         profilePicUrls = List<String?>.from(json['profilePicUrls']),
         userNames = List<String>.from(json['names']),
         lastMessage = json['lastMessage'],
@@ -34,7 +40,9 @@ class Chat {
         lastMessageTimestamp = json['lastMessageTimestamp'],
         unreadCount = json['unreadCount'],
         userMuted = List<bool>.from(json['userMuted']),
-        lastMessageStatus = MessageStatus.sent;
+        lastMessageId = json['lastMessageId'] ?? '',
+        lastMessageStatus =
+            MessageStatusExtension.fromString(json['lastMessageStatus']);
 
   Map<String, dynamic> toJson() => {
         'participants': participants,
@@ -45,6 +53,7 @@ class Chat {
         'lastMessageTimestamp': lastMessageTimestamp,
         'unreadCount': unreadCount,
         'userMuted': userMuted,
-        'lastMessageStatus': lastMessageStatus.toString(),
+        "lastMessageId": lastMessageId,
+        'lastMessageStatus': lastMessageStatus.name.toString(),
       };
 }

@@ -14,8 +14,6 @@ import '../../../../models/chat.dart';
 class ChatListView extends StatefulWidget {
   const ChatListView({Key? key}) : super(key: key);
 
-  static const tag = '/chat_list_view';
-
   @override
   State<ChatListView> createState() => _ChatListViewState();
 }
@@ -76,16 +74,12 @@ class _ChatListViewState extends State<ChatListView> {
   }
 
   void onTileTap(ChatProvider data, Chat tile, bool sameUser, int oppIndex) {
-    int userIndex = oppIndex == 0 ? 1 : 0;
-
     //data.resetUnread(tile.chatId);
     data.setCurrentChat(
-      username: sameUser ? tile.userNames[oppIndex] : tile.userNames[userIndex],
-      uidUser1: sameUser ? currentUser : tile.participants[oppIndex],
-      uidUser2: sameUser ? tile.participants[oppIndex] : currentUser,
-      profilePicUrl: sameUser
-          ? tile.profilePicUrls[oppIndex]
-          : tile.profilePicUrls[userIndex],
+      username: tile.userNames[oppIndex],
+      uidUser1: currentUser,
+      uidUser2: tile.participants[oppIndex],
+      profilePicUrl: tile.profilePicUrls[oppIndex],
     );
 
     data.cancelReplyAndClearCache();

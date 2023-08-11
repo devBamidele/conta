@@ -1,8 +1,10 @@
+import 'package:conta/utils/app_utils.dart';
 import 'package:conta/view/home/tab_views/message_view/chat_list_view.dart';
 import 'package:conta/view/home/tab_views/message_view/story_screen.dart';
 import 'package:conta/view/home/tab_views/message_view/users_search.dart';
 import 'package:conta/view_model/chat_provider.dart';
 import 'package:conta/view_model/user_provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
@@ -107,7 +109,10 @@ class _MessageTabViewState extends State<MessageTabView>
                   Consumer<ChatProvider>(
                     builder: (_, data, Widget? child) {
                       return CustomIconButton(
-                        onTap: () {},
+                        onTap: () {
+                          final id = FirebaseAuth.instance.currentUser!.uid;
+                          AppUtils.showToast(id);
+                        },
                         child: const Icon(
                           IconlyLight.edit,
                           size: 24,

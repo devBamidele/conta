@@ -102,7 +102,7 @@ Widget messageStatus(MessageStatus status) {
   } else if (status == MessageStatus.seen) {
     return doubleTick();
   } else {
-    return offlineIcon(Colors.black);
+    return offlineIcon(AppColors.iconColor);
   }
 }
 

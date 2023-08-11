@@ -3,13 +3,18 @@ import 'package:conta/res/components/shimmer/shimmer_widget.dart';
 import 'package:conta/res/components/unread_identifier.dart';
 import 'package:conta/res/style/component_style.dart';
 import 'package:conta/utils/extensions.dart';
+import 'package:conta/view_model/chat_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:iconly/iconly.dart';
+import 'package:provider/provider.dart';
 
 import '../../models/chat.dart';
+import '../../utils/app_utils.dart';
 import '../../utils/widget_functions.dart';
 import '../color.dart';
 
-class ChatListTile extends StatelessWidget {
+class ChatListTile extends StatefulWidget {
   const ChatListTile({
     Key? key,
     required this.tileData,
@@ -24,40 +29,99 @@ class ChatListTile extends StatelessWidget {
   final VoidCallback? onTileTap;
 
   @override
-  Widget build(BuildContext context) {
-    final userIndex = oppIndex == 0 ? 1 : 0;
+  State<ChatListTile> createState() => _ChatListTileState();
+}
 
-    return ListTile(
-      onTap: onTileTap,
-      leading: CircleAvatar(
-        radius: 25,
-        backgroundColor: Colors.white,
-        child: _buildProfileImage(userIndex),
-      ),
-      trailing: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          _buildLastMessageTimestamp(),
-          addHeight(6),
-          isSameUser
-              ? messageStatus(tileData.lastMessageStatus)
-              : _buildUnreadIdentifier(),
-        ],
-      ),
-      title: _buildUsername(userIndex),
-      contentPadding: tileContentPadding,
-      subtitle: Padding(
-        padding: const EdgeInsets.only(top: 2),
-        child: _buildLastMessage(),
-      ),
+class _ChatListTileState extends State<ChatListTile> {
+  bool chatMuted = false;
+  bool waiting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    chatMuted = widget.tileData.userMuted[widget.oppIndex];
+  }
+
+  Future<void> onActionPressed(ChatProvider data) async {
+    final name = widget.tileData.userNames[widget.oppIndex];
+
+    setState(() {
+      chatMuted = !chatMuted;
+      waiting = true;
+    });
+
+    AppUtils.showToast(
+        'Successfully ${chatMuted ? 'muted' : 'Un-muted'} $name');
+
+    // Delay execution for 2 seconds
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        setState(() {
+          waiting = false;
+        });
+
+        // Call toggleMutedStatus only if we're done waiting
+        if (!waiting) {
+          data.toggleMutedStatus(
+            chatId: widget.tileData.id!,
+            index: widget.oppIndex,
+            newValue: chatMuted,
+          );
+        }
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<ChatProvider>(
+      builder: (_, data, Widget? child) {
+        return Slidable(
+          endActionPane: ActionPane(
+            extentRatio: 0.28,
+            motion: const BehindMotion(),
+            children: [
+              SlidableAction(
+                onPressed: (context) => onActionPressed(data),
+                backgroundColor: const Color(0xFF21B7CA),
+                foregroundColor: Colors.white,
+                icon: chatMuted ? IconlyBold.volume_up : IconlyBold.volume_off,
+                label: chatMuted ? 'Un-mute' : 'Mute',
+              ),
+            ],
+          ),
+          child: ListTile(
+            onTap: widget.onTileTap,
+            leading: CircleAvatar(
+              radius: 25,
+              backgroundColor: Colors.white,
+              child: _buildProfileImage(),
+            ),
+            trailing: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                _buildLastMessageTimestamp(),
+                addHeight(10),
+                widget.isSameUser
+                    ? messageStatus(widget.tileData.lastMessageStatus)
+                    : _buildUnreadIdentifier(),
+              ],
+            ),
+            title: _buildUsername(),
+            contentPadding: tileContentPadding,
+            subtitle: Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: _buildLastMessage(),
+            ),
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildProfileImage(int userIndex) {
-    final imageUrl = isSameUser
-        ? tileData.profilePicUrls[oppIndex]
-        : tileData.profilePicUrls[userIndex];
+  Widget _buildProfileImage() {
+    final imageUrl = widget.tileData.profilePicUrls[widget.oppIndex];
 
     return imageUrl != null
         ? CachedNetworkImage(
@@ -80,20 +144,20 @@ class ChatListTile extends StatelessWidget {
 
   Widget _buildLastMessageTimestamp() {
     return Text(
-      tileData.lastMessageTimestamp.customFormat(),
+      widget.tileData.lastMessageTimestamp.customFormat(),
       style: const TextStyle(color: AppColors.extraTextColor),
     );
   }
 
   Widget _buildUnreadIdentifier() {
-    return tileData.unreadCount > 0
-        ? UnReadIdentifier(unread: tileData.unreadCount)
+    return widget.tileData.unreadCount > 0
+        ? UnReadIdentifier(unread: widget.tileData.unreadCount)
         : addHeight(12);
   }
 
-  Widget _buildUsername(int userIndex) {
+  Widget _buildUsername() {
     return Text(
-      isSameUser ? tileData.userNames[oppIndex] : tileData.userNames[userIndex],
+      widget.tileData.userNames[widget.oppIndex],
       style: const TextStyle(
         fontSize: 18,
         height: 1.2,
@@ -103,7 +167,7 @@ class ChatListTile extends StatelessWidget {
 
   Widget _buildLastMessage() {
     return Text(
-      tileData.lastMessage,
+      widget.tileData.lastMessage,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
       style: const TextStyle(color: AppColors.extraTextColor),
