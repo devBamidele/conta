@@ -122,7 +122,7 @@ class _MessagesStreamState extends State<MessagesStream> {
                               sameUser ? AppColors.bubbleColor : Colors.white,
                           tail: showTail,
                           isSender: sameUser,
-                          timeSent: message.timestamp.customFormat(),
+                          timeSent: message.timestamp.customBubbleFormat(),
                           textStyle: const TextStyle(
                             color: Colors.black87,
                             fontSize: 15.5,

@@ -83,7 +83,7 @@ class _ChatListTileState extends State<ChatListTile> {
             children: [
               SlidableAction(
                 onPressed: (context) => onActionPressed(data),
-                backgroundColor: const Color(0xFF21B7CA),
+                backgroundColor: AppColors.opaqueTextColor,
                 foregroundColor: Colors.white,
                 icon: chatMuted ? IconlyBold.volume_up : IconlyBold.volume_off,
                 label: chatMuted ? 'Un-mute' : 'Mute',
@@ -144,7 +144,7 @@ class _ChatListTileState extends State<ChatListTile> {
 
   Widget _buildLastMessageTimestamp() {
     return Text(
-      widget.tileData.lastMessageTimestamp.customFormat(),
+      widget.tileData.lastMessageTimestamp.customTileFormat(),
       style: const TextStyle(color: AppColors.extraTextColor),
     );
   }

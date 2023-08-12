@@ -5,7 +5,24 @@ import 'package:intl/intl.dart';
 import 'enums.dart';
 
 extension TimeStampExtensions on Timestamp {
-  String customFormat() => DateFormat.jm().format(toDate());
+  String customTileFormat() {
+    final DateTime now = DateTime.now();
+    final DateTime dateTime = toDate();
+
+    final int differenceInDays = now.difference(dateTime).inDays;
+
+    return differenceInDays == 0
+        ? now.day - dateTime.day > 0
+            ? '${DateFormat.E().format(dateTime)} ${DateFormat.d().format(dateTime)}'
+            : DateFormat.jm().format(dateTime)
+        : differenceInDays == 1 && now.weekday == dateTime.weekday
+            ? '${DateFormat.E().format(dateTime)} ${DateFormat.d().format(dateTime)}'
+            : differenceInDays <= 6
+                ? DateFormat.E().format(dateTime)
+                : DateFormat.MMMd().format(dateTime);
+  }
+
+  String customBubbleFormat() => DateFormat.jm().format(toDate());
 
   bool isSameDay(Timestamp time) {
     final first = toDate();
