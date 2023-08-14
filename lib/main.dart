@@ -1,3 +1,4 @@
+import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:conta/utils/services/notification_service.dart';
 import 'package:conta/view_model/auth_provider.dart';
 import 'package:conta/view_model/chat_provider.dart';
@@ -7,9 +8,12 @@ import 'package:conta/view_model/user_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 
 import 'app/my_app.dart';
+
+final getIt = GetIt.instance;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,6 +26,8 @@ void main() async {
   ]);
 
   await NotificationService().initNotifications();
+
+  getIt.registerSingleton<AppRouter>(AppRouter());
 
   runApp(
     MultiProvider(

@@ -11,15 +11,18 @@ extension TimeStampExtensions on Timestamp {
 
     final int differenceInDays = now.difference(dateTime).inDays;
 
-    return differenceInDays == 0
-        ? now.day - dateTime.day > 0
-            ? '${DateFormat.E().format(dateTime)} ${DateFormat.d().format(dateTime)}'
-            : DateFormat.jm().format(dateTime)
-        : differenceInDays == 1 && now.weekday == dateTime.weekday
-            ? '${DateFormat.E().format(dateTime)} ${DateFormat.d().format(dateTime)}'
-            : differenceInDays <= 6
-                ? DateFormat.E().format(dateTime)
-                : DateFormat.MMMd().format(dateTime);
+    if (differenceInDays == 0) {
+      if (now.day - dateTime.day > 0) {
+        return '${DateFormat.E().format(dateTime)} ${DateFormat.d().format(dateTime)}';
+      }
+      return DateFormat.jm().format(dateTime);
+    } else if (now.month - dateTime.month == 0) {
+      return '${DateFormat.E().format(dateTime)} ${DateFormat.d().format(dateTime)}';
+    } else if (now.year - dateTime.year == 0) {
+      return DateFormat.MMMd().format(dateTime);
+    } else {
+      return DateFormat('MMM d, yyyy').format(dateTime);
+    }
   }
 
   String customBubbleFormat() => DateFormat.jm().format(toDate());

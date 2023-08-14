@@ -103,6 +103,8 @@ class _ChatScreenState extends State<ChatScreen>
   }
 
   void sendMessage(String message) {
+    _scrollToBottom();
+
     chatProvider.uploadChat(message);
 
     messagesController.clear();
@@ -125,6 +127,8 @@ class _ChatScreenState extends State<ChatScreen>
 
   Future<bool> onWillPop() async {
     chatProvider.cancelReplyAndClearCache();
+
+    chatProvider.clearIdData();
     return true;
   }
 

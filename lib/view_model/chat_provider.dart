@@ -14,6 +14,7 @@ import 'package:uuid/uuid.dart';
 import '../models/Person.dart';
 import '../models/current_chat.dart';
 import '../models/message.dart';
+import '../models/response.dart';
 import '../utils/app_utils.dart';
 import '../utils/services/file_picker_service.dart';
 import '../utils/widget_functions.dart';
@@ -21,9 +22,19 @@ import '../utils/widget_functions.dart';
 class ChatProvider extends ChangeNotifier {
   Map<String, Message> selectedMessages = {};
   List<Message> deletedMessages = [];
+  static String? oppUserId;
 
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
   Person? personData;
+
+  static bool? same(Response response) {
+    return oppUserId == response.uidUser2;
+  }
+
+  void clearIdData() {
+    oppUserId = null;
+
+    notifyListeners();
+  }
 
   // Check if any message is currently long pressed
   bool isMessageLongPressed = false;
@@ -133,8 +144,12 @@ class ChatProvider extends ChangeNotifier {
     required int limit,
   }) {
     String chatId = generateChatId(currentUserUid, otherUserUid);
-    CollectionReference<Map<String, dynamic>> messageRef =
-        firestore.collection('chats').doc(chatId).collection('messages');
+
+    CollectionReference<Map<String, dynamic>> messageRef = FirebaseFirestore
+        .instance
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages');
 
     // Use the limit method to fetch a specific number of messages
     Query<Map<String, dynamic>> query =
@@ -182,6 +197,10 @@ class ChatProvider extends ChangeNotifier {
       uidUser2: uidUser2,
       profilePicUrl: profilePicUrl,
     );
+
+    oppUserId = uidUser2;
+
+    notifyListeners();
   }
 
   void updateUserData(UserProvider userData) {
@@ -209,7 +228,9 @@ class ChatProvider extends ChangeNotifier {
   }
 
   Future<void> updateMessageSeen(String messageId) async {
-    final batch = FirebaseFirestore.instance.batch();
+    final firestore = FirebaseFirestore.instance;
+
+    final batch = firestore.batch();
     final chatId = currentChat!.chatId;
 
     final messageRef = firestore
@@ -236,6 +257,8 @@ class ChatProvider extends ChangeNotifier {
   }
 
   Future<void> deleteMessage() async {
+    final firestore = FirebaseFirestore.instance;
+
     if (selectedMessages.isNotEmpty) {
       // Get the chat ID and message IDs of the selected messages
       final chatId = currentChat!.chatId;
@@ -287,6 +310,8 @@ class ChatProvider extends ChangeNotifier {
   }
 
   Future<void> undoDelete() async {
+    final firestore = FirebaseFirestore.instance;
+
     final chatId = currentChat!.chatId;
 
     final messageRef =
@@ -445,6 +470,9 @@ class ChatProvider extends ChangeNotifier {
     final secondUser = currentChat!.uidUser2;
     final user2PicUrl = currentChat!.profilePicUrl;
     final user2name = currentChat!.username;
+
+    final firestore = FirebaseFirestore.instance;
+
     final chatId =
         currentChat?.chatId ?? generateChatId(currentUser, secondUser);
 
@@ -483,7 +511,8 @@ class ChatProvider extends ChangeNotifier {
   }
 
   Stream<Person> getOnlineStatusStream() async* {
-    final userDocRef = firestore.doc('users/${currentChat!.uidUser2}');
+    final userDocRef =
+        FirebaseFirestore.instance.doc('users/${currentChat!.uidUser2}');
 
     await for (DocumentSnapshot<Map<String, dynamic>> snapshot
         in userDocRef.snapshots()) {

@@ -1,8 +1,13 @@
 import 'dart:convert';
-import 'dart:developer';
 
+import 'package:conta/view_model/chat_provider.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+import '../../main.dart';
+import '../../models/response.dart';
+import '../app_router/router.gr.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -11,12 +16,8 @@ class NotificationService {
 
   NotificationService._internal();
 
-  final _firebaseMessaging = FirebaseMessaging.instance;
   final icon = '@drawable/ic_launcher';
   final androidPriority = Priority.high;
-  final androidChannelId = '';
-  final androidChannelName = 'High Importance Notifications';
-  late Map token;
 
   final _androidChannel = const AndroidNotificationChannel(
     'high importance channel',
@@ -28,24 +29,35 @@ class NotificationService {
   final _localNotifications = FlutterLocalNotificationsPlugin();
 
   Future<void> initNotifications() async {
-    await _firebaseMessaging.requestPermission();
+    await FirebaseMessaging.instance.requestPermission();
 
     initPushNotifications();
     initLocalNotifications();
   }
 
   Future<void> initPushNotifications() async {
-    FirebaseMessaging.instance
-        .getInitialMessage()
-        .then(handleForegroundMessage);
+    // The app was launched due to a notification
+    FirebaseMessaging.instance.getInitialMessage().then(handleInitialMessage);
+
+    //
+    // The app was already running
     FirebaseMessaging.onMessageOpenedApp.listen(handleForegroundMessage);
+
+    // Executes the high level function when the app is not in foreground
     FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
+
     FirebaseMessaging.onMessage.listen((event) {
       final notification = event.notification;
 
       if (notification == null) return;
 
-      handleForegroundMessage(event);
+      final response = Response.fromJson(event.data);
+
+      bool same = ChatProvider.same(response) ?? false;
+
+      if (same) {
+        return;
+      }
 
       _localNotifications.show(
         notification.hashCode,
@@ -97,18 +109,22 @@ Future<void> onDidReceiveNotificationResponse(
 
 void handleForegroundMessage(RemoteMessage? message) {
   if (message == null) return;
-  log('---------- This is a foreground message ----------');
-  log('Title: ${message.notification?.title}');
-  log('Body: ${message.notification?.body}');
-  log('Payload: ${message.data}');
 
-  // Add some navigation here
+  final response = Response.fromJson(message.data);
+
+  getIt<AppRouter>().push(IntermediaryRoute(data: response));
+}
+
+void handleInitialMessage(RemoteMessage? message) {
+  if (message == null) return;
+
+  final response = Response.fromJson(message.data);
+
+  getIt<AppRouter>()
+      .pushAll([const PersistentTabRoute(), IntermediaryRoute(data: response)]);
 }
 
 @pragma('vm:entry-point')
 Future<void> handleBackgroundMessage(RemoteMessage message) async {
-  log('---------- This is a background message ----------');
-  log('Title: ${message.notification?.title}');
-  log('Body: ${message.notification?.body}');
-  log('Payload: ${message.data}');
+  debugPrint('Background message detected');
 }

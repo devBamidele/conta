@@ -74,7 +74,6 @@ class _ChatListViewState extends State<ChatListView> {
   }
 
   void onTileTap(ChatProvider data, Chat tile, bool sameUser, int oppIndex) {
-    //data.resetUnread(tile.chatId);
     data.setCurrentChat(
       username: tile.userNames[oppIndex],
       uidUser1: currentUser,

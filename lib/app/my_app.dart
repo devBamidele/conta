@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../main.dart';
 import '../res/app_theme.dart';
 import '../utils/app_router/router.gr.dart';
 import '../utils/app_utils.dart';
@@ -14,9 +15,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
-  /// An instance of the AppRouter.
-  final _appRouter = AppRouter();
-
   /// An instance of the [AuthService].
   late AuthService _authService;
 
@@ -57,6 +55,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    final appRouter = getIt<AppRouter>();
+
     return MaterialApp.router(
       // Set the scaffold messenger key to the AppUtils messenger key.
       scaffoldMessengerKey: AppUtils.messengerKey,
@@ -67,9 +67,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       // Disable the debug banner.
       debugShowCheckedModeBanner: false,
       // Set the router delegate to an instance of the AppRouter delegate.
-      routerDelegate: _appRouter.delegate(),
+      routerDelegate: appRouter.delegate(),
       // Set the route information parser to an instance of the AppRouter default route parser.
-      routeInformationParser: _appRouter.defaultRouteParser(),
+      routeInformationParser: appRouter.defaultRouteParser(),
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:conta/view/account_setup/verify_account_screen.dart';
 import 'package:conta/view/authentication/login_screen.dart';
 import 'package:conta/view/authentication/recover_password_screen.dart';
 import 'package:conta/view/authentication/update_password_screen.dart';
+import 'package:conta/view/home/intermediary.dart';
 import 'package:conta/view/home/persistent_tab.dart';
 import 'package:conta/view/home/tab_views/message_view/chat_screen.dart';
 import 'package:conta/view/home/tab_views/message_view/preview_screen.dart';
@@ -27,14 +28,16 @@ import '../../view/onboard/splash_screen.dart';
     AutoRoute(page: RecoverPasswordScreen),
     AutoRoute(page: LoginScreen),
     AutoRoute(page: UpdatePasswordScreen),
-    AutoRoute(page: PreviewScreen),
 
+    AutoRoute(page: Intermediary),
+
+    AutoRoute(page: PreviewScreen),
     AutoRoute(page: ViewImageScreen),
+
+    // Home Screens
     AutoRoute(page: PersistentTab),
-    CustomRoute(
+    AutoRoute(
       page: ChatScreen,
-      transitionsBuilder: TransitionsBuilders.slideLeft,
-      durationInMilliseconds: 150,
     ),
   ],
 )
