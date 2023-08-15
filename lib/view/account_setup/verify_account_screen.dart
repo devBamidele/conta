@@ -41,7 +41,7 @@ class _VerifyAccountScreenState extends State<VerifyAccountScreen> {
 
   navigateToHome() => navReplaceAll(
         context,
-        [const PersistentTabRoute()],
+        [const HomeScreenRoute()],
       );
 
   setMail() {

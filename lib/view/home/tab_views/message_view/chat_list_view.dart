@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:conta/res/components/chat_list_tile.dart';
 import 'package:conta/utils/app_router/router.dart';
 import 'package:conta/utils/app_router/router.gr.dart';
+import 'package:conta/utils/enums.dart';
 import 'package:conta/utils/widget_functions.dart';
 import 'package:conta/view_model/chat_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,7 +13,12 @@ import 'package:provider/provider.dart';
 import '../../../../models/chat.dart';
 
 class ChatListView extends StatefulWidget {
-  const ChatListView({Key? key}) : super(key: key);
+  const ChatListView({
+    Key? key,
+    this.category = MessageCategory.all,
+  }) : super(key: key);
+
+  final MessageCategory category;
 
   @override
   State<ChatListView> createState() => _ChatListViewState();
@@ -27,7 +33,7 @@ class _ChatListViewState extends State<ChatListView> {
     return Consumer<ChatProvider>(
       builder: (_, data, Widget? child) {
         return StreamBuilder(
-          stream: data.getChatStream(),
+          stream: getStream(data),
           builder: (context, AsyncSnapshot<List<Chat>> snapshot) {
             if (snapshot.hasData) {
               final tileData = snapshot.data!;
@@ -62,6 +68,18 @@ class _ChatListViewState extends State<ChatListView> {
         );
       },
     );
+  }
+
+  Stream<List<Chat>> getStream(ChatProvider data) {
+    switch (widget.category) {
+      case MessageCategory.unread:
+        return data.getUnreadChatsStream();
+      case MessageCategory.muted:
+        return data.getMutedChatsStream();
+      case MessageCategory.all:
+      default:
+        return data.getAllChatsStream();
+    }
   }
 
   void navigateToNextScreen(BuildContext context) {

@@ -124,7 +124,7 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
                                   SizedBox(
                                     height: 170,
                                     width: 170,
-                                    child: ProfilePicture(
+                                    child: FileProfilePic(
                                       imageFile: data.profilePic,
                                     ),
                                   ),
@@ -148,7 +148,7 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
                         ],
                       ),
                       Positioned(
-                        bottom: 40,
+                        bottom: 30,
                         left: 0,
                         right: 0,
                         child: Container(
@@ -181,15 +181,19 @@ class UploadPhotoWidget extends StatelessWidget {
   const UploadPhotoWidget({
     super.key,
     required this.onTap,
+    this.bottom = 3,
+    this.right = 3,
   });
 
   final Function() onTap;
+  final double? bottom;
+  final double? right;
 
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      bottom: 3,
-      right: 3,
+      bottom: bottom,
+      right: right,
       child: GestureDetector(
         onTap: () => onTap(),
         child: Container(
@@ -219,10 +223,10 @@ class UploadPhotoWidget extends StatelessWidget {
   }
 }
 
-class ProfilePicture extends StatelessWidget {
+class FileProfilePic extends StatelessWidget {
   final File? imageFile;
 
-  const ProfilePicture({
+  const FileProfilePic({
     Key? key,
     this.imageFile,
   }) : super(key: key);

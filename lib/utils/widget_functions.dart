@@ -38,6 +38,15 @@ Icon visibilityIcon(bool isVisible, Color passwordColor) {
     // Based on passwordVisible state choose the icon
     isVisible ? Icons.visibility_off : Icons.visibility,
     color: passwordColor,
+    size: 20,
+  );
+}
+
+Widget emailIcon(Color color) {
+  return Icon(
+    IconlyBold.message,
+    color: color,
+    size: 20,
   );
 }
 
@@ -45,6 +54,7 @@ Icon lockIcon(Color iconColor) {
   return Icon(
     IconlyBold.lock,
     color: iconColor,
+    size: 20,
   );
 }
 
@@ -64,7 +74,7 @@ Widget singleTick({double size = 19}) {
   );
 }
 
-Widget noProfilePic({double size = 27}) {
+Widget noProfilePic({double size = 25}) {
   return Icon(
     IconlyBold.profile,
     color: AppColors.hintTextColor,
@@ -151,6 +161,14 @@ Widget clearIcon() {
     Icons.clear_rounded,
     size: 24,
     color: AppColors.opaqueTextColor,
+  );
+}
+
+Widget searchIcon() {
+  return const Icon(
+    IconlyBold.search,
+    color: AppColors.hintTextColor,
+    size: 20,
   );
 }
 

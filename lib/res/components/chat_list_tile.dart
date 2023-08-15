@@ -78,22 +78,24 @@ class _ChatListTileState extends State<ChatListTile> {
       builder: (_, data, Widget? child) {
         return Slidable(
           endActionPane: ActionPane(
-            extentRatio: 0.28,
+            extentRatio: 0.27,
             motion: const BehindMotion(),
             children: [
-              SlidableAction(
-                onPressed: (context) => onActionPressed(data),
-                backgroundColor: AppColors.opaqueTextColor,
-                foregroundColor: Colors.white,
-                icon: chatMuted ? IconlyBold.volume_up : IconlyBold.volume_off,
-                label: chatMuted ? 'Un-mute' : 'Mute',
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(6),
+                  child: GestureDetector(
+                    onTap: () => onActionPressed(data),
+                    child: MuteButton(chatMuted: chatMuted),
+                  ),
+                ),
               ),
             ],
           ),
           child: ListTile(
             onTap: widget.onTileTap,
             leading: CircleAvatar(
-              radius: 25,
+              radius: 26,
               backgroundColor: Colors.white,
               child: _buildProfileImage(),
             ),
@@ -171,6 +173,45 @@ class _ChatListTileState extends State<ChatListTile> {
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
       style: const TextStyle(color: AppColors.extraTextColor),
+    );
+  }
+}
+
+class MuteButton extends StatelessWidget {
+  final bool chatMuted;
+
+  const MuteButton({required this.chatMuted, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: chatMuted
+            ? AppColors.custom
+            : AppColors.opaqueTextColor.withOpacity(0.25),
+        borderRadius: const BorderRadius.all(Radius.circular(12)),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            chatMuted ? IconlyBold.volume_up : IconlyBold.volume_off,
+            color: chatMuted
+                ? AppColors.primaryShadeColor.withOpacity(0.8)
+                : AppColors.continueWithColor.withOpacity(0.8),
+            size: 24,
+          ),
+          addHeight(2),
+          Text(
+            chatMuted ? 'Un-mute' : 'Mute',
+            style: TextStyle(
+              color: chatMuted
+                  ? AppColors.primaryShadeColor.withOpacity(0.8)
+                  : AppColors.continueWithColor.withOpacity(0.8),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

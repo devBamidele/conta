@@ -18,3 +18,5 @@ enum MessageStatus {
   seen,
   undelivered,
 }
+
+enum MessageCategory { all, unread, muted }

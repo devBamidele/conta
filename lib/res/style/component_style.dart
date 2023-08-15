@@ -12,11 +12,11 @@ const inputBorder = OutlineInputBorder(
 
 /// The decoration for the elevated button
 final elevatedButton = ElevatedButton.styleFrom(
-  backgroundColor: AppColors.primaryColor,
-  minimumSize: const Size(double.infinity, 58),
+  backgroundColor: AppColors.primaryShadeColor,
+  minimumSize: const Size(double.infinity, 54),
   shape: const RoundedRectangleBorder(
     borderRadius: BorderRadius.all(
-      Radius.circular(28),
+      Radius.circular(24),
     ),
   ),
 );
@@ -67,12 +67,12 @@ ButtonStyle resendButtonStyle({
 }) {
   return OutlinedButton.styleFrom(
     foregroundColor: foregroundColor ?? AppColors.dividerColor,
-    side: BorderSide(color: sideColor ?? AppColors.primaryColor),
+    side: BorderSide(color: sideColor ?? AppColors.primaryShadeColor),
     backgroundColor: backgroundColor ?? Colors.white,
     elevation: elevation ?? 0,
-    minimumSize: minimumSize ?? const Size(double.infinity, 58),
+    minimumSize: minimumSize ?? const Size(double.infinity, 54),
     shape: RoundedRectangleBorder(
-      borderRadius: borderRadius ?? BorderRadius.circular(28),
+      borderRadius: borderRadius ?? BorderRadius.circular(24),
     ),
   );
 }
@@ -80,7 +80,7 @@ ButtonStyle resendButtonStyle({
 final shadow = BoxShadow(
   color: AppColors.primaryColor.withOpacity(0.7),
   offset: const Offset(1, 4),
-  blurRadius: 20,
+  blurRadius: 15,
   spreadRadius: 1,
 );
 
@@ -104,4 +104,9 @@ const customGridDelegate = SliverGridDelegateWithFixedCrossAxisCount(
   crossAxisSpacing: 5.0,
 );
 
-const tileContentPadding = EdgeInsets.symmetric(vertical: 2, horizontal: 18);
+const tileContentPadding = EdgeInsets.symmetric(vertical: 2, horizontal: 20);
+
+final tabIndicator = BoxDecoration(
+  borderRadius: BorderRadius.circular(13),
+  color: AppColors.primaryShadeColor,
+);

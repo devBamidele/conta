@@ -1,16 +1,11 @@
-1. Image downloading and caching
-2. The notifications need to be worked on and perfected
 
 
-look at image_grid_tile and dynamic_image_preview
+Major
 
 
-I can send single images with no breeze, the data gets uploaded to firebase and the cloud function works perfectly.However
-on the UI layer it attempting to download the images immediately, which means it's still using the down-dated url and this
-results to some unintended errors (Icons)
 
-2 images, the url does not get updated. But there's an indication that it's being updated
 
-3 images, I see no updates to the data in firebase, but it gets sent
+Minor
 
-4 images, client-side error
+UI -- I made some changes in the icon size on for the text field in the Login page
+and I didn't adjust the other Icons for the remaining text fields

@@ -10,7 +10,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
-import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
 import '../../data/logins.dart';
@@ -189,7 +188,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  gotoHome() => navReplaceAll(context, [const PersistentTabRoute()]);
+  gotoHome() => navReplaceAll(context, [const HomeScreenRoute()]);
 
   @override
   Widget build(BuildContext context) {
@@ -236,10 +235,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         textController: myEmailController,
                         customFillColor: fillEmailColor,
                         hintText: 'Email',
-                        prefixIcon: Icon(
-                          IconlyBold.message,
-                          color: emailColor,
-                        ),
+                        prefixIcon: emailIcon(emailColor),
                         validation: (email) => email?.trim().validateEmail(),
                       ),
                     ),

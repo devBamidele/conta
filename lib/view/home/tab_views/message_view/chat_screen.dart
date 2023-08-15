@@ -13,7 +13,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../res/color.dart';
-import '../../../../res/components/custom/custom_fab.dart';
+import '../../../../res/components/custom/custom_scroll_button.dart';
 import '../../../../res/components/reply_message.dart';
 import '../../../../utils/app_router/router.gr.dart';
 import '../../../../utils/app_utils.dart';
@@ -150,7 +150,7 @@ class _ChatScreenState extends State<ChatScreen>
                     Positioned(
                       bottom: 10,
                       right: 20,
-                      child: CustomFAB(
+                      child: CustomScrollButton(
                         showIcon: showIcon,
                         onPressed: _scrollToBottom,
                       ),

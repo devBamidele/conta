@@ -60,6 +60,12 @@ class AppTextStyles {
     height: 1.4,
     letterSpacing: 0.2,
   );
+
+  static const TextStyle textFieldLabel = TextStyle(
+    fontWeight: FontWeight.bold,
+    letterSpacing: 0.5,
+    fontSize: 14,
+  );
 }
 
 /*

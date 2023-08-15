@@ -39,8 +39,7 @@ class NotificationService {
     // The app was launched due to a notification
     FirebaseMessaging.instance.getInitialMessage().then(handleInitialMessage);
 
-    //
-    // The app was already running
+    // A notification is received while the app was already running
     FirebaseMessaging.onMessageOpenedApp.listen(handleForegroundMessage);
 
     // Executes the high level function when the app is not in foreground
@@ -121,7 +120,7 @@ void handleInitialMessage(RemoteMessage? message) {
   final response = Response.fromJson(message.data);
 
   getIt<AppRouter>()
-      .pushAll([const PersistentTabRoute(), IntermediaryRoute(data: response)]);
+      .pushAll([const HomeScreenRoute(), IntermediaryRoute(data: response)]);
 }
 
 @pragma('vm:entry-point')

@@ -48,7 +48,7 @@ class _SplashScreenState extends State<SplashScreen>
   navigateNext() {
     if (isAuth) {
       // User is authenticated, navigate to the home screen
-      navReplace(context, const PersistentTabRoute());
+      navReplace(context, const HomeScreenRoute());
     } else {
       // User is not authenticated, navigate to the login screen
       navReplace(context, const LoginScreenRoute());

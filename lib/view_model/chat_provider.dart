@@ -159,7 +159,7 @@ class ChatProvider extends ChangeNotifier {
         snapshot.docs.map((doc) => Message.fromJson(doc.data())).toList());
   }
 
-  Stream<List<Chat>> getChatStream() {
+  Stream<List<Chat>> getAllChatsStream() {
     final userId = FirebaseAuth.instance.currentUser!.uid;
     final CollectionReference<Map<String, dynamic>> chatRef =
         FirebaseFirestore.instance.collection('chats');
@@ -169,6 +169,47 @@ class ChatProvider extends ChangeNotifier {
         .orderBy('lastMessageTimestamp', descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs
+            .map((doc) => Chat.fromJson({...doc.data(), 'id': doc.id}))
+            .toList());
+  }
+
+  Stream<List<Chat>> getUnreadChatsStream() {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final CollectionReference<Map<String, dynamic>> chatRef =
+        FirebaseFirestore.instance.collection('chats');
+
+    return chatRef
+        .where('participants', arrayContains: userId)
+        .orderBy('lastMessageTimestamp', descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .where((doc) =>
+                doc['lastSenderUserId'] != userId && doc['unreadCount'] > 0)
+            .map((doc) => Chat.fromJson({...doc.data(), 'id': doc.id}))
+            .toList());
+  }
+
+  Stream<List<Chat>> getMutedChatsStream() {
+    final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+    final CollectionReference<Map<String, dynamic>> chatRef =
+        FirebaseFirestore.instance.collection('chats');
+
+    return chatRef
+        .where('participants', arrayContains: currentUserId)
+        .orderBy('lastMessageTimestamp', descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .where((doc) {
+              // Get participants array from the document
+              final participants = doc['participants'] as List<dynamic>;
+
+              // Determine the indices of the current user and the opposite user
+              final currentUserIndex = participants.indexOf(currentUserId);
+              final oppositeUserIndex = currentUserIndex == 0 ? 1 : 0;
+
+              // Check if the opposite user is muted, default to false if not found
+              return doc['userMuted'][oppositeUserIndex] ?? false;
+            })
             .map((doc) => Chat.fromJson({...doc.data(), 'id': doc.id}))
             .toList());
   }

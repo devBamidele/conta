@@ -225,6 +225,7 @@ class _SetNameScreenState extends State<SetNameScreen> {
                         prefixIcon: Icon(
                           IconlyBold.profile,
                           color: nameColor,
+                          size: 20,
                         ),
                         validation: (name) => name?.trim().validateName(),
                       ),
@@ -249,6 +250,7 @@ class _SetNameScreenState extends State<SetNameScreen> {
                           prefixIcon: Icon(
                             Icons.alternate_email_rounded,
                             color: usernameColor,
+                            size: 20,
                           ),
                           validation: (username) =>
                               username.validateUsername(existingUserName),

@@ -4,7 +4,7 @@ class AppColors {
   static const Color backGroundColor = Color(0xFFF5F5F5);
   static const Color inactiveColor = Color(0xFFD6D6D6);
   static const Color iconColor = Color(0xFFACACAC);
-  static const Color inputBackGround = Color(0xFFFAFAFA);
+  static const Color inputBackGround = Color(0xFFF5F5F5);
   static const Color hintTextColor = Color(0xFF9E9E9E);
   static const Color photoContainerColor = Color(0xFFF2F2F2);
   static const Color dateChipColor = Color(0x558AD3D5);
@@ -22,6 +22,8 @@ class AppColors {
   // For the text fields
   static const Color selectedFieldColor = Color(0xFFFD9787);
   static const Color selectedBackgroundColor = Color(0xFFFFEEEB);
+
+  static const Color custom = Color(0xFFFDF0ED);
 
   // Main App Colors
   static const Color bubbleColor = Color(0xFFFD9787);

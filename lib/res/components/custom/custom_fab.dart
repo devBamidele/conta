@@ -3,31 +3,25 @@ import 'package:flutter/material.dart';
 import '../../color.dart';
 
 class CustomFAB extends StatelessWidget {
-  const CustomFAB({
-    Key? key,
-    required this.showIcon,
-    this.onPressed,
-  }) : super(key: key);
+  const CustomFAB({super.key, this.onPressed});
 
-  final bool showIcon;
   final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
-    return Visibility(
-      visible: showIcon,
-      child: SizedBox.square(
-        dimension: 32,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 18),
+      child: SizedBox(
+        width: 65,
+        height: 65,
         child: FittedBox(
           child: FloatingActionButton(
-            elevation: 4,
             backgroundColor: Colors.white,
             onPressed: onPressed,
-            shape: const CircleBorder(),
             child: const Icon(
-              Icons.keyboard_arrow_down_outlined,
-              size: 45,
-              color: AppColors.extraTextColor,
+              Icons.add,
+              size: 30,
+              color: AppColors.primaryShadeColor,
             ),
           ),
         ),

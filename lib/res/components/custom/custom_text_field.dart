@@ -1,4 +1,7 @@
+import 'package:conta/res/style/component_style.dart';
 import 'package:flutter/material.dart';
+
+import '../../color.dart';
 
 class CustomTextField extends StatelessWidget {
   const CustomTextField({
@@ -13,6 +16,7 @@ class CustomTextField extends StatelessWidget {
     this.obscureText = false,
     this.action = TextInputAction.next,
     this.onFieldSubmitted,
+    this.focusedBorderColor,
   }) : super(key: key);
 
   final FocusNode focusNode;
@@ -25,6 +29,7 @@ class CustomTextField extends StatelessWidget {
   final String? Function(String?)? validation;
   final TextInputAction action;
   final bool obscureText;
+  final Color? focusedBorderColor;
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +43,12 @@ class CustomTextField extends StatelessWidget {
       validator: validation,
       onFieldSubmitted: onFieldSubmitted,
       decoration: InputDecoration(
+        focusedBorder: inputBorder.copyWith(
+          borderSide: BorderSide(
+            color: focusedBorderColor ?? AppColors.selectedFieldColor,
+            width: focusedBorderColor == null ? 1 : 0.5,
+          ),
+        ),
         isDense: true,
         fillColor: customFillColor.withOpacity(0.5),
         hintText: hintText,

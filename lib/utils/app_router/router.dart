@@ -4,10 +4,11 @@ import 'package:conta/view/account_setup/verify_account_screen.dart';
 import 'package:conta/view/authentication/login_screen.dart';
 import 'package:conta/view/authentication/recover_password_screen.dart';
 import 'package:conta/view/authentication/update_password_screen.dart';
+import 'package:conta/view/home/home_screen.dart';
 import 'package:conta/view/home/intermediary.dart';
-import 'package:conta/view/home/persistent_tab.dart';
 import 'package:conta/view/home/tab_views/message_view/chat_screen.dart';
 import 'package:conta/view/home/tab_views/message_view/preview_screen.dart';
+import 'package:conta/view/home/tab_views/profile_screen.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../res/components/image_views/view_image_screen.dart';
@@ -34,11 +35,10 @@ import '../../view/onboard/splash_screen.dart';
     AutoRoute(page: PreviewScreen),
     AutoRoute(page: ViewImageScreen),
 
-    // Home Screens
-    AutoRoute(page: PersistentTab),
-    AutoRoute(
-      page: ChatScreen,
-    ),
+    AutoRoute(page: ProfileScreen),
+
+    AutoRoute(page: HomeScreen),
+    AutoRoute(page: ChatScreen),
   ],
 )
 class $AppRouter {}

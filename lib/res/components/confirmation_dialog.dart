@@ -5,13 +5,19 @@ import '../color.dart';
 class ConfirmationDialog extends StatelessWidget {
   final String title;
   final String contentText;
-  final VoidCallback onConfirmPressed;
+
+  final String? validateText;
+  final String? cancelText;
+
+  final VoidCallback? onConfirmPressed;
 
   const ConfirmationDialog({
     super.key,
     required this.title,
     required this.contentText,
-    required this.onConfirmPressed,
+    this.onConfirmPressed,
+    this.validateText,
+    this.cancelText,
   });
 
   @override
@@ -22,12 +28,12 @@ class ConfirmationDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(cancelText ?? 'Cancel'),
         ),
         TextButton(
           onPressed: onConfirmPressed,
           child: Text(
-            'Delete',
+            validateText ?? 'Delete',
             style: TextStyle(
               color: AppColors.errorBorderColor.withOpacity(0.7),
             ),

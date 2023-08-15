@@ -4,7 +4,6 @@ import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:conta/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
-import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
 import '../../res/color.dart';
@@ -153,10 +152,7 @@ class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
                         textController: myEmailController,
                         customFillColor: fillEmailColor,
                         hintText: 'Email',
-                        prefixIcon: Icon(
-                          IconlyBold.message,
-                          color: emailColor,
-                        ),
+                        prefixIcon: emailIcon(emailColor),
                         validation: (email) => email?.trim().validateEmail(),
                         onFieldSubmitted: (email) => onContinuePressed(),
                       ),
