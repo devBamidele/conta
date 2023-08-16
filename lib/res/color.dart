@@ -18,6 +18,7 @@ class AppColors {
   static Color dividerColor = Colors.grey.shade200;
   static const Color continueWithColor = Color(0xFF616161);
   static const Color extraTextColor = Color(0xFF999999);
+  static const Color blackColor = Color(0xff424242);
 
   // For the text fields
   static const Color selectedFieldColor = Color(0xFFFD9787);

@@ -1,17 +1,106 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:conta/utils/extensions.dart';
+import 'package:conta/view_model/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_vibrate/flutter_vibrate.dart';
+import 'package:provider/provider.dart';
 
+import '../../../utils/app_utils.dart';
 import '../../../utils/widget_functions.dart';
 import '../../color.dart';
 import '../../style/app_text_style.dart';
 import '../../style/component_style.dart';
 import '../custom/custom_text_field.dart';
+import '../shake_error.dart';
 
-class DeleteAccountSheet extends StatelessWidget {
-  DeleteAccountSheet({super.key});
+class DeleteAccountSheet extends StatefulWidget {
+  const DeleteAccountSheet({super.key});
+
+  @override
+  State<DeleteAccountSheet> createState() => _DeleteAccountSheetState();
+}
+
+class _DeleteAccountSheetState extends State<DeleteAccountSheet> {
+  late UserProvider userProvider;
+
+  late bool _passwordVisible;
+  bool _isPasswordEmpty = true;
 
   final passwordNode = FocusNode();
   final passController = TextEditingController();
+
+  Color passwordColor = AppColors.hintTextColor;
+  Color fillPasswordColor = AppColors.inputBackGround;
+
+  final passwordShake = GlobalKey<ShakeWidgetState>();
+  final formKey1 = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _passwordVisible = true;
+
+    passController.addListener(_updatePasswordEmpty);
+
+    passwordNode.addListener(_updatePasswordColor);
+
+    userProvider = Provider.of<UserProvider>(context, listen: false);
+  }
+
+  void toggleVisibility() {
+    setState(
+      () => _passwordVisible = !_passwordVisible,
+    );
+  }
+
+  void _updatePasswordEmpty() {
+    setState(() {
+      _isPasswordEmpty = passController.text.isEmpty;
+    });
+  }
+
+  void _updatePasswordColor() {
+    setState(() {
+      passwordColor = passwordNode.hasFocus
+          ? AppColors.selectedFieldColor
+          : _isPasswordEmpty
+              ? AppColors.hintTextColor
+              : AppColors.blackColor;
+      fillPasswordColor = passwordNode.hasFocus
+          ? AppColors.selectedBackgroundColor
+          : AppColors.inputBackGround;
+    });
+  }
+
+  void showSnackbar(String message) {
+    if (mounted) {
+      AppUtils.showToast(message);
+    }
+  }
+
+  void onContinuePressed() {
+    final password = formKey1.currentState?.validate();
+
+    if (!password!) {
+      passwordShake.currentState?.shake();
+    } else {
+      deleteAccount();
+      return;
+    }
+
+    Vibrate.feedback(FeedbackType.success);
+  }
+
+  Future<void> deleteAccount() async {
+    final password = passController.text;
+
+    await userProvider.deleteAccount(
+      context: context,
+      password: password,
+      showSnackbar: showSnackbar,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +128,7 @@ class DeleteAccountSheet extends StatelessWidget {
                       fontWeight: FontWeight.w500,
                       color: AppColors.primaryShadeColor,
                     ),
-                  ),
+                  ), //
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: Divider(
@@ -51,16 +140,32 @@ class DeleteAccountSheet extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w500,
+                      color: AppColors.blackColor,
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 20, bottom: 10),
-                    child: CustomTextField(
-                      focusNode: passwordNode,
-                      textController: passController,
-                      customFillColor: AppColors.inputBackGround,
-                      hintText: 'Password',
-                      prefixIcon: lockIcon(AppColors.hintTextColor),
+                    child: Form(
+                      key: formKey1,
+                      child: ShakeWidget(
+                        key: passwordShake,
+                        child: CustomTextField(
+                          action: TextInputAction.done,
+                          focusNode: passwordNode,
+                          textController: passController,
+                          customFillColor: fillPasswordColor,
+                          hintText: 'Password',
+                          obscureText: _passwordVisible,
+                          validation: (value) => value.validatePassword(),
+                          prefixIcon: lockIcon(passwordColor),
+                          onFieldSubmitted: (password) => onContinuePressed(),
+                          suffixIcon: IconButton(
+                            icon:
+                                visibilityIcon(_passwordVisible, passwordColor),
+                            onPressed: toggleVisibility,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                   Padding(
@@ -86,7 +191,7 @@ class DeleteAccountSheet extends StatelessWidget {
                         Expanded(
                           child: ElevatedButton(
                             style: elevatedButton,
-                            onPressed: () {},
+                            onPressed: onContinuePressed,
                             child: Text(
                               'Yes, Delete',
                               style: AppTextStyles.labelMedium

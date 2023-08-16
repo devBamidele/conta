@@ -17,6 +17,7 @@ class CustomTextField extends StatelessWidget {
     this.action = TextInputAction.next,
     this.onFieldSubmitted,
     this.focusedBorderColor,
+    this.maxLength,
   }) : super(key: key);
 
   final FocusNode focusNode;
@@ -30,11 +31,15 @@ class CustomTextField extends StatelessWidget {
   final TextInputAction action;
   final bool obscureText;
   final Color? focusedBorderColor;
+  final Color textColor = AppColors.blackColor;
+  final int? maxLength;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      cursorColor: Colors.black,
+      style: TextStyle(color: textColor),
+      maxLength: maxLength,
+      cursorColor: textColor,
       focusNode: focusNode,
       controller: textController,
       autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -50,16 +55,16 @@ class CustomTextField extends StatelessWidget {
           ),
         ),
         isDense: true,
-        fillColor: customFillColor.withOpacity(0.5),
+        fillColor: customFillColor
+            .withOpacity(customFillColor == Colors.white ? 1.0 : 0.4),
         hintText: hintText,
         contentPadding: const EdgeInsets.all(18),
-        prefixIcon: Visibility(
-          visible: prefixIcon != null ? true : false,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 22, right: 14),
-            child: prefixIcon,
-          ),
-        ),
+        prefixIcon: prefixIcon != null
+            ? Padding(
+                padding: const EdgeInsets.only(left: 22, right: 14),
+                child: prefixIcon,
+              )
+            : null,
         suffixIcon: suffixIcon,
       ),
     );

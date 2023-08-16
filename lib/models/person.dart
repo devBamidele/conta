@@ -99,4 +99,29 @@ class Person {
         '  token: $token\n'
         ')';
   }
+
+  /// Create a new instance of the [Person] class with updated values.
+  Person copy({
+    String? id,
+    String? name,
+    String? username,
+    String? email,
+    String? profilePicUrl,
+    String? bio,
+    Timestamp? lastSeen,
+    bool? online,
+    String? token,
+  }) {
+    return Person(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      username: username ?? this.username,
+      email: email ?? this.email,
+      profilePicUrl: profilePicUrl ?? this.profilePicUrl,
+      bio: bio ?? this.bio,
+      lastSeen: lastSeen ?? this.lastSeen,
+      online: online ?? this.online,
+      token: token ?? this.token,
+    );
+  }
 }

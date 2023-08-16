@@ -22,6 +22,8 @@ class AppTheme {
         shape: dialogShape,
       ),
 
+      textTheme: TextTheme(),
+
       // Configure the app bar theme.
       appBarTheme: const AppBarTheme(
         // Set the shadow color of the app bar.

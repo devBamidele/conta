@@ -165,8 +165,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> loginWithEmailAndPassword() async {
-    final String email = myEmailController.text.trim();
-    final String password = myPasswordController.text;
+    final email = myEmailController.text.trim();
+    final password = myPasswordController.text;
 
     await authProvider.loginWithEmailAndPassword(
       context: context,

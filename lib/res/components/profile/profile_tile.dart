@@ -1,24 +1,52 @@
 import 'package:flutter/material.dart';
 
+import '../../color.dart';
+
 class ProfileTile extends StatelessWidget {
   const ProfileTile({
     super.key,
     required this.titleText,
     this.onTap,
-    this.leading,
+    this.icon,
+    this.leadingColor,
+    this.showTrailing = true,
+    this.subtitle,
   });
 
   final String titleText;
   final VoidCallback? onTap;
-  final Widget? leading;
+  final IconData? icon;
+  final Color? leadingColor;
+  final bool showTrailing;
+  final String? subtitle;
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       onTap: onTap,
-      leading: leading,
-      title: Text(titleText),
-      trailing: const Icon(Icons.chevron_right_rounded),
+      leading: Icon(
+        icon,
+        color: leadingColor ?? AppColors.blackColor,
+      ),
+      titleTextStyle: TextStyle(
+        fontSize: subtitle != null ? 12 : 16,
+        color: subtitle != null
+            ? AppColors.blackColor.withOpacity(0.7)
+            : AppColors.blackColor,
+      ),
+      subtitleTextStyle: const TextStyle(
+        fontSize: 16,
+      ),
+      title: Text(
+        titleText,
+      ),
+      subtitle: subtitle != null ? Text(subtitle!) : null,
+      trailing: showTrailing
+          ? const Icon(
+              Icons.chevron_right_rounded,
+              color: AppColors.blackColor,
+            )
+          : const SizedBox.shrink(),
     );
   }
 }
