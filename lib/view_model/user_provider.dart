@@ -59,7 +59,20 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> updateBio(String newBio, {required BuildContext context}) async {
+  void updateNameData(String newBio) {
+    if (userData != null) {
+      userData = userData!.copy(bio: newBio);
+      notifyListeners();
+    }
+  }
+
+  Future<void> updateBio(
+    String newBio, {
+    required BuildContext context,
+    required void Function(String) showSnackbar,
+  }) async {
+    AppUtils.showLoadingDialog1(context);
+
     final auth = FirebaseAuth.instance;
     final firestore = FirebaseFirestore.instance;
 
@@ -71,11 +84,15 @@ class UserProvider extends ChangeNotifier {
           'bio': newBio,
         });
 
+        updateNameData(newBio);
+
         // Successfully updated bio
-        log('Successfully updated bio');
+        showSnackbar('Successfully updated bio');
       } catch (error) {
-        log('Error updating bio $error');
         // Error updating bio
+        showSnackbar('Error updating bio');
+      } finally {
+        Navigator.of(context).pop();
       }
     }
   }

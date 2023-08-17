@@ -20,7 +20,7 @@ class CustomBackButton extends StatelessWidget {
   final Color color;
   final IconData icon;
   final AlignmentGeometry align;
-  final Function? action;
+  final Function()? action;
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +29,7 @@ class CustomBackButton extends StatelessWidget {
       alignment: align,
       iconSize: size,
       onPressed: () {
-        action != null ? action!() : null;
-
-        context.router.pop();
+        action != null ? action!() : context.router.pop();
       },
       icon: Icon(icon, color: color),
       splashColor: Colors.transparent,

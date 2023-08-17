@@ -101,7 +101,7 @@ class Person {
   }
 
   /// Create a new instance of the [Person] class with updated values.
-  Person copy({
+  Person? copy({
     String? id,
     String? name,
     String? username,

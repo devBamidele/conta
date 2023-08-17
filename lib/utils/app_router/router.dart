@@ -5,6 +5,7 @@ import 'package:conta/view/authentication/login_screen.dart';
 import 'package:conta/view/authentication/recover_password_screen.dart';
 import 'package:conta/view/authentication/update_password_screen.dart';
 import 'package:conta/view/home/edit_profile_info/edit_bio_screen.dart';
+import 'package:conta/view/home/edit_profile_info/edit_password_screen.dart';
 import 'package:conta/view/home/home_screen.dart';
 import 'package:conta/view/home/intermediary.dart';
 import 'package:conta/view/home/tab_views/message_view/chat_screen.dart';
@@ -43,6 +44,12 @@ import '../../view/onboard/splash_screen.dart';
 
     CustomRoute(
       page: EditBioScreen,
+      transitionsBuilder: TransitionsBuilders.slideLeft,
+      durationInMilliseconds: 150,
+    ),
+
+    CustomRoute(
+      page: EditPasswordScreen,
       transitionsBuilder: TransitionsBuilders.slideLeft,
       durationInMilliseconds: 150,
     ),

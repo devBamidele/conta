@@ -6,17 +6,18 @@ import 'package:provider/provider.dart';
 
 import '../../../res/color.dart';
 import '../../../res/components/custom/custom_back_button.dart';
+import '../../../utils/app_utils.dart';
 
 class EditBioScreen extends StatefulWidget {
-  const EditBioScreen({super.key, required this.bio});
-
-  final String bio;
+  const EditBioScreen({super.key});
 
   @override
   State<EditBioScreen> createState() => _EditBioScreenState();
 }
 
 class _EditBioScreenState extends State<EditBioScreen> {
+  late UserProvider userProvider;
+
   final bioNode = FocusNode();
 
   final bioController = TextEditingController();
@@ -24,19 +25,46 @@ class _EditBioScreenState extends State<EditBioScreen> {
   final fillColor = Colors.white;
 
   bool _showSave = false;
+  String _currentBio = '';
 
   @override
   void initState() {
     super.initState();
 
-    bioController.text = widget.bio;
+    userProvider = Provider.of<UserProvider>(context, listen: false);
+
+    bioController.text = userProvider.userData?.bio ?? '';
+
+    _currentBio = bioController.text;
 
     bioController.addListener(_showSaveButton);
   }
 
+  // Something needs to be done here
   void _showSaveButton() {
     setState(() {
-      _showSave = bioController.text != widget.bio;
+      _showSave = bioController.text != _currentBio;
+    });
+  }
+
+  void showSnackbar(String message) {
+    if (mounted) {
+      AppUtils.showSnackbar(message);
+    }
+  }
+
+  void updateBio(UserProvider userProvider) async {
+    final newBio = bioController.text.trim();
+
+    await userProvider.updateBio(
+      newBio,
+      context: context,
+      showSnackbar: showSnackbar,
+    );
+
+    setState(() {
+      _currentBio = newBio;
+      _showSave = false;
     });
   }
 
@@ -67,10 +95,12 @@ class _EditBioScreenState extends State<EditBioScreen> {
                             align: Alignment.centerRight,
                             padding: const EdgeInsets.only(top: 20),
                             icon: Icons.check_rounded,
-                            action: () => data.updateBio(
-                              bioController.text,
-                              context: context,
-                            ),
+                            action: () {
+                              // Un-focus from the text field
+                              FocusScope.of(context).unfocus();
+
+                              updateBio(data);
+                            },
                           ),
                         ),
                       ],

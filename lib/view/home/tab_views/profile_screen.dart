@@ -99,17 +99,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               titleText: 'Bio',
                               icon: IconlyLight.chat,
                               subtitle: data.userData!.bio,
-                              onTap: () => context.router.push(
-                                  EditBioScreenRoute(bio: data.userData!.bio)),
+                              onTap: () => context.router
+                                  .push(const EditBioScreenRoute()),
                             ),
                             ProfileTile(
                               titleText: 'Email',
                               icon: IconlyLight.message,
                               subtitle: data.userData!.email,
                             ),
-                            const ProfileTile(
+                            ProfileTile(
                               titleText: 'Password',
                               icon: IconlyLight.lock,
+                              onTap: () => context.router
+                                  .push(const EditPasswordScreenRoute()),
                             ),
                           ],
                         ),
