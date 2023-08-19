@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../models/chat.dart';
+import '../../../../res/components/empty.dart';
 
 class ChatListView extends StatefulWidget {
   const ChatListView({
@@ -38,9 +39,7 @@ class _ChatListViewState extends State<ChatListView> {
             if (snapshot.hasData) {
               final tileData = snapshot.data!;
               if (tileData.isEmpty) {
-                return const Center(
-                  child: Text('Empty'),
-                );
+                return Empty(value: data.filter);
               }
               return ListView.builder(
                 itemCount: tileData.length,

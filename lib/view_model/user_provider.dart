@@ -96,5 +96,28 @@ class UserProvider extends ChangeNotifier {
       }
     }
   }
+
+  Future<void> updateUserName(String uid, String newName) async {
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(uid).update({
+        'name': newName,
+      });
+      log('User name updated successfully');
+    } catch (error) {
+      log('Error updating user name: $error');
+    }
+  }
+
+  Future<void> updateUserEmail(String uid, String newEmail) async {
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(uid).update({
+        'email': newEmail,
+      });
+      log('User email updated successfully');
+    } catch (error) {
+      log('Error updating user email: $error');
+    }
+  }
+
 // Add other methods to update profile properties (e.g., profile picture, bio, etc.) as needed
 }

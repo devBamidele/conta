@@ -28,9 +28,7 @@ class CustomBackButton extends StatelessWidget {
       padding: padding,
       alignment: align,
       iconSize: size,
-      onPressed: () {
-        action != null ? action!() : context.router.pop();
-      },
+      onPressed: () => action != null ? action!() : context.router.pop(),
       icon: Icon(icon, color: color),
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,

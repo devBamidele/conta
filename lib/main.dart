@@ -1,4 +1,5 @@
 import 'package:conta/utils/app_router/router.gr.dart';
+import 'package:conta/utils/services/contacts_service.dart';
 import 'package:conta/utils/services/notification_service.dart';
 import 'package:conta/view_model/auth_provider.dart';
 import 'package:conta/view_model/chat_provider.dart';
@@ -26,6 +27,8 @@ void main() async {
   ]);
 
   await NotificationService().initNotifications();
+
+  await ContactService().initContactService();
 
   getIt.registerSingleton<AppRouter>(AppRouter());
 

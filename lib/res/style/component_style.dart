@@ -84,6 +84,17 @@ final shadow = BoxShadow(
   spreadRadius: 1,
 );
 
+final bottomShade = BoxDecoration(
+  gradient: LinearGradient(
+    end: const Alignment(0.00, -0.4),
+    begin: const Alignment(0, 1),
+    colors: [
+      AppColors.backGroundColor,
+      AppColors.backGroundColor.withOpacity(0),
+    ],
+  ),
+);
+
 const pagePadding = EdgeInsets.symmetric(horizontal: 20);
 
 const chatFieldPadding = EdgeInsets.fromLTRB(10, 5, 10, 10);
@@ -107,6 +118,6 @@ const customGridDelegate = SliverGridDelegateWithFixedCrossAxisCount(
 const tileContentPadding = EdgeInsets.symmetric(vertical: 2, horizontal: 20);
 
 final tabIndicator = BoxDecoration(
-  borderRadius: BorderRadius.circular(13),
+  borderRadius: BorderRadius.circular(12),
   color: AppColors.primaryShadeColor,
 );

@@ -9,6 +9,7 @@ import 'package:conta/view/home/edit_profile_info/edit_password_screen.dart';
 import 'package:conta/view/home/home_screen.dart';
 import 'package:conta/view/home/intermediary.dart';
 import 'package:conta/view/home/tab_views/message_view/chat_screen.dart';
+import 'package:conta/view/home/tab_views/message_view/contacts_view.dart';
 import 'package:conta/view/home/tab_views/message_view/preview_screen.dart';
 import 'package:conta/view/home/tab_views/profile_screen.dart';
 import 'package:flutter/cupertino.dart';
@@ -41,6 +42,8 @@ import '../../view/onboard/splash_screen.dart';
 
     AutoRoute(page: HomeScreen),
     AutoRoute(page: ChatScreen),
+
+    AutoRoute(page: ContactsView),
 
     CustomRoute(
       page: EditBioScreen,

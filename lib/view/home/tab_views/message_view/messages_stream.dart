@@ -137,9 +137,9 @@ class _MessagesStreamState extends State<MessagesStream> {
               return const Text('Sorry, try again later');
             } else {
               return Center(
-                child: LoadingAnimationWidget.fourRotatingDots(
+                child: LoadingAnimationWidget.waveDots(
                   color: AppColors.primaryShadeColor,
-                  size: 50,
+                  size: 48,
                 ),
               );
             }

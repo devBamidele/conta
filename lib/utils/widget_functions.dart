@@ -166,7 +166,7 @@ Widget clearIcon() {
 
 Widget searchIcon() {
   return const Icon(
-    IconlyBold.search,
+    IconlyLight.search,
     color: AppColors.hintTextColor,
     size: 20,
   );

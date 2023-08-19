@@ -39,6 +39,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: [
                         CustomBackButton(
                           padding: EdgeInsets.only(top: 20),
+                          color: AppColors.extraTextColor,
                         ),
                       ],
                     ),
@@ -118,7 +119,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(top: 20, bottom: 20),
+                      padding: const EdgeInsets.only(top: 0, bottom: 10),
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.white,

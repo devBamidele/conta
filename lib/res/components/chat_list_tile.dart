@@ -195,11 +195,11 @@ class MuteButton extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            chatMuted ? IconlyBold.volume_up : IconlyBold.volume_off,
+            chatMuted ? IconlyLight.volume_up : IconlyLight.volume_off,
             color: chatMuted
                 ? AppColors.primaryShadeColor.withOpacity(0.8)
                 : AppColors.continueWithColor.withOpacity(0.8),
-            size: 24,
+            size: 22,
           ),
           addHeight(2),
           Text(

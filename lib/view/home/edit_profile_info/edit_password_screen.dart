@@ -149,6 +149,19 @@ class _EditPasswordScreenState extends State<EditPasswordScreen> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+
+    pass1Controller.dispose();
+    pass2Controller.dispose();
+    pass3Controller.dispose();
+
+    pass1FocusNode.dispose();
+    pass2FocusNode.dispose();
+    pass3FocusNode.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -196,6 +209,7 @@ class _EditPasswordScreenState extends State<EditPasswordScreen> {
                         ),
                       ),
                     ),
+                    addHeight(8),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -247,9 +261,9 @@ class _EditPasswordScreenState extends State<EditPasswordScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        addHeight(12),
+                        addHeight(20),
                         const Text(
-                          "New password",
+                          "New Password",
                           style: TextStyle(
                             fontSize: 16,
                             color: AppColors.blackColor,
@@ -283,7 +297,7 @@ class _EditPasswordScreenState extends State<EditPasswordScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        addHeight(12),
+                        addHeight(20),
                         const Text(
                           "Confirm Password",
                           style: TextStyle(

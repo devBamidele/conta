@@ -10,6 +10,7 @@ class Person {
   final String name;
   final String username;
   final String email;
+  final String? phone;
   final String? profilePicUrl;
   final String bio;
   final Timestamp lastSeen;
@@ -31,6 +32,7 @@ class Person {
     required this.name,
     required this.username,
     required this.email,
+    this.phone,
     this.profilePicUrl,
     this.bio = 'Hello there, I\'m a new user.',
     required this.lastSeen,
@@ -48,6 +50,7 @@ class Person {
         email = json['email'],
         profilePicUrl = json['profilePicUrl'],
         bio = json['bio'],
+        phone = json['phone'],
         lastSeen = json['lastSeen'],
         online = json['online'],
         token = json['token'];
@@ -58,6 +61,7 @@ class Person {
         'name': name,
         'username': username,
         'email': email,
+        'phone': phone,
         'profilePicUrl': profilePicUrl,
         'bio': bio,
         'lastSeen': lastSeen,
@@ -92,6 +96,7 @@ class Person {
         '  name: $name,\n'
         '  username: $username,\n'
         '  email: $email,\n'
+        '  phone: $phone,\n'
         '  profilePicUrl: $profilePicUrl,\n'
         '  bio: $bio,\n'
         '  lastSeen: $lastSeen,\n'
@@ -106,6 +111,7 @@ class Person {
     String? name,
     String? username,
     String? email,
+    String? phone,
     String? profilePicUrl,
     String? bio,
     Timestamp? lastSeen,
@@ -117,6 +123,7 @@ class Person {
       name: name ?? this.name,
       username: username ?? this.username,
       email: email ?? this.email,
+      phone: phone ?? this.phone,
       profilePicUrl: profilePicUrl ?? this.profilePicUrl,
       bio: bio ?? this.bio,
       lastSeen: lastSeen ?? this.lastSeen,

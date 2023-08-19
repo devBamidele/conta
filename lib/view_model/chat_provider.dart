@@ -16,6 +16,7 @@ import '../models/current_chat.dart';
 import '../models/message.dart';
 import '../models/response.dart';
 import '../utils/app_utils.dart';
+import '../utils/services/contacts_service.dart';
 import '../utils/services/file_picker_service.dart';
 import '../utils/widget_functions.dart';
 
@@ -25,6 +26,16 @@ class ChatProvider extends ChangeNotifier {
   static String? oppUserId;
 
   Person? personData;
+
+  String? _filter;
+
+  String? get filter => _filter;
+
+  set filter(String? value) {
+    _filter = value;
+
+    notifyListeners();
+  }
 
   static bool? same(Response response) {
     return oppUserId == response.uidUser2;
@@ -138,6 +149,23 @@ class ChatProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Function to find app users from contacts and return Person objects
+  Stream<List<Person>> findAppUsersFromContact() {
+    ContactService contacts = ContactService();
+
+    final phoneNumbers = contacts.userContacts.map((contact) {
+      return contact.phones?.map((phone) => phone.value).join(',');
+    }).toList();
+
+    final CollectionReference<Map<String, dynamic>> userRef =
+        FirebaseFirestore.instance.collection('users');
+
+    // Filter the contacts to show only matching app users
+    return userRef.where('phone', whereIn: phoneNumbers).snapshots().map(
+        (snapshot) =>
+            snapshot.docs.map((doc) => Person.fromJson(doc.data())).toList());
+  }
+
   Stream<List<Message>> getChatMessagesStream({
     required String currentUserUid,
     required String otherUserUid,
@@ -169,8 +197,29 @@ class ChatProvider extends ChangeNotifier {
         .orderBy('lastMessageTimestamp', descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs
+            .where((chat) => isChatMatchSearchQuery(chat.data(), userId))
             .map((doc) => Chat.fromJson({...doc.data(), 'id': doc.id}))
             .toList());
+  }
+
+  bool isChatMatchSearchQuery(
+    Map<String, dynamic> chatData,
+    String uid,
+  ) {
+    if (filter == null || filter!.isEmpty) {
+      return true;
+    }
+    final participants = chatData['participants'] as List<dynamic>;
+    final currentUserPosition = participants.indexOf(uid);
+
+    if (currentUserPosition != -1) {
+      final oppositePosition = (currentUserPosition + 1) % 2;
+      final oppositeUsername = chatData['names'][oppositePosition] as String;
+
+      return oppositeUsername.toLowerCase().contains(filter!.toLowerCase());
+    }
+
+    return false;
   }
 
   Stream<List<Chat>> getUnreadChatsStream() {
@@ -185,17 +234,18 @@ class ChatProvider extends ChangeNotifier {
         .map((snapshot) => snapshot.docs
             .where((doc) =>
                 doc['lastSenderUserId'] != userId && doc['unreadCount'] > 0)
+            .where((chat) => isChatMatchSearchQuery(chat.data(), userId))
             .map((doc) => Chat.fromJson({...doc.data(), 'id': doc.id}))
             .toList());
   }
 
   Stream<List<Chat>> getMutedChatsStream() {
-    final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+    final userId = FirebaseAuth.instance.currentUser!.uid;
     final CollectionReference<Map<String, dynamic>> chatRef =
         FirebaseFirestore.instance.collection('chats');
 
     return chatRef
-        .where('participants', arrayContains: currentUserId)
+        .where('participants', arrayContains: userId)
         .orderBy('lastMessageTimestamp', descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs
@@ -204,12 +254,13 @@ class ChatProvider extends ChangeNotifier {
               final participants = doc['participants'] as List<dynamic>;
 
               // Determine the indices of the current user and the opposite user
-              final currentUserIndex = participants.indexOf(currentUserId);
+              final currentUserIndex = participants.indexOf(userId);
               final oppositeUserIndex = currentUserIndex == 0 ? 1 : 0;
 
               // Check if the opposite user is muted, default to false if not found
               return doc['userMuted'][oppositeUserIndex] ?? false;
             })
+            .where((chat) => isChatMatchSearchQuery(chat.data(), userId))
             .map((doc) => Chat.fromJson({...doc.data(), 'id': doc.id}))
             .toList());
   }
@@ -429,6 +480,7 @@ class ChatProvider extends ChangeNotifier {
       'lastMessage': newLastMessage,
       'lastMessageTimestamp': Timestamp.now(),
       'lastSenderUserId': currentChat!.uidUser1,
+      'lastMessageStatus': MessageStatus.undelivered.name,
     };
     // Update the fields in the document
     batch.update(chatRef, data);
