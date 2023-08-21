@@ -361,6 +361,8 @@ class AuthProvider extends ChangeNotifier {
       // Set up token for the user
       updateUserToken(user.uid);
 
+      // Todo: Show the appropriate message here
+
       onAuthenticate();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'account-exists-with-different-credential') {

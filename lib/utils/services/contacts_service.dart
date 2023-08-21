@@ -16,8 +16,6 @@ class ContactService {
     if (permission.isGranted == false &&
         permission.isPermanentlyDenied == false) {
       await Permission.contacts.request();
-
-      fetchContacts();
     }
   }
 

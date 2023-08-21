@@ -74,6 +74,7 @@ Future<void> navReplaceAll(
   await context.router.replaceAll(routes);
 }
 
-void navReplace(BuildContext context, PageRouteInfo<dynamic> route) {
-  context.router.replace(route);
+Future<void> navReplace(
+    BuildContext context, PageRouteInfo<dynamic> route) async {
+  await context.router.replace(route);
 }

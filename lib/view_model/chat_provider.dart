@@ -149,21 +149,54 @@ class ChatProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Function to find app users from contacts and return Person objects
-  Stream<List<Person>> findAppUsersFromContact() {
+  List<String?> phoneNumbers = [];
+
+  Future<void> getContacts() async {
     ContactService contacts = ContactService();
 
-    final phoneNumbers = contacts.userContacts.map((contact) {
-      return contact.phones?.map((phone) => phone.value).join(',');
+    await contacts.fetchContacts();
+
+    phoneNumbers = contacts.userContacts
+        .where(
+            (contact) => contact.phones != null && contact.phones!.isNotEmpty)
+        .map((contact) {
+      final phoneNumber = contact.phones!.first.value;
+      return phoneNumber.formatPhoneNumber();
     }).toList();
+  }
+
+  Future<List<Person>> findAppUsersFromContact() async {
+    await getContacts();
 
     final CollectionReference<Map<String, dynamic>> userRef =
         FirebaseFirestore.instance.collection('users');
 
-    // Filter the contacts to show only matching app users
-    return userRef.where('phone', whereIn: phoneNumbers).snapshots().map(
-        (snapshot) =>
-            snapshot.docs.map((doc) => Person.fromJson(doc.data())).toList());
+    // Split phoneNumbers into chunks of 30
+    const chunkSize = 30;
+
+    final totalChunks = (phoneNumbers.length / chunkSize).ceil();
+
+    // Create a list to store the resulting List of matching users
+    final resultList = <Person>[];
+
+    for (var i = 0; i < totalChunks; i++) {
+      final start = i * chunkSize;
+      final end = (i + 1) * chunkSize;
+      final chunkNumbers = phoneNumbers.sublist(
+          start, end < phoneNumbers.length ? end : phoneNumbers.length);
+
+      // Fetch data from Firestore for each chunk
+      final querySnapshot =
+          await userRef.where('phone', whereIn: chunkNumbers).get();
+
+      // Process the documents and add to the resultList
+      final chunkPersons =
+          querySnapshot.docs.map((doc) => Person.fromJson(doc.data()));
+      resultList.addAll(chunkPersons);
+    }
+
+    // Return the aggregated resultList as a Stream
+    return resultList;
   }
 
   Stream<List<Message>> getChatMessagesStream({

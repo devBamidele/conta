@@ -113,6 +113,25 @@ extension StringExtentions on String? {
     const middle = '****';
     return '$start$middle$end';
   }
+
+  String formatPhoneNumber() {
+    final cleanedNumber = this?.replaceAll(RegExp(r'\s+'), '');
+
+    if (cleanedNumber!.startsWith('+')) {
+      return cleanedNumber
+          .replaceFirst(RegExp(r'^\+234'), '+234 ')
+          .replaceRange(8, 8, ' ')
+          .replaceRange(12, 12, ' ');
+    } else if (cleanedNumber.startsWith('0')) {
+      final formattedNumber = '+234${cleanedNumber.substring(1)}';
+      return formattedNumber
+          .replaceFirst(RegExp(r'^\+234'), '+234 ')
+          .replaceRange(8, 8, ' ')
+          .replaceRange(12, 12, ' ');
+    } else {
+      return cleanedNumber;
+    }
+  }
 }
 
 extension IntExtension on int {

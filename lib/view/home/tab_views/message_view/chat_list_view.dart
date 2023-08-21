@@ -26,8 +26,8 @@ class ChatListView extends StatefulWidget {
 }
 
 class _ChatListViewState extends State<ChatListView> {
-  bool isNavigating = false;
   final currentUser = FirebaseAuth.instance.currentUser!.uid;
+  bool isNavigating = false;
 
   @override
   Widget build(BuildContext context) {

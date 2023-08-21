@@ -34,7 +34,6 @@ class ChatListTile extends StatefulWidget {
 
 class _ChatListTileState extends State<ChatListTile> {
   bool chatMuted = false;
-  bool waiting = false;
 
   @override
   void initState() {
@@ -43,32 +42,21 @@ class _ChatListTileState extends State<ChatListTile> {
   }
 
   Future<void> onActionPressed(ChatProvider data) async {
-    final name = widget.tileData.userNames[widget.oppIndex];
+    Future.delayed(const Duration(milliseconds: 100), () {
+      final name = widget.tileData.userNames[widget.oppIndex];
 
-    setState(() {
-      chatMuted = !chatMuted;
-      waiting = true;
-    });
+      setState(() {
+        chatMuted = !chatMuted;
+      });
 
-    AppUtils.showToast(
-        'Successfully ${chatMuted ? 'muted' : 'Un-muted'} $name');
+      AppUtils.showToast(
+          'Successfully ${chatMuted ? 'muted' : 'Un-muted'} $name');
 
-    // Delay execution for 2 seconds
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        setState(() {
-          waiting = false;
-        });
-
-        // Call toggleMutedStatus only if we're done waiting
-        if (!waiting) {
-          data.toggleMutedStatus(
-            chatId: widget.tileData.id!,
-            index: widget.oppIndex,
-            newValue: chatMuted,
-          );
-        }
-      }
+      data.toggleMutedStatus(
+        chatId: widget.tileData.id!,
+        index: widget.oppIndex,
+        newValue: chatMuted,
+      );
     });
   }
 
@@ -81,14 +69,10 @@ class _ChatListTileState extends State<ChatListTile> {
             extentRatio: 0.27,
             motion: const BehindMotion(),
             children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(6),
-                  child: GestureDetector(
-                    onTap: () => onActionPressed(data),
-                    child: MuteButton(chatMuted: chatMuted),
-                  ),
-                ),
+              CustomSlidableAction(
+                backgroundColor: Colors.transparent,
+                onPressed: (context) => onActionPressed(data),
+                child: MuteButton(chatMuted: chatMuted),
               ),
             ],
           ),
@@ -158,12 +142,23 @@ class _ChatListTileState extends State<ChatListTile> {
   }
 
   Widget _buildUsername() {
-    return Text(
-      widget.tileData.userNames[widget.oppIndex],
-      style: const TextStyle(
-        fontSize: 18,
-        height: 1.2,
-      ),
+    return Row(
+      children: [
+        Text(
+          widget.tileData.userNames[widget.oppIndex],
+          style: const TextStyle(
+            fontSize: 18,
+            height: 1.2,
+          ),
+        ),
+        Visibility(
+          visible: chatMuted,
+          child: const Padding(
+            padding: EdgeInsets.only(left: 4),
+            child: Icon(IconlyLight.volume_off, size: 14),
+          ),
+        ),
+      ],
     );
   }
 

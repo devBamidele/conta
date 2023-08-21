@@ -1,4 +1,3 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:conta/res/components/custom/custom_fab.dart';
 import 'package:conta/res/components/custom/custom_text_field.dart';
@@ -7,7 +6,6 @@ import 'package:conta/res/style/component_style.dart';
 import 'package:conta/utils/app_router/router.dart';
 import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:conta/utils/enums.dart';
-import 'package:conta/utils/services/contacts_service.dart';
 import 'package:conta/view/home/tab_views/message_view/chat_list_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -76,19 +74,15 @@ class _HomeScreenState extends State<HomeScreen>
     const ChatListView(category: MessageCategory.muted),
   ];
 
+  void onPressed() => navPush(context, const ContactsViewRoute());
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         floatingActionButton: CustomFAB(
-          onPressed: () {
-            ContactService contact = ContactService();
-
-            contact.fetchContacts();
-
-            context.router.push(const ContactsViewRoute());
-          },
+          onPressed: onPressed,
         ),
         resizeToAvoidBottomInset: false,
         body: SafeArea(
