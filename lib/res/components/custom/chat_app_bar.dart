@@ -18,19 +18,19 @@ import '../../../view_model/chat_provider.dart';
 import '../confirmation_dialog.dart';
 import '../message_counter.dart';
 
-class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
-  const CustomAppBar({
+class ChatAppBar extends StatefulWidget implements PreferredSizeWidget {
+  const ChatAppBar({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<CustomAppBar> createState() => _CustomAppBarState();
+  State<ChatAppBar> createState() => _ChatAppBarState();
 
   @override
   Size get preferredSize => const Size.fromHeight(58);
 }
 
-class _CustomAppBarState extends State<CustomAppBar> {
+class _ChatAppBarState extends State<ChatAppBar> {
   final double customSize = 27;
 
   @override
@@ -199,7 +199,7 @@ void confirmDelete(BuildContext context, ChatProvider data) {
 
 void _showSnackbar(ChatProvider data, BuildContext context) {
   AppUtils.showSnackbar(
-    'Successfully deleted message',
+    'Message Deleted',
     delay: const Duration(seconds: 3),
     label: SnackBarLabel(
       onTap: () => data.undoDelete(),
@@ -207,3 +207,86 @@ void _showSnackbar(ChatProvider data, BuildContext context) {
     onClosed: () => data.clearDeletedMessages(),
   );
 }
+
+/*
+class SearchAppBarDemo extends StatefulWidget {
+  @override
+  _SearchAppBarDemoState createState() => _SearchAppBarDemoState();
+}
+
+class _SearchAppBarDemoState extends State<SearchAppBarDemo>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  bool _isSearchModeActive = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 300),
+    );
+    _animation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeInOut,
+    );
+  }
+
+  void _toggleSearchMode() {
+    if (_isSearchModeActive) {
+      _controller.reverse();
+    } else {
+      _controller.forward();
+    }
+    setState(() {
+      _isSearchModeActive = !_isSearchModeActive;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AnimatedBuilder(
+        animation: _animation,
+        builder: (context, child) {
+          return AppBar(
+            title: _isSearchModeActive
+                ? Transform.scale(
+                    scale: 1.0 - _animation.value, // Transition scale
+                    child: TextField(
+                      decoration: InputDecoration(
+                        hintText: 'Search...',
+                        border: InputBorder.none,
+                      ),
+                    ),
+                  )
+                : Text('Chat App'),
+            actions: [
+              IconButton(
+                icon: Icon(_isSearchModeActive
+                    ? Icons.close
+                    : Icons.search), // Switch icon
+                onPressed: _toggleSearchMode,
+              ),
+            ],
+          );
+        },
+      ),
+      body: Center(
+        child: Text('Content goes here'),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+}
+
+void main() => runApp(MaterialApp(home: SearchAppBarDemo()));
+
+ */

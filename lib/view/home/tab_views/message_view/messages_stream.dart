@@ -1,8 +1,8 @@
 import 'dart:developer';
 
+import 'package:conta/res/components/empty/empty_chat.dart';
 import 'package:conta/res/components/message_bubble.dart';
 import 'package:conta/utils/extensions.dart';
-import 'package:conta/utils/widget_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -63,7 +63,6 @@ class _MessagesStreamState extends State<MessagesStream> {
 
   @override
   Widget build(BuildContext context) {
-    double size = MediaQuery.of(context).size.width * 0.5;
     return Consumer<ChatProvider>(
       builder: (_, data, __) {
         return StreamBuilder(
@@ -76,7 +75,9 @@ class _MessagesStreamState extends State<MessagesStream> {
             if (snapshot.hasData) {
               List<Message> messages = snapshot.data!;
 
-              if (messages.isEmpty) emptyMessages(size);
+              if (messages.isEmpty) {
+                return const EmptyChat();
+              }
 
               return ListView.builder(
                 reverse: true,

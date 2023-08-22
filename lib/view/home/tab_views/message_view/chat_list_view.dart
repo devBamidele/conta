@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../models/chat.dart';
-import '../../../../res/components/empty.dart';
+import '../../../../res/components/empty/empty.dart';
 
 class ChatListView extends StatefulWidget {
   const ChatListView({
@@ -54,6 +54,7 @@ class _ChatListViewState extends State<ChatListView> {
                     onTileTap: () => onTileTap(data, tile, sameUser, oppIndex),
                     isSameUser: sameUser,
                     oppIndex: oppIndex,
+                    samePerson: tile.participants[0] == tile.participants[1],
                   );
                 },
               );

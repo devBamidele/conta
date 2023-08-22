@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../color.dart';
+
 class MessageCounter extends StatefulWidget {
   final int count;
 
@@ -50,7 +52,10 @@ class _MessageCounterState extends State<MessageCounter>
       child: Text(
         '${widget.count}',
         key: ValueKey<int>(widget.count),
-        style: const TextStyle(fontSize: 22),
+        style: const TextStyle(
+          fontSize: 22,
+          color: AppColors.blackColor,
+        ),
       ),
     );
   }

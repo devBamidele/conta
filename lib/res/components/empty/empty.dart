@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../utils/widget_functions.dart';
-import '../color.dart';
-import '../style/app_text_style.dart';
+import '../../../utils/widget_functions.dart';
+import '../../color.dart';
+import '../../style/app_text_style.dart';
 
 class Empty extends StatelessWidget {
   const Empty({

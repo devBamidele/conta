@@ -21,12 +21,14 @@ class ChatListTile extends StatefulWidget {
     required this.isSameUser,
     this.onTileTap,
     required this.oppIndex,
+    required this.samePerson,
   }) : super(key: key);
 
   final Chat tileData;
   final bool isSameUser;
   final int oppIndex;
   final VoidCallback? onTileTap;
+  final bool samePerson;
 
   @override
   State<ChatListTile> createState() => _ChatListTileState();
@@ -50,7 +52,7 @@ class _ChatListTileState extends State<ChatListTile> {
       });
 
       AppUtils.showToast(
-          'Successfully ${chatMuted ? 'muted' : 'Un-muted'} $name');
+          '${chatMuted ? 'muted' : 'Un-muted'} notifications from $name');
 
       data.toggleMutedStatus(
         chatId: widget.tileData.id!,
@@ -65,17 +67,19 @@ class _ChatListTileState extends State<ChatListTile> {
     return Consumer<ChatProvider>(
       builder: (_, data, Widget? child) {
         return Slidable(
-          endActionPane: ActionPane(
-            extentRatio: 0.27,
-            motion: const BehindMotion(),
-            children: [
-              CustomSlidableAction(
-                backgroundColor: Colors.transparent,
-                onPressed: (context) => onActionPressed(data),
-                child: MuteButton(chatMuted: chatMuted),
-              ),
-            ],
-          ),
+          endActionPane: widget.samePerson
+              ? null
+              : ActionPane(
+                  extentRatio: 0.25,
+                  motion: const BehindMotion(),
+                  children: [
+                    CustomSlidableAction(
+                      backgroundColor: Colors.transparent,
+                      onPressed: (context) => onActionPressed(data),
+                      child: MuteButton(chatMuted: chatMuted),
+                    ),
+                  ],
+                ),
           child: ListTile(
             onTap: widget.onTileTap,
             leading: CircleAvatar(
@@ -144,18 +148,29 @@ class _ChatListTileState extends State<ChatListTile> {
   Widget _buildUsername() {
     return Row(
       children: [
-        Text(
-          widget.tileData.userNames[widget.oppIndex],
-          style: const TextStyle(
-            fontSize: 18,
-            height: 1.2,
-          ),
+        Row(
+          children: [
+            Text(
+              widget.tileData.userNames[widget.oppIndex],
+              style: const TextStyle(
+                  fontSize: 18, height: 1.2, color: AppColors.blackColor),
+            ),
+            addWidth(2),
+            Text(
+              widget.samePerson ? '(You)' : '',
+              style: const TextStyle(fontSize: 16, color: AppColors.blackColor),
+            ),
+          ],
         ),
         Visibility(
           visible: chatMuted,
           child: const Padding(
             padding: EdgeInsets.only(left: 4),
-            child: Icon(IconlyLight.volume_off, size: 14),
+            child: Icon(
+              IconlyLight.volume_off,
+              size: 14,
+              color: AppColors.blackColor,
+            ),
           ),
         ),
       ],

@@ -8,6 +8,7 @@ class AppTextStyles {
     fontSize: 17.5,
     height: 1.2,
     fontWeight: FontWeight.w500,
+    color: AppColors.blackColor,
   );
 
   // Header text for authentication pages
@@ -15,6 +16,7 @@ class AppTextStyles {
     height: 1.1,
     fontSize: 42,
     fontWeight: FontWeight.bold,
+    color: AppColors.blackColor,
   );
 
   // Sub-Header text for authentication pages

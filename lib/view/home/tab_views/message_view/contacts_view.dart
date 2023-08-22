@@ -1,7 +1,5 @@
 import 'dart:developer';
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:conta/res/components/custom/custom_back_button.dart';
 import 'package:conta/view_model/chat_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -10,12 +8,11 @@ import 'package:provider/provider.dart';
 
 import '../../../../models/Person.dart';
 import '../../../../res/color.dart';
-import '../../../../res/components/empty.dart';
-import '../../../../res/components/shimmer/shimmer_widget.dart';
-import '../../../../res/style/component_style.dart';
+import '../../../../res/components/contact_tile.dart';
+import '../../../../res/components/contacts_app_bar.dart';
+import '../../../../res/components/empty/empty.dart';
 import '../../../../utils/app_router/router.dart';
 import '../../../../utils/app_router/router.gr.dart';
-import '../../../../utils/widget_functions.dart';
 
 class ContactsView extends StatefulWidget {
   const ContactsView({super.key});
@@ -38,29 +35,7 @@ class _ContactsViewState extends State<ContactsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: const CustomBackButton(
-          color: AppColors.hintTextColor,
-          size: 24,
-          padding: EdgeInsets.only(left: 16),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 20),
-            child: searchIcon(),
-          ),
-        ],
-        title: const Column(
-          children: [
-            Text(
-              'Select contact',
-              style: TextStyle(
-                color: AppColors.blackColor,
-              ),
-            ),
-          ],
-        ),
-      ),
+      appBar: const ContactsAppBar(),
       body: Consumer<ChatProvider>(
         builder: (_, data, __) {
           return Column(
@@ -83,9 +58,10 @@ class _ContactsViewState extends State<ContactsView> {
                           itemCount: personList.length,
                           itemBuilder: (context, index) {
                             Person person = personList[index];
-                            return SelectContactTile(
+                            return ContactTile(
                               person: person,
                               onTap: () => onTileTap(data, person),
+                              isSamePerson: person.id == currentUser,
                             );
                           },
                         );
@@ -130,76 +106,5 @@ class _ContactsViewState extends State<ContactsView> {
 
     data.cancelReplyAndClearCache();
     navigateToNextScreen(context);
-  }
-}
-
-class SelectContactTile extends StatelessWidget {
-  const SelectContactTile({
-    super.key,
-    required this.person,
-    this.onTap,
-  });
-
-  final Person person;
-
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      onTap: onTap,
-      leading: CircleAvatar(
-        radius: 26,
-        backgroundColor: Colors.white,
-        child: _buildProfileImage(),
-      ),
-      title: _buildUsername(),
-      contentPadding: tileContentPadding,
-      subtitle: Padding(
-        padding: const EdgeInsets.only(top: 2),
-        child: _buildBio(),
-      ),
-    );
-  }
-
-  Widget _buildBio() {
-    return Text(
-      person.bio,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      style: const TextStyle(color: AppColors.extraTextColor),
-    );
-  }
-
-  Widget _buildUsername() {
-    return Text(
-      person.username,
-      style: const TextStyle(
-        fontSize: 18,
-        height: 1.2,
-      ),
-    );
-  }
-
-  Widget _buildProfileImage() {
-    final imageUrl = person.profilePicUrl;
-
-    return imageUrl != null
-        ? CachedNetworkImage(
-            imageUrl: imageUrl,
-            imageBuilder: (context, imageProvider) => Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                image: DecorationImage(
-                  image: imageProvider,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            placeholder: (context, url) =>
-                const ShimmerWidget.circular(width: 54, height: 54),
-            errorWidget: (context, url, error) => const Icon(Icons.error),
-          )
-        : noProfilePic();
   }
 }

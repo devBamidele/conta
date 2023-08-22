@@ -86,6 +86,7 @@ class ChatProvider extends ChangeNotifier {
     selectedMessages.remove(message.id);
   }
 
+  // Todo: Need to work on this
   void resetSelectedMessages() {
     for (var message in selectedMessages.values) {
       message.updateSelected(false);
@@ -463,12 +464,30 @@ class ChatProvider extends ChangeNotifier {
   }
 
   Future<void> clearDeletedMessages() async {
-    updateUnreadOnDelete();
+    checkAndDeleteEmptyChat();
 
     await deleteFilesFromStorage().then(
       (value) => deletedMessages.clear(),
     );
     notifyListeners();
+  }
+
+  Future<void> checkAndDeleteEmptyChat() async {
+    final firestore = FirebaseFirestore.instance;
+
+    final chatId = currentChat!.chatId;
+
+    final messageRef =
+        firestore.collection('chats').doc(chatId).collection('messages');
+
+    final messagesQuery = await messageRef.limit(1).get();
+
+    if (messagesQuery.size == 0) {
+      // The 'messages' collection is empty, so delete the chat document
+      await firestore.collection('chats').doc(chatId).delete();
+    } else {
+      await updateUnreadOnDelete();
+    }
   }
 
   Future<void> updateUnreadOnDelete() async {
