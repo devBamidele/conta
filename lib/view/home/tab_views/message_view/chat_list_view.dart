@@ -5,6 +5,7 @@ import 'package:conta/utils/app_router/router.dart';
 import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:conta/utils/enums.dart';
 import 'package:conta/utils/widget_functions.dart';
+import 'package:conta/view_model/chat_provider.dart';
 import 'package:conta/view_model/messages_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +32,7 @@ class _ChatListViewState extends State<ChatListView> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<MessagesProvider>(
+    return Consumer<ChatProvider>(
       builder: (_, data, Widget? child) {
         return StreamBuilder(
           stream: getStream(data),
@@ -41,20 +42,26 @@ class _ChatListViewState extends State<ChatListView> {
               if (tileData.isEmpty) {
                 return Empty(value: data.filter);
               }
-              return ListView.builder(
-                itemCount: tileData.length,
-                itemBuilder: (context, index) {
-                  Chat tile = tileData[index];
-                  bool sameUser = tile.lastSenderUserId == currentUser;
-                  int oppIndex =
-                      tile.participants.indexOf(currentUser) == 0 ? 1 : 0;
+              return Consumer<MessagesProvider>(
+                builder: (_, info, __) {
+                  return ListView.builder(
+                    itemCount: tileData.length,
+                    itemBuilder: (context, index) {
+                      Chat tile = tileData[index];
+                      bool sameUser = tile.lastSenderUserId == currentUser;
+                      int oppIndex =
+                          tile.participants.indexOf(currentUser) == 0 ? 1 : 0;
 
-                  return ChatListTile(
-                    tileData: tile,
-                    onTileTap: () => onTileTap(data, tile, sameUser, oppIndex),
-                    isSameUser: sameUser,
-                    oppIndex: oppIndex,
-                    samePerson: tile.participants[0] == tile.participants[1],
+                      return ChatListTile(
+                        tileData: tile,
+                        onTileTap: () =>
+                            onTileTap(info, tile, sameUser, oppIndex),
+                        isSameUser: sameUser,
+                        oppIndex: oppIndex,
+                        samePerson:
+                            tile.participants[0] == tile.participants[1],
+                      );
+                    },
                   );
                 },
               );
@@ -70,7 +77,7 @@ class _ChatListViewState extends State<ChatListView> {
     );
   }
 
-  Stream<List<Chat>> getStream(MessagesProvider data) {
+  Stream<List<Chat>> getStream(ChatProvider data) {
     switch (widget.category) {
       case MessageCategory.unread:
         return data.getUnreadChatsStream();

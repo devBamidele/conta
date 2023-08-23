@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:conta/view_model/chat_provider.dart';
 import 'package:conta/view_model/messages_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -42,43 +43,46 @@ class _ContactsViewState extends State<ContactsView> {
             children: [
               Expanded(
                 child: RefreshIndicator(
-                  color: AppColors.primaryShadeColor,
-                  onRefresh: refresh,
-                  child: FutureBuilder<List<Person>>(
-                    future: data.findAppUsersFromContact(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        final personList = snapshot.data!;
-                        if (personList.isEmpty) {
-                          return const Center(
-                            child: Empty(),
-                          );
-                        }
-                        return ListView.builder(
-                          itemCount: personList.length,
-                          itemBuilder: (context, index) {
-                            Person person = personList[index];
-                            return ContactTile(
-                              person: person,
-                              onTap: () => onTileTap(data, person),
-                              isSamePerson: person.id == currentUser,
-                            );
+                    color: AppColors.primaryShadeColor,
+                    onRefresh: refresh,
+                    child: Consumer<ChatProvider>(
+                      builder: (_, info, __) {
+                        return FutureBuilder<List<Person>>(
+                          future: info.findAppUsersFromContact(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              final personList = snapshot.data!;
+                              if (personList.isEmpty) {
+                                return const Center(
+                                  child: Empty(),
+                                );
+                              }
+                              return ListView.builder(
+                                itemCount: personList.length,
+                                itemBuilder: (context, index) {
+                                  Person person = personList[index];
+                                  return ContactTile(
+                                    person: person,
+                                    onTap: () => onTileTap(data, person),
+                                    isSamePerson: person.id == currentUser,
+                                  );
+                                },
+                              );
+                            } else if (snapshot.hasError) {
+                              log('Error fetching chat tiles: ${snapshot.error}');
+                              return const Text('Sorry, try again later');
+                            } else {
+                              return Center(
+                                child: LoadingAnimationWidget.threeArchedCircle(
+                                  color: AppColors.primaryShadeColor,
+                                  size: 48,
+                                ),
+                              );
+                            }
                           },
                         );
-                      } else if (snapshot.hasError) {
-                        log('Error fetching chat tiles: ${snapshot.error}');
-                        return const Text('Sorry, try again later');
-                      } else {
-                        return Center(
-                          child: LoadingAnimationWidget.threeArchedCircle(
-                            color: AppColors.primaryShadeColor,
-                            size: 48,
-                          ),
-                        );
-                      }
-                    },
-                  ),
-                ),
+                      },
+                    )),
               ),
             ],
           );

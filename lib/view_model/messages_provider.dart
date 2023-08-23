@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conta/models/chat.dart';
@@ -16,7 +15,6 @@ import '../models/current_chat.dart';
 import '../models/message.dart';
 import '../models/response.dart';
 import '../utils/app_utils.dart';
-import '../utils/services/contacts_service.dart';
 import '../utils/services/file_picker_service.dart';
 import '../utils/widget_functions.dart';
 
@@ -26,16 +24,6 @@ class MessagesProvider extends ChangeNotifier {
   static String? oppUserId;
 
   Person? personData;
-
-  String? _filter;
-
-  String? get filter => _filter;
-
-  set filter(String? value) {
-    _filter = value;
-
-    notifyListeners();
-  }
 
   static bool? same(Response response) {
     return oppUserId == response.uidUser2;
@@ -150,56 +138,6 @@ class MessagesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<String?> phoneNumbers = [];
-
-  Future<void> getContacts() async {
-    ContactService contacts = ContactService();
-
-    await contacts.fetchContacts();
-
-    phoneNumbers = contacts.userContacts
-        .where(
-            (contact) => contact.phones != null && contact.phones!.isNotEmpty)
-        .map((contact) {
-      final phoneNumber = contact.phones!.first.value;
-      return phoneNumber.formatPhoneNumber();
-    }).toList();
-  }
-
-  Future<List<Person>> findAppUsersFromContact() async {
-    await getContacts();
-
-    final CollectionReference<Map<String, dynamic>> userRef =
-        FirebaseFirestore.instance.collection('users');
-
-    // Split phoneNumbers into chunks of 30
-    const chunkSize = 30;
-
-    final totalChunks = (phoneNumbers.length / chunkSize).ceil();
-
-    // Create a list to store the resulting List of matching users
-    final resultList = <Person>[];
-
-    for (var i = 0; i < totalChunks; i++) {
-      final start = i * chunkSize;
-      final end = (i + 1) * chunkSize;
-      final chunkNumbers = phoneNumbers.sublist(
-          start, end < phoneNumbers.length ? end : phoneNumbers.length);
-
-      // Fetch data from Firestore for each chunk
-      final querySnapshot =
-          await userRef.where('phone', whereIn: chunkNumbers).get();
-
-      // Process the documents and add to the resultList
-      final chunkPersons =
-          querySnapshot.docs.map((doc) => Person.fromJson(doc.data()));
-      resultList.addAll(chunkPersons);
-    }
-
-    // Return the aggregated resultList as a Stream
-    return resultList;
-  }
-
   Stream<List<Message>> getChatMessagesStream({
     required String currentUserUid,
     required String otherUserUid,
@@ -219,167 +157,6 @@ class MessagesProvider extends ChangeNotifier {
 
     return query.snapshots().map((snapshot) =>
         snapshot.docs.map((doc) => Message.fromJson(doc.data())).toList());
-  }
-
-  Stream<List<Chat>> getBlockedChatStream() {
-    final userId = FirebaseAuth.instance.currentUser!.uid;
-    final CollectionReference<Map<String, dynamic>> chatRef =
-        FirebaseFirestore.instance.collection('chats');
-
-    return chatRef
-        .where('participants', arrayContains: userId)
-        .orderBy('lastMessageTimestamp', descending: true)
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-            .where((chat) => onlyBlocked(chat.data(), userId))
-            .where((chat) => filterBlockedSearchQuery(chat.data(), userId))
-            .map((doc) => Chat.fromJson({...doc.data(), 'id': doc.id}))
-            .toList());
-  }
-
-  bool onlyBlocked(
-    Map<String, dynamic> chatData,
-    String uid,
-  ) {
-    final participants = chatData['participants'] as List<dynamic>;
-    final currentUserPosition = participants.indexOf(uid);
-
-    if (currentUserPosition != -1) {
-      final oppositePosition = (currentUserPosition + 1) % 2;
-      final oppUserBlocked = chatData['userBlocked'][oppositePosition] as bool;
-
-      return oppUserBlocked;
-    }
-
-    return false;
-  }
-
-  bool filterBlockedSearchQuery(
-    Map<String, dynamic> chatData,
-    String uid,
-  ) {
-    if (filter == null || filter!.isEmpty) {
-      return true;
-    }
-    final participants = chatData['participants'] as List<dynamic>;
-    final currentUserPosition = participants.indexOf(uid);
-
-    if (currentUserPosition != -1) {
-      final oppositePosition = (currentUserPosition + 1) % 2;
-      final oppositeUsername = chatData['names'][oppositePosition] as String;
-
-      return oppositeUsername.toLowerCase().contains(filter!.toLowerCase());
-    }
-
-    return false;
-  }
-
-  Stream<List<Chat>> getAllChatsStream() {
-    final userId = FirebaseAuth.instance.currentUser!.uid;
-    final CollectionReference<Map<String, dynamic>> chatRef =
-        FirebaseFirestore.instance.collection('chats');
-
-    return chatRef
-        .where('participants', arrayContains: userId)
-        .orderBy('lastMessageTimestamp', descending: true)
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-            .where((chat) => filterBlocked(chat.data(), userId))
-            .where((chat) => filterSearchQuery(chat.data(), userId))
-            .map((doc) => Chat.fromJson({...doc.data(), 'id': doc.id}))
-            .toList());
-  }
-
-  Stream<List<Chat>> getUnreadChatsStream() {
-    final userId = FirebaseAuth.instance.currentUser!.uid;
-    final CollectionReference<Map<String, dynamic>> chatRef =
-        FirebaseFirestore.instance.collection('chats');
-
-    return chatRef
-        .where('participants', arrayContains: userId)
-        .orderBy('lastMessageTimestamp', descending: true)
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-            .where((chat) => filterBlocked(chat.data(), userId))
-            .where((chat) => filterUnread(chat.data(), userId))
-            .where((chat) => filterSearchQuery(chat.data(), userId))
-            .map((doc) => Chat.fromJson({...doc.data(), 'id': doc.id}))
-            .toList());
-  }
-
-  Stream<List<Chat>> getMutedChatsStream() {
-    final userId = FirebaseAuth.instance.currentUser!.uid;
-    final CollectionReference<Map<String, dynamic>> chatRef =
-        FirebaseFirestore.instance.collection('chats');
-
-    return chatRef
-        .where('participants', arrayContains: userId)
-        .orderBy('lastMessageTimestamp', descending: true)
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-            .where((chat) => filterMuted(chat.data(), userId))
-            .where((chat) => filterBlocked(chat.data(), userId))
-            .where((chat) => filterSearchQuery(chat.data(), userId))
-            .map((doc) => Chat.fromJson({...doc.data(), 'id': doc.id}))
-            .toList());
-  }
-
-  bool filterUnread(
-    Map<String, dynamic> chatData,
-    String uid,
-  ) {
-    return chatData['lastSenderUserId'] != uid && chatData['unreadCount'] > 0;
-  }
-
-  bool filterMuted(
-    Map<String, dynamic> chatData,
-    String uid,
-  ) {
-    final participants = chatData['participants'] as List<dynamic>;
-
-    // Determine the indices of the current user and the opposite user
-    final currentUserIndex = participants.indexOf(uid);
-    final oppositeUserIndex = currentUserIndex == 0 ? 1 : 0;
-
-    // Check if the opposite user is muted, default to false if not found
-    return chatData['userMuted'][oppositeUserIndex] ?? false;
-  }
-
-  bool filterBlocked(
-    Map<String, dynamic> chatData,
-    String uid,
-  ) {
-    final participants = chatData['participants'] as List<dynamic>;
-    final currentUserPosition = participants.indexOf(uid);
-
-    if (currentUserPosition != -1) {
-      final oppositePosition = (currentUserPosition + 1) % 2;
-      final oppUserBlocked = chatData['userBlocked'][oppositePosition] as bool;
-
-      return !oppUserBlocked;
-    }
-
-    return false;
-  }
-
-  bool filterSearchQuery(
-    Map<String, dynamic> chatData,
-    String uid,
-  ) {
-    if (filter == null || filter!.isEmpty) {
-      return true;
-    }
-    final participants = chatData['participants'] as List<dynamic>;
-    final currentUserPosition = participants.indexOf(uid);
-
-    if (currentUserPosition != -1) {
-      final oppositePosition = (currentUserPosition + 1) % 2;
-      final oppositeUsername = chatData['names'][oppositePosition] as String;
-
-      return oppositeUsername.toLowerCase().contains(filter!.toLowerCase());
-    }
-
-    return false;
   }
 
   String generateChatId(String currentUserUid, String otherUserUid) {
@@ -414,47 +191,6 @@ class MessagesProvider extends ChangeNotifier {
 
   void updateUserData(UserProvider userData) {
     personData = userData.userData;
-  }
-
-  Future<void> toggleBlockedStatus({
-    required String chatId,
-    required int index,
-    required bool newValue,
-  }) async {
-    final chatRef = FirebaseFirestore.instance.collection('chats').doc(chatId);
-    final chatSnapshot = await chatRef.get();
-
-    if (chatSnapshot.exists) {
-      List<bool> userBlocked =
-          List<bool>.from(chatSnapshot.data()!['userBlocked']);
-
-      userBlocked[index] = newValue;
-
-      await chatRef.update({'userBlocked': userBlocked});
-      log('Updated blocked status properly to $newValue');
-    } else {
-      log('Chat not found.');
-    }
-  }
-
-  Future<void> toggleMutedStatus({
-    required String chatId,
-    required int index,
-    required bool newValue,
-  }) async {
-    final chatRef = FirebaseFirestore.instance.collection('chats').doc(chatId);
-    final chatSnapshot = await chatRef.get();
-
-    if (chatSnapshot.exists) {
-      List<bool> userMuted = List<bool>.from(chatSnapshot.data()!['userMuted']);
-
-      userMuted[index] = newValue;
-
-      await chatRef.update({'userMuted': userMuted});
-      log('User muted status updated successfully.');
-    } else {
-      log('Chat not found.');
-    }
   }
 
   Future<void> updateMessageSeen(String messageId) async {
@@ -610,10 +346,7 @@ class MessagesProvider extends ChangeNotifier {
     await batch.commit();
   }
 
-  Future<void> updateLastMessageId(
-    String id,
-    WriteBatch batch,
-  ) async {
+  Future<void> updateLastMessageId(String id, WriteBatch batch) async {
     final chatId = currentChat!.chatId!;
     final chatRef = FirebaseFirestore.instance.collection('chats').doc(chatId);
 
@@ -624,10 +357,7 @@ class MessagesProvider extends ChangeNotifier {
     batch.update(chatRef, data);
   }
 
-  Future<void> updateChatInfo(
-    String newLastMessage,
-    WriteBatch batch,
-  ) async {
+  Future<void> updateChatInfo(String newLastMessage, WriteBatch batch) async {
     final chatId = currentChat!.chatId!;
     final chatRef = FirebaseFirestore.instance.collection('chats').doc(chatId);
 

@@ -13,7 +13,7 @@ import 'package:provider/provider.dart';
 import '../../res/color.dart';
 import '../../res/components/shimmer/shimmer_widget.dart';
 import '../../utils/widget_functions.dart';
-import '../../view_model/messages_provider.dart';
+import '../../view_model/chat_provider.dart';
 import '../../view_model/user_provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -27,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late UserProvider _userProvider;
-  late MessagesProvider _chatProvider;
+  late ChatProvider _chatProvider;
 
   final searchFocusNode = FocusNode();
   final _searchController = TextEditingController();
@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen>
 
     _userProvider = Provider.of<UserProvider>(context, listen: false);
 
-    _chatProvider = Provider.of<MessagesProvider>(context, listen: false);
+    _chatProvider = Provider.of<ChatProvider>(context, listen: false);
 
     _userProvider.getUserInfo();
 

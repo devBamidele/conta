@@ -1,9 +1,11 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:conta/res/components/confirmation_dialog.dart';
 import 'package:conta/res/components/shimmer/shimmer_widget.dart';
 import 'package:conta/res/components/unread_identifier.dart';
 import 'package:conta/res/style/component_style.dart';
 import 'package:conta/utils/extensions.dart';
-import 'package:conta/view_model/messages_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:iconly/iconly.dart';
@@ -12,6 +14,7 @@ import 'package:provider/provider.dart';
 import '../../models/chat.dart';
 import '../../utils/app_utils.dart';
 import '../../utils/widget_functions.dart';
+import '../../view_model/chat_provider.dart';
 import '../color.dart';
 
 class ChatListTile extends StatefulWidget {
@@ -46,7 +49,7 @@ class _ChatListTileState extends State<ChatListTile> {
     chatBlocked = widget.tileData.userBlocked[widget.oppIndex];
   }
 
-  Future<void> onBlockedPressed(MessagesProvider data) async {
+  Future<void> onBlockedPressed(ChatProvider data) async {
     final name = widget.tileData.userNames[widget.oppIndex];
 
     AppUtils.showToast('${!chatBlocked ? 'blocked' : 'Un-blocked'} $name');
@@ -58,7 +61,7 @@ class _ChatListTileState extends State<ChatListTile> {
     );
   }
 
-  Future<void> onMutePressed(MessagesProvider data) async {
+  Future<void> onMutePressed(ChatProvider data) async {
     Future.delayed(const Duration(milliseconds: 100), () {
       final name = widget.tileData.userNames[widget.oppIndex];
 
@@ -75,9 +78,39 @@ class _ChatListTileState extends State<ChatListTile> {
     });
   }
 
+  Future<bool> confirmDismissed() async {
+    final name = widget.tileData.userNames[widget.oppIndex];
+
+    const contentText = 'Blocked contacts cannot send you messages '
+        'This contact will not be notified';
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return ConfirmationDialog(
+          title: 'Block $name ?',
+          contentText: contentText,
+          validateText: 'Block',
+        );
+      },
+    );
+
+    if (confirmed != null && !confirmed) {
+      log('I am here ');
+
+      closeSlidable();
+    }
+
+    return confirmed ?? false;
+  }
+
+  // Todo : I don't seem to be getting anywhere with closing the slidable here
+  closeSlidable() =>
+      Slidable.of(context)?.close().then((value) => log('I got called'));
+
   @override
   Widget build(BuildContext context) {
-    return Consumer<MessagesProvider>(
+    return Consumer<ChatProvider>(
       builder: (_, data, Widget? child) {
         return Slidable(
           key: UniqueKey(),
@@ -86,14 +119,13 @@ class _ChatListTileState extends State<ChatListTile> {
               : ActionPane(
                   dismissible: DismissiblePane(
                     onDismissed: () => onBlockedPressed(data),
+                    confirmDismiss: !chatBlocked ? confirmDismissed : null,
                   ),
                   extentRatio: 0.25,
                   motion: const DrawerMotion(),
                   children: [
                     CustomSlidableAction(
-                      onPressed: (context) {
-                        onBlockedPressed(data);
-                      },
+                      onPressed: (context) => onBlockedPressed(data),
                       backgroundColor: Colors.transparent,
                       child: BlockedButton(chatBlocked: chatBlocked),
                     ),

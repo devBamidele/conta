@@ -8,9 +8,11 @@ class Empty extends StatelessWidget {
   const Empty({
     super.key,
     this.value,
+    this.customMessage,
   });
 
   final String? value;
+  final String? customMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +27,7 @@ class Empty extends StatelessWidget {
         addHeight(8),
         Text(
           (value == null || value!.isEmpty)
-              ? 'Nope, nothing here'
+              ? customMessage ?? 'Nope, nothing here'
               : 'No results found for \'$value\'',
           style: AppTextStyles.headlineSmall.copyWith(
             fontSize: 16,
