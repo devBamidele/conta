@@ -4,6 +4,7 @@ import 'package:conta/view/account_setup/verify_account_screen.dart';
 import 'package:conta/view/authentication/login_screen.dart';
 import 'package:conta/view/authentication/recover_password_screen.dart';
 import 'package:conta/view/authentication/update_password_screen.dart';
+import 'package:conta/view/home/edit_profile_info/blocked_contacts_screen.dart';
 import 'package:conta/view/home/edit_profile_info/edit_bio_screen.dart';
 import 'package:conta/view/home/edit_profile_info/edit_password_screen.dart';
 import 'package:conta/view/home/home_screen.dart';
@@ -44,6 +45,12 @@ import '../../view/onboard/splash_screen.dart';
     AutoRoute(page: ChatScreen),
 
     AutoRoute(page: ContactsView),
+
+    CustomRoute(
+      page: BlockedContactsScreen,
+      transitionsBuilder: TransitionsBuilders.slideLeft,
+      durationInMilliseconds: 150,
+    ),
 
     CustomRoute(
       page: EditBioScreen,

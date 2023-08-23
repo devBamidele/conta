@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:conta/view_model/chat_provider.dart';
+import 'package:conta/view_model/messages_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -36,7 +36,7 @@ class _ContactsViewState extends State<ContactsView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const ContactsAppBar(),
-      body: Consumer<ChatProvider>(
+      body: Consumer<MessagesProvider>(
         builder: (_, data, __) {
           return Column(
             children: [
@@ -96,7 +96,7 @@ class _ContactsViewState extends State<ContactsView> {
     }
   }
 
-  void onTileTap(ChatProvider data, Person person) {
+  void onTileTap(MessagesProvider data, Person person) {
     data.setCurrentChat(
       username: person.username,
       uidUser1: currentUser,

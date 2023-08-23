@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../view_model/chat_provider.dart';
+import '../../view_model/messages_provider.dart';
 
 class Intermediary extends StatefulWidget {
   const Intermediary({
@@ -30,7 +30,7 @@ class _IntermediaryState extends State<Intermediary> {
         ? widget.data.senderProfilePic
         : null;
 
-    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+    final chatProvider = Provider.of<MessagesProvider>(context, listen: false);
 
     chatProvider.setCurrentChat(
       username: widget.data.username,

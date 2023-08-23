@@ -5,7 +5,7 @@ import 'package:conta/res/components/custom/chat_app_bar.dart';
 import 'package:conta/res/style/component_style.dart';
 import 'package:conta/utils/app_router/router.dart';
 import 'package:conta/utils/widget_functions.dart';
-import 'package:conta/view_model/chat_provider.dart';
+import 'package:conta/view_model/messages_provider.dart';
 import 'package:conta/view_model/photo_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +29,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late ChatProvider chatProvider;
+  late MessagesProvider chatProvider;
   late PhotoProvider photoProvider;
 
   final messagesController = TextEditingController();
@@ -49,7 +49,7 @@ class _ChatScreenState extends State<ChatScreen>
       duration: const Duration(milliseconds: 300),
     );
 
-    chatProvider = Provider.of<ChatProvider>(context, listen: false);
+    chatProvider = Provider.of<MessagesProvider>(context, listen: false);
     photoProvider = Provider.of<PhotoProvider>(context, listen: false);
 
     messagesController.addListener(_updateIcon);
@@ -165,7 +165,7 @@ class _ChatScreenState extends State<ChatScreen>
                     // Text field for chatting
 
                     Expanded(
-                      child: Consumer<ChatProvider>(
+                      child: Consumer<MessagesProvider>(
                         builder: (_, data, Widget? child) {
                           bool isReplying = data.replyChat;
                           if (isReplying) {

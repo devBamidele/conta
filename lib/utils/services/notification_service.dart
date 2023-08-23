@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:conta/view_model/chat_provider.dart';
+import 'package:conta/view_model/messages_provider.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -52,7 +52,7 @@ class NotificationService {
 
       final response = Response.fromJson(event.data);
 
-      bool same = ChatProvider.same(response) ?? false;
+      bool same = MessagesProvider.same(response) ?? false;
 
       if (same) {
         return;

@@ -3,7 +3,7 @@ import 'package:conta/res/components/shimmer/shimmer_widget.dart';
 import 'package:conta/res/components/unread_identifier.dart';
 import 'package:conta/res/style/component_style.dart';
 import 'package:conta/utils/extensions.dart';
-import 'package:conta/view_model/chat_provider.dart';
+import 'package:conta/view_model/messages_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:iconly/iconly.dart';
@@ -36,20 +36,33 @@ class ChatListTile extends StatefulWidget {
 
 class _ChatListTileState extends State<ChatListTile> {
   bool chatMuted = false;
+  bool chatBlocked = false;
 
   @override
   void initState() {
     super.initState();
     chatMuted = widget.tileData.userMuted[widget.oppIndex];
+
+    chatBlocked = widget.tileData.userBlocked[widget.oppIndex];
   }
 
-  Future<void> onActionPressed(ChatProvider data) async {
+  Future<void> onBlockedPressed(MessagesProvider data) async {
+    final name = widget.tileData.userNames[widget.oppIndex];
+
+    AppUtils.showToast('${!chatBlocked ? 'blocked' : 'Un-blocked'} $name');
+
+    data.toggleBlockedStatus(
+      chatId: widget.tileData.id!,
+      index: widget.oppIndex,
+      newValue: !chatBlocked,
+    );
+  }
+
+  Future<void> onMutePressed(MessagesProvider data) async {
     Future.delayed(const Duration(milliseconds: 100), () {
       final name = widget.tileData.userNames[widget.oppIndex];
 
-      setState(() {
-        chatMuted = !chatMuted;
-      });
+      setState(() => chatMuted = !chatMuted);
 
       AppUtils.showToast(
           '${chatMuted ? 'muted' : 'Un-muted'} notifications from $name');
@@ -64,10 +77,29 @@ class _ChatListTileState extends State<ChatListTile> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ChatProvider>(
+    return Consumer<MessagesProvider>(
       builder: (_, data, Widget? child) {
         return Slidable(
-          endActionPane: widget.samePerson
+          key: UniqueKey(),
+          startActionPane: widget.samePerson
+              ? null
+              : ActionPane(
+                  dismissible: DismissiblePane(
+                    onDismissed: () => onBlockedPressed(data),
+                  ),
+                  extentRatio: 0.25,
+                  motion: const DrawerMotion(),
+                  children: [
+                    CustomSlidableAction(
+                      onPressed: (context) {
+                        onBlockedPressed(data);
+                      },
+                      backgroundColor: Colors.transparent,
+                      child: BlockedButton(chatBlocked: chatBlocked),
+                    ),
+                  ],
+                ),
+          endActionPane: widget.samePerson || chatBlocked
               ? null
               : ActionPane(
                   extentRatio: 0.25,
@@ -75,7 +107,7 @@ class _ChatListTileState extends State<ChatListTile> {
                   children: [
                     CustomSlidableAction(
                       backgroundColor: Colors.transparent,
-                      onPressed: (context) => onActionPressed(data),
+                      onPressed: (context) => onMutePressed(data),
                       child: MuteButton(chatMuted: chatMuted),
                     ),
                   ],
@@ -183,6 +215,45 @@ class _ChatListTileState extends State<ChatListTile> {
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
       style: const TextStyle(color: AppColors.extraTextColor),
+    );
+  }
+}
+
+class BlockedButton extends StatelessWidget {
+  final bool chatBlocked;
+
+  const BlockedButton({super.key, required this.chatBlocked});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: !chatBlocked
+            ? AppColors.custom
+            : AppColors.opaqueTextColor.withOpacity(0.25),
+        borderRadius: const BorderRadius.all(Radius.circular(12)),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.block_rounded,
+            color: !chatBlocked
+                ? AppColors.primaryShadeColor.withOpacity(0.8)
+                : AppColors.continueWithColor.withOpacity(0.8),
+            size: 22,
+          ),
+          addHeight(2),
+          Text(
+            chatBlocked ? 'Un-block' : 'Block',
+            style: TextStyle(
+              color: !chatBlocked
+                  ? AppColors.primaryShadeColor.withOpacity(0.8)
+                  : AppColors.continueWithColor.withOpacity(0.8),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

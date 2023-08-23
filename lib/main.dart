@@ -3,6 +3,7 @@ import 'package:conta/utils/services/contacts_service.dart';
 import 'package:conta/utils/services/notification_service.dart';
 import 'package:conta/view_model/auth_provider.dart';
 import 'package:conta/view_model/chat_provider.dart';
+import 'package:conta/view_model/messages_provider.dart';
 import 'package:conta/view_model/photo_provider.dart';
 import 'package:conta/view_model/search_provider.dart';
 import 'package:conta/view_model/user_provider.dart';
@@ -39,8 +40,9 @@ void main() async {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => PhotoProvider()),
         ChangeNotifierProvider(create: (_) => SearchProvider()),
-        ChangeNotifierProxyProvider<UserProvider, ChatProvider>(
-          create: (_) => ChatProvider(),
+        ChangeNotifierProvider(create: (_) => ChatProvider()),
+        ChangeNotifierProxyProvider<UserProvider, MessagesProvider>(
+          create: (_) => MessagesProvider(),
           update: (_, userData, chatProvider) {
             return chatProvider!..updateUserData(userData);
           },

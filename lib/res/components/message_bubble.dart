@@ -9,7 +9,7 @@ import 'package:swipe_to/swipe_to.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 import '../../models/message.dart';
-import '../../view_model/chat_provider.dart';
+import '../../view_model/messages_provider.dart';
 import '../color.dart';
 import 'bubble_painter.dart';
 import 'image_views/image_tile.dart';
@@ -56,7 +56,8 @@ class MessageBubble extends StatefulWidget {
 }
 
 class _MessageBubbleState extends State<MessageBubble> {
-  late final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+  late final chatProvider =
+      Provider.of<MessagesProvider>(context, listen: false);
   final currentUser = FirebaseAuth.instance.currentUser;
 
   late String? replyMessage;
@@ -264,7 +265,7 @@ void resetOverlayColor() {
                                       ? (replyMessage != null ? 0 : 4)
                                       : 4,
                                 ),
-                                child: Consumer<ChatProvider>(
+                                child: Consumer<MessagesProvider>(
                                     builder: (_, data, child) {
                                   return Column(
                                     crossAxisAlignment:

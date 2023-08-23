@@ -1,5 +1,5 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:conta/res/components/profile/logout_sheet.dart';
+import 'package:conta/utils/app_router/router.dart';
 import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:conta/utils/widget_functions.dart';
 import 'package:conta/view/account_setup/set_photo_page.dart';
@@ -100,8 +100,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               titleText: 'Bio',
                               icon: IconlyLight.chat,
                               subtitle: data.userData!.bio,
-                              onTap: () => context.router
-                                  .push(const EditBioScreenRoute()),
+                              onTap: () =>
+                                  navPush(context, const EditBioScreenRoute()),
                             ),
                             ProfileTile(
                               titleText: 'Email',
@@ -111,8 +111,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ProfileTile(
                               titleText: 'Password',
                               icon: IconlyLight.lock,
-                              onTap: () => context.router
-                                  .push(const EditPasswordScreenRoute()),
+                              onTap: () => navPush(
+                                  context, const EditPasswordScreenRoute()),
                             ),
                           ],
                         ),
@@ -128,7 +128,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: Column(
                           children: [
                             ProfileTile(
-                              onTap: () {},
+                              onTap: () => navPush(
+                                  context, const BlockedContactsScreenRoute()),
                               titleText: 'Blocked accounts',
                               icon: Icons.block_rounded,
                               leadingColor: AppColors.primaryShadeColor,

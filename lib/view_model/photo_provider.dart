@@ -1,4 +1,4 @@
-import 'package:conta/view_model/chat_provider.dart';
+import 'package:conta/view_model/messages_provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -70,7 +70,7 @@ class PhotoProvider extends ChangeNotifier {
         pickerResult.map((file) => file.path).whereType<String>().toList();
 
     final uIds = generateUniqueIds(photoPaths.length);
-    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+    final chatProvider = Provider.of<MessagesProvider>(context, listen: false);
     final chatId = chatProvider.currentChat!.chatId!;
 
     try {

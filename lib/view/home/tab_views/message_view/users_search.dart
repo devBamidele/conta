@@ -4,7 +4,7 @@ import 'package:conta/res/components/user_tile.dart';
 import 'package:conta/res/style/app_text_style.dart';
 import 'package:conta/utils/app_router/router.dart';
 import 'package:conta/utils/app_router/router.gr.dart';
-import 'package:conta/view_model/chat_provider.dart';
+import 'package:conta/view_model/messages_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -44,7 +44,7 @@ class UsersSearch extends SearchDelegate {
   Widget buildResults(BuildContext context) {
     return Consumer<SearchProvider>(
       builder: (_, searchData, Widget? child) {
-        return Consumer<ChatProvider>(
+        return Consumer<MessagesProvider>(
           builder: (_, chatData, Widget? child) {
             return StreamBuilder(
               stream: searchData.getSuggestionsStream(query, currentUserId),
@@ -90,7 +90,7 @@ class UsersSearch extends SearchDelegate {
   Widget buildSuggestions(BuildContext context) {
     return Consumer<SearchProvider>(
       builder: (_, searchData, Widget? child) {
-        return Consumer<ChatProvider>(
+        return Consumer<MessagesProvider>(
           builder: (_, chatData, Widget? child) {
             return query.isEmpty
                 ? StreamBuilder(
@@ -237,7 +237,7 @@ class UsersSearch extends SearchDelegate {
   void onUserTileTap(
     BuildContext context, {
     required SearchProvider searchData,
-    required ChatProvider chatData,
+    required MessagesProvider chatData,
     required Person user,
   }) {
     searchData.addToRecentSearch(person: user);
@@ -252,7 +252,7 @@ class UsersSearch extends SearchDelegate {
 
   void onSearchTileTap(
     BuildContext context, {
-    required ChatProvider chatData,
+    required MessagesProvider chatData,
     required SearchUser searchUser,
   }) {
     chatData.setCurrentChat(

@@ -5,7 +5,7 @@ import 'package:conta/utils/app_router/router.dart';
 import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:conta/utils/enums.dart';
 import 'package:conta/utils/widget_functions.dart';
-import 'package:conta/view_model/chat_provider.dart';
+import 'package:conta/view_model/messages_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -31,7 +31,7 @@ class _ChatListViewState extends State<ChatListView> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ChatProvider>(
+    return Consumer<MessagesProvider>(
       builder: (_, data, Widget? child) {
         return StreamBuilder(
           stream: getStream(data),
@@ -70,7 +70,7 @@ class _ChatListViewState extends State<ChatListView> {
     );
   }
 
-  Stream<List<Chat>> getStream(ChatProvider data) {
+  Stream<List<Chat>> getStream(MessagesProvider data) {
     switch (widget.category) {
       case MessageCategory.unread:
         return data.getUnreadChatsStream();
@@ -91,7 +91,8 @@ class _ChatListViewState extends State<ChatListView> {
     }
   }
 
-  void onTileTap(ChatProvider data, Chat tile, bool sameUser, int oppIndex) {
+  void onTileTap(
+      MessagesProvider data, Chat tile, bool sameUser, int oppIndex) {
     data.setCurrentChat(
       username: tile.userNames[oppIndex],
       uidUser1: currentUser,

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conta/res/components/shimmer/shimmer_widget.dart';
-import 'package:conta/view_model/chat_provider.dart';
+import 'package:conta/view_model/messages_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,7 +13,7 @@ class OnlineStatus extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    return Consumer<ChatProvider>(
+    return Consumer<MessagesProvider>(
       builder: (_, data, Widget? child) {
         return StreamBuilder<Person>(
           stream: data.getOnlineStatusStream(),

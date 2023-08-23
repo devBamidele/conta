@@ -15,6 +15,7 @@ class Chat {
   final List<bool> userMuted;
   final MessageStatus lastMessageStatus;
   final String lastMessageId;
+  final List<bool> userBlocked;
 
   Chat({
     this.id,
@@ -28,7 +29,9 @@ class Chat {
     this.lastMessageStatus = MessageStatus.undelivered,
     required this.lastMessageId,
     List<bool>? userMuted,
-  }) : userMuted = userMuted ?? List.filled(2, false);
+    List<bool>? userBlocked,
+  })  : userMuted = userMuted ?? List.filled(2, false),
+        userBlocked = userBlocked ?? List.filled(2, false);
 
   Chat.fromJson(Map<String, dynamic> json)
       : id = json['id'],
@@ -40,6 +43,7 @@ class Chat {
         lastMessageTimestamp = json['lastMessageTimestamp'],
         unreadCount = json['unreadCount'],
         userMuted = List<bool>.from(json['userMuted']),
+        userBlocked = List<bool>.from(json['userBlocked']),
         lastMessageId = json['lastMessageId'] ?? '',
         lastMessageStatus =
             MessageStatusExtension.fromString(json['lastMessageStatus']);
@@ -53,6 +57,7 @@ class Chat {
         'lastMessageTimestamp': lastMessageTimestamp,
         'unreadCount': unreadCount,
         'userMuted': userMuted,
+        'userBlocked': userBlocked,
         "lastMessageId": lastMessageId,
         'lastMessageStatus': lastMessageStatus.name.toString(),
       };

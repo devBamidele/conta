@@ -55,6 +55,14 @@ class _SplashScreenState extends State<SplashScreen>
     }
   }
 
+  onLoaded(LottieComposition composition) {
+    // Configure the AnimationController with the duration of the
+    // Lottie file and start the animation.
+    _controller
+      ..duration = composition.duration
+      ..forward();
+  }
+
   @override
   void dispose() {
     _controller.dispose();
@@ -69,13 +77,9 @@ class _SplashScreenState extends State<SplashScreen>
         child: Lottie.asset(
           'assets/anim/splash.json',
           controller: _controller,
-          onLoaded: (composition) {
-            // Configure the AnimationController with the duration of the
-            // Lottie file and start the animation.
-            _controller
-              ..duration = composition.duration
-              ..forward();
-          },
+          onLoaded: onLoaded,
+          height: 400,
+          width: 400,
         ),
       ),
     );

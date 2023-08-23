@@ -12,7 +12,7 @@ import 'package:provider/provider.dart';
 import '../../../../models/message.dart';
 import '../../../../res/color.dart';
 import '../../../../res/components/date_time/date_chip.dart';
-import '../../../../view_model/chat_provider.dart';
+import '../../../../view_model/messages_provider.dart';
 
 /// A widget that displays a stream of chat messages.
 class MessagesStream extends StatefulWidget {
@@ -63,7 +63,7 @@ class _MessagesStreamState extends State<MessagesStream> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ChatProvider>(
+    return Consumer<MessagesProvider>(
       builder: (_, data, __) {
         return StreamBuilder(
           stream: data.getChatMessagesStream(

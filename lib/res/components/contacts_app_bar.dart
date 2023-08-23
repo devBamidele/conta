@@ -29,7 +29,7 @@ class _ContactsAppBarState extends State<ContactsAppBar>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 500),
     );
     _animation = CurvedAnimation(
       parent: _controller,

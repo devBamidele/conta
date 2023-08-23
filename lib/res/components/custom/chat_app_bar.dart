@@ -14,7 +14,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../../res/color.dart';
 import '../../../utils/widget_functions.dart';
-import '../../../view_model/chat_provider.dart';
+import '../../../view_model/messages_provider.dart';
 import '../confirmation_dialog.dart';
 import '../message_counter.dart';
 
@@ -35,7 +35,7 @@ class _ChatAppBarState extends State<ChatAppBar> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ChatProvider>(
+    return Consumer<MessagesProvider>(
       builder: (_, data, __) {
         final currentChat = data.currentChat!;
         return AnimatedSwitcher(
@@ -174,7 +174,7 @@ class _ChatAppBarState extends State<ChatAppBar> {
   }
 }
 
-void confirmDelete(BuildContext context, ChatProvider data) {
+void confirmDelete(BuildContext context, MessagesProvider data) {
   final length = data.selectedMessages.length;
   final isSingleMessage = length == 1;
   final contentText = isSingleMessage
@@ -197,7 +197,7 @@ void confirmDelete(BuildContext context, ChatProvider data) {
   );
 }
 
-void _showSnackbar(ChatProvider data, BuildContext context) {
+void _showSnackbar(MessagesProvider data, BuildContext context) {
   AppUtils.showSnackbar(
     'Message Deleted',
     delay: const Duration(seconds: 3),
