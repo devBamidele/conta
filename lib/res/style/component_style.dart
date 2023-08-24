@@ -121,3 +121,17 @@ final tabIndicator = BoxDecoration(
   borderRadius: BorderRadius.circular(12),
   color: AppColors.primaryShadeColor,
 );
+
+const textFieldDecoration = InputDecoration(
+  fillColor: Colors.transparent,
+  hintStyle: TextStyle(
+    color: AppColors.hintTextColor,
+    fontWeight: FontWeight.normal,
+    fontSize: 18,
+  ),
+  hintText: 'Search ...',
+  focusedBorder: OutlineInputBorder(
+    borderSide: BorderSide(color: Colors.transparent),
+    borderRadius: BorderRadius.zero,
+  ),
+);

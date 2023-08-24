@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
+import 'package:conta/res/components/app_bars/chat_app_bar.dart';
 import 'package:conta/res/components/chat_text_form_field.dart';
-import 'package:conta/res/components/custom/chat_app_bar.dart';
 import 'package:conta/res/style/component_style.dart';
 import 'package:conta/utils/app_router/router.dart';
 import 'package:conta/utils/widget_functions.dart';

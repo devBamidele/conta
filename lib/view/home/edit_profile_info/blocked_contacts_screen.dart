@@ -5,10 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../models/chat.dart';
-import '../../../res/color.dart';
-import '../../../res/components/app_bar_icon.dart';
+import '../../../res/components/app_bars/blocked_app_bar.dart';
 import '../../../res/components/chat_list_tile.dart';
-import '../../../res/components/custom/custom_back_button.dart';
 import '../../../res/components/empty/empty.dart';
 import '../../../utils/app_router/router.dart';
 import '../../../utils/app_router/router.gr.dart';
@@ -33,41 +31,43 @@ class _BlockedContactsScreenState extends State<BlockedContactsScreen> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: const BlockedAccountsAppBar(),
-        body: Consumer<ChatProvider>(
-          builder: (_, data, __) {
-            return Column(
-              children: [
-                Expanded(
-                  child: StreamBuilder(
-                    stream: data.getBlockedChatStream(),
-                    builder: (context, AsyncSnapshot<List<Chat>> snapshot) {
-                      if (snapshot.hasData) {
-                        final tileData = snapshot.data!;
-                        if (tileData.isEmpty) {
-                          return Center(
-                            child: Empty(
-                              value: data.filter,
-                              customMessage: 'Blocked chats will appear here',
-                            ),
+        body: SafeArea(
+          child: Consumer<ChatProvider>(
+            builder: (_, data, __) {
+              return Column(
+                children: [
+                  Expanded(
+                    child: StreamBuilder(
+                      stream: data.getBlockedChatStream(),
+                      builder: (context, AsyncSnapshot<List<Chat>> snapshot) {
+                        if (snapshot.hasData) {
+                          final tileData = snapshot.data!;
+                          if (tileData.isEmpty) {
+                            return Center(
+                              child: Empty(
+                                value: data.blockedFilter,
+                                customMessage: 'Blocked chats will appear here',
+                              ),
+                            );
+                          }
+                          return Consumer<MessagesProvider>(
+                            builder: (_, info, __) {
+                              return buildChatList(info, tileData);
+                            },
                           );
+                        } else if (snapshot.hasError) {
+                          log('Error fetching chat tiles: ${snapshot.error}');
+                          return const Text('Sorry, try again later');
+                        } else {
+                          return shimmerTiles();
                         }
-                        return Consumer<MessagesProvider>(
-                          builder: (_, info, __) {
-                            return buildChatList(info, tileData);
-                          },
-                        );
-                      } else if (snapshot.hasError) {
-                        log('Error fetching chat tiles: ${snapshot.error}');
-                        return const Text('Sorry, try again later');
-                      } else {
-                        return shimmerTiles();
-                      }
-                    },
+                      },
+                    ),
                   ),
-                ),
-              ],
-            );
-          },
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
@@ -113,96 +113,5 @@ class _BlockedContactsScreenState extends State<BlockedContactsScreen> {
 
     data.cancelReplyAndClearCache();
     navigateToNextScreen(context);
-  }
-}
-
-class BlockedAccountsAppBar extends StatefulWidget
-    implements PreferredSizeWidget {
-  const BlockedAccountsAppBar({super.key});
-
-  @override
-  State<BlockedAccountsAppBar> createState() => _BlockedAccountsAppBarState();
-
-  @override
-  Size get preferredSize => const Size.fromHeight(58);
-}
-
-class _BlockedAccountsAppBarState extends State<BlockedAccountsAppBar> {
-  bool _isSearchModeActive = false;
-
-  void _toggleSearchMode() {
-    setState(() => _isSearchModeActive = !_isSearchModeActive);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<MessagesProvider>(
-      builder: (_, data, __) {
-        return AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          transitionBuilder: (child, animation) => FadeTransition(
-            opacity: animation,
-            child: child,
-          ),
-          child: _isSearchModeActive
-              ? AppBar(
-                  key: const ValueKey<bool>(true),
-                  leading: const CustomBackButton(
-                    color: AppColors.hintTextColor,
-                    size: 24,
-                    padding: EdgeInsets.only(left: 16),
-                  ),
-                  title: const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 4),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        fillColor: Colors.transparent,
-                        hintText: 'Search ...',
-                      ),
-                    ),
-                  ),
-                  actions: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 20),
-                      child: GestureDetector(
-                        onTap: _toggleSearchMode,
-                        child: const AppBarIcon(
-                          icon: Icons.close,
-                          size: 28,
-                        ),
-                      ),
-                    ),
-                  ],
-                )
-              : AppBar(
-                  key: const ValueKey<bool>(false),
-                  leading: const CustomBackButton(
-                    color: AppColors.hintTextColor,
-                    size: 24,
-                    padding: EdgeInsets.only(left: 16),
-                  ),
-                  title: const Column(
-                    children: [
-                      Text(
-                        'Blocked chats',
-                        style: TextStyle(
-                          color: AppColors.blackColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                  actions: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 20),
-                      child: GestureDetector(
-                        onTap: _toggleSearchMode,
-                        child: searchIcon(),
-                      ),
-                    ),
-                  ],
-                ),
-        );
-      },
-    );
   }
 }

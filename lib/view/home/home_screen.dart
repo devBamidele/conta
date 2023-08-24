@@ -59,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   _updateFilter() {
     // Update the value in the provider
-    _chatProvider.filter = _searchController.text;
+    _chatProvider.chatFilter = _searchController.text;
   }
 
   final _tabs = [

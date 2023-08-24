@@ -35,6 +35,7 @@ class AppTheme {
       ),
 
       dividerColor: Colors.grey[200],
+
       // Configure the input decoration theme for form fields.
       inputDecorationTheme: InputDecorationTheme(
         filled: true,

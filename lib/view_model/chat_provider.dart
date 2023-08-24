@@ -13,12 +13,32 @@ import '../utils/services/contacts_service.dart';
 class ChatProvider extends ChangeNotifier {
   List<String?> phoneNumbers = [];
 
-  String? _filter;
+  String? _chatFilter;
 
-  String? get filter => _filter;
+  String? get chatFilter => _chatFilter;
 
-  set filter(String? value) {
-    _filter = value;
+  set chatFilter(String? value) {
+    _chatFilter = value;
+
+    notifyListeners();
+  }
+
+  String? _contactFilter;
+
+  String? get contactFilter => _contactFilter;
+
+  set contactFilter(String? value) {
+    _contactFilter = value;
+
+    notifyListeners();
+  }
+
+  String? _blockedFilter;
+
+  String? get blockedFilter => _blockedFilter;
+
+  set blockedFilter(String? value) {
+    _blockedFilter = value;
 
     notifyListeners();
   }
@@ -84,7 +104,7 @@ class ChatProvider extends ChangeNotifier {
         .map((snapshot) => snapshot.docs
             .where(
                 (chat) => filterBlocked(chat.data(), userId, onlyBlocked: true))
-            .where((chat) => filterSearchQuery(chat.data(), userId))
+            .where((chat) => filterBlockedSearchQuery(chat.data(), userId))
             .map((doc) => Chat.fromJson({...doc.data(), 'id': doc.id}))
             .toList());
   }
@@ -100,7 +120,7 @@ class ChatProvider extends ChangeNotifier {
         .snapshots()
         .map((snapshot) => snapshot.docs
             .where((chat) => filterBlocked(chat.data(), userId))
-            .where((chat) => filterSearchQuery(chat.data(), userId))
+            .where((chat) => filterChatSearchQuery(chat.data(), userId))
             .map((doc) => Chat.fromJson({...doc.data(), 'id': doc.id}))
             .toList());
   }
@@ -117,7 +137,7 @@ class ChatProvider extends ChangeNotifier {
         .map((snapshot) => snapshot.docs
             .where((chat) => filterBlocked(chat.data(), userId))
             .where((chat) => filterUnread(chat.data(), userId))
-            .where((chat) => filterSearchQuery(chat.data(), userId))
+            .where((chat) => filterChatSearchQuery(chat.data(), userId))
             .map((doc) => Chat.fromJson({...doc.data(), 'id': doc.id}))
             .toList());
   }
@@ -134,7 +154,7 @@ class ChatProvider extends ChangeNotifier {
         .map((snapshot) => snapshot.docs
             .where((chat) => filterMuted(chat.data(), userId))
             .where((chat) => filterBlocked(chat.data(), userId))
-            .where((chat) => filterSearchQuery(chat.data(), userId))
+            .where((chat) => filterChatSearchQuery(chat.data(), userId))
             .map((doc) => Chat.fromJson({...doc.data(), 'id': doc.id}))
             .toList());
   }
@@ -182,11 +202,11 @@ class ChatProvider extends ChangeNotifier {
     return false;
   }
 
-  bool filterSearchQuery(
+  bool filterBlockedSearchQuery(
     Map<String, dynamic> chatData,
     String uid,
   ) {
-    if (filter == null || filter!.isEmpty) {
+    if (blockedFilter == null || blockedFilter!.isEmpty) {
       return true;
     }
     final participants = chatData['participants'] as List<dynamic>;
@@ -196,7 +216,29 @@ class ChatProvider extends ChangeNotifier {
       final oppositePosition = (currentUserPosition + 1) % 2;
       final oppositeUsername = chatData['names'][oppositePosition] as String;
 
-      return oppositeUsername.toLowerCase().contains(filter!.toLowerCase());
+      return oppositeUsername
+          .toLowerCase()
+          .contains(blockedFilter!.toLowerCase());
+    }
+
+    return false;
+  }
+
+  bool filterChatSearchQuery(
+    Map<String, dynamic> chatData,
+    String uid,
+  ) {
+    if (chatFilter == null || chatFilter!.isEmpty) {
+      return true;
+    }
+    final participants = chatData['participants'] as List<dynamic>;
+    final currentUserPosition = participants.indexOf(uid);
+
+    if (currentUserPosition != -1) {
+      final oppositePosition = (currentUserPosition + 1) % 2;
+      final oppositeUsername = chatData['names'][oppositePosition] as String;
+
+      return oppositeUsername.toLowerCase().contains(chatFilter!.toLowerCase());
     }
 
     return false;

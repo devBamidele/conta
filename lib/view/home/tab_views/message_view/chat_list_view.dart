@@ -40,7 +40,7 @@ class _ChatListViewState extends State<ChatListView> {
             if (snapshot.hasData) {
               final tileData = snapshot.data!;
               if (tileData.isEmpty) {
-                return Empty(value: data.filter);
+                return Empty(value: data.chatFilter);
               }
               return Consumer<MessagesProvider>(
                 builder: (_, info, __) {

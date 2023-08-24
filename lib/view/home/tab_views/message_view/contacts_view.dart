@@ -9,8 +9,8 @@ import 'package:provider/provider.dart';
 
 import '../../../../models/Person.dart';
 import '../../../../res/color.dart';
+import '../../../../res/components/app_bars/contacts_app_bar.dart';
 import '../../../../res/components/contact_tile.dart';
-import '../../../../res/components/contacts_app_bar.dart';
 import '../../../../res/components/empty/empty.dart';
 import '../../../../utils/app_router/router.dart';
 import '../../../../utils/app_router/router.gr.dart';

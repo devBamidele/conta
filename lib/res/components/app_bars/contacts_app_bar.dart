@@ -1,9 +1,9 @@
 import 'package:conta/res/components/app_bar_icon.dart';
 import 'package:flutter/material.dart';
 
-import '../../utils/widget_functions.dart';
-import '../color.dart';
-import 'custom/custom_back_button.dart';
+import '../../../utils/widget_functions.dart';
+import '../../color.dart';
+import '../custom/custom_back_button.dart';
 
 class ContactsAppBar extends StatefulWidget implements PreferredSizeWidget {
   const ContactsAppBar({super.key});
