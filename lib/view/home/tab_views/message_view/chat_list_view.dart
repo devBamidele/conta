@@ -32,36 +32,30 @@ class _ChatListViewState extends State<ChatListView> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ChatProvider>(
-      builder: (_, data, Widget? child) {
-        return StreamBuilder(
+    return Consumer2<ChatProvider, MessagesProvider>(
+      builder: (_, data, info, ___) {
+        return StreamBuilder<List<Chat>>(
           stream: getStream(data),
-          builder: (context, AsyncSnapshot<List<Chat>> snapshot) {
+          builder: (context, snapshot) {
             if (snapshot.hasData) {
               final tileData = snapshot.data!;
               if (tileData.isEmpty) {
                 return Empty(value: data.chatFilter);
               }
-              return Consumer<MessagesProvider>(
-                builder: (_, info, __) {
-                  return ListView.builder(
-                    itemCount: tileData.length,
-                    itemBuilder: (context, index) {
-                      Chat tile = tileData[index];
-                      bool sameUser = tile.lastSenderUserId == currentUser;
-                      int oppIndex =
-                          tile.participants.indexOf(currentUser) == 0 ? 1 : 0;
+              return ListView.builder(
+                itemCount: tileData.length,
+                itemBuilder: (context, index) {
+                  Chat tile = tileData[index];
+                  bool sameUser = tile.lastSenderUserId == currentUser;
+                  int oppIndex =
+                      tile.participants.indexOf(currentUser) == 0 ? 1 : 0;
 
-                      return ChatListTile(
-                        tileData: tile,
-                        onTileTap: () =>
-                            onTileTap(info, tile, sameUser, oppIndex),
-                        isSameUser: sameUser,
-                        oppIndex: oppIndex,
-                        samePerson:
-                            tile.participants[0] == tile.participants[1],
-                      );
-                    },
+                  return ChatListTile(
+                    tileData: tile,
+                    onTileTap: () => onTileTap(info, tile, sameUser, oppIndex),
+                    isSameUser: sameUser,
+                    oppIndex: oppIndex,
+                    samePerson: tile.participants[0] == tile.participants[1],
                   );
                 },
               );
@@ -99,7 +93,11 @@ class _ChatListViewState extends State<ChatListView> {
   }
 
   void onTileTap(
-      MessagesProvider data, Chat tile, bool sameUser, int oppIndex) {
+    MessagesProvider data,
+    Chat tile,
+    bool sameUser,
+    int oppIndex,
+  ) {
     data.setCurrentChat(
       username: tile.userNames[oppIndex],
       uidUser1: currentUser,

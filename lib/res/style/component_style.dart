@@ -23,7 +23,7 @@ final elevatedButton = ElevatedButton.styleFrom(
 
 const dialogShape = RoundedRectangleBorder(
   borderRadius: BorderRadius.all(
-    Radius.circular(10),
+    Radius.circular(16),
   ),
 );
 

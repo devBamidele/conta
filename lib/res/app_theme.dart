@@ -15,11 +15,13 @@ class AppTheme {
       dialogTheme: const DialogTheme(
         // Set the style for the title of the dialog.
         titleTextStyle: TextStyle(
-          fontSize: 20,
+          fontSize: 22,
           color: Colors.black,
         ),
         // Set the shape of the dialog.
         shape: dialogShape,
+
+        actionsPadding: EdgeInsets.fromLTRB(0, 0, 8, 8),
       ),
 
       // Configure the app bar theme.

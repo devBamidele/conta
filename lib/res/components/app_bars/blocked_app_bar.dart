@@ -49,6 +49,18 @@ class _BlockedAccountsAppBarState extends State<BlockedAccountsAppBar> {
     data.blockedFilter = text;
   }
 
+  void clearSearch(ChatProvider data) {
+    data.clearBlockedFilter();
+
+    _searchController.clear();
+  }
+
+  Future<bool> onWillPop(ChatProvider data) async {
+    clearSearch(data);
+
+    return true;
+  }
+
   void _chooseAction() {
     _isSearchModeActive ? _toggleSearchMode() : context.router.pop();
   }
@@ -64,90 +76,93 @@ class _BlockedAccountsAppBarState extends State<BlockedAccountsAppBar> {
   Widget build(BuildContext context) {
     return Consumer<ChatProvider>(
       builder: (_, data, __) {
-        return AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          transitionBuilder: (child, animation) => FadeTransition(
-            opacity: animation,
-            child: child,
-          ),
-          child: _isSearchModeActive
-              ? AppBar(
-                  toolbarHeight: _myToolBarHeight,
-                  titleSpacing: 0,
-                  key: const ValueKey<bool>(true),
-                  leading: CustomBackButton(
-                    color: AppColors.hintTextColor,
-                    size: 24,
-                    padding: const EdgeInsets.only(left: 20),
-                    action: _chooseAction,
-                  ),
-                  title: Column(
-                    children: [
-                      const SizedBox.square(
-                        dimension: 10,
+        return WillPopScope(
+          onWillPop: () => onWillPop(data),
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            transitionBuilder: (child, animation) => FadeTransition(
+              opacity: animation,
+              child: child,
+            ),
+            child: _isSearchModeActive
+                ? AppBar(
+                    toolbarHeight: _myToolBarHeight,
+                    titleSpacing: 0,
+                    key: const ValueKey<bool>(true),
+                    leading: CustomBackButton(
+                      color: AppColors.hintTextColor,
+                      size: 24,
+                      padding: const EdgeInsets.only(left: 20),
+                      action: _chooseAction,
+                    ),
+                    title: Column(
+                      children: [
+                        const SizedBox.square(
+                          dimension: 10,
+                        ),
+                        SizedBox(
+                          height: _myToolBarHeight,
+                          child: TextField(
+                            controller: _searchController,
+                            cursorColor: AppColors.blackColor,
+                            onChanged: (text) => onUpdate(text, data),
+                            style: const TextStyle(
+                              fontSize: 18,
+                              height: 1.2,
+                              color: AppColors.blackColor,
+                            ),
+                            decoration: textFieldDecoration,
+                          ),
+                        ),
+                      ],
+                    ),
+                    actions: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 20),
+                        child: _isTextFieldEmpty
+                            ? const SizedBox.shrink()
+                            : GestureDetector(
+                                onTap: () => clearSearch(data),
+                                child: const AppBarIcon(
+                                  icon: Icons.close,
+                                  size: 28,
+                                ),
+                              ),
                       ),
-                      SizedBox(
-                        height: _myToolBarHeight,
-                        child: TextField(
-                          controller: _searchController,
-                          cursorColor: AppColors.blackColor,
-                          onChanged: (text) => onUpdate(text, data),
-                          style: const TextStyle(
-                            fontSize: 18,
-                            height: 1.2,
+                    ],
+                  )
+                : AppBar(
+                    toolbarHeight: _myToolBarHeight,
+                    key: const ValueKey<bool>(false),
+                    leading: const CustomBackButton(
+                      color: AppColors.hintTextColor,
+                      size: 24,
+                      padding: EdgeInsets.only(left: 20),
+                    ),
+                    title: const Column(
+                      children: [
+                        SizedBox.square(
+                          dimension: 2,
+                        ),
+                        Text(
+                          'Blocked chats',
+                          style: TextStyle(
                             color: AppColors.blackColor,
                           ),
-                          decoration: textFieldDecoration,
+                        ),
+                      ],
+                    ),
+                    actions: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 20),
+                        child: GestureDetector(
+                          onTap: _toggleSearchMode,
+                          child: searchIcon(),
                         ),
                       ),
                     ],
                   ),
-                  actions: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 20),
-                      child: _isTextFieldEmpty
-                          ? const SizedBox.shrink()
-                          : GestureDetector(
-                              onTap: () => _searchController.clear(),
-                              child: const AppBarIcon(
-                                icon: Icons.close,
-                                size: 28,
-                              ),
-                            ),
-                    ),
-                  ],
-                )
-              : AppBar(
-                  toolbarHeight: _myToolBarHeight,
-                  key: const ValueKey<bool>(false),
-                  leading: const CustomBackButton(
-                    color: AppColors.hintTextColor,
-                    size: 24,
-                    padding: EdgeInsets.only(left: 20),
-                  ),
-                  title: const Column(
-                    children: [
-                      SizedBox.square(
-                        dimension: 2,
-                      ),
-                      Text(
-                        'Blocked chats',
-                        style: TextStyle(
-                          color: AppColors.blackColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                  actions: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 20),
-                      child: GestureDetector(
-                        onTap: _toggleSearchMode,
-                        child: searchIcon(),
-                      ),
-                    ),
-                  ],
-                ),
+          ),
         );
       },
     );

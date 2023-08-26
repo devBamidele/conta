@@ -46,10 +46,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     addHeight(15),
                     Stack(
                       children: [
-                        Hero(
+                        const Hero(
                           tag: 'Avatar',
-                          child: UrlProfilePicture(
-                              imageUrl: data.userData?.profilePicUrl),
+                          child: CircleAvatar(
+                            radius: 60,
+                            backgroundColor: Colors.white,
+                            child: ProfilePic(noPicSize: 42),
+                          ),
                         ),
                         UploadPhotoWidget(
                           onTap: () {},

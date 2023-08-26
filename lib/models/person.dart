@@ -51,7 +51,7 @@ class Person {
         profilePicUrl = json['profilePicUrl'],
         bio = json['bio'],
         phone = json['phone'],
-        lastSeen = json['lastSeen'],
+        lastSeen = _parseTimestamp(json['lastSeen']),
         online = json['online'],
         token = json['token'];
 
@@ -68,6 +68,16 @@ class Person {
         'online': online,
         'token': token,
       };
+
+  static dynamic _parseTimestamp(dynamic timestamp) {
+    if (timestamp is int) {
+      return Timestamp.fromMillisecondsSinceEpoch((timestamp));
+    } else if (timestamp is Timestamp) {
+      return timestamp;
+    } else {
+      return null;
+    }
+  }
 
   String formatLastSeen(Timestamp currentTime) {
     final time = lastSeen.toDate();

@@ -52,7 +52,7 @@ class _ChatListTileState extends State<ChatListTile> {
   Future<void> onBlockedPressed(ChatProvider data) async {
     final name = widget.tileData.userNames[widget.oppIndex];
 
-    AppUtils.showToast('${!chatBlocked ? 'blocked' : 'Un-blocked'} $name');
+    AppUtils.showToast('${!chatBlocked ? 'Blocked' : 'Un-blocked'} $name');
 
     data.toggleBlockedStatus(
       chatId: widget.tileData.id!,
@@ -81,7 +81,7 @@ class _ChatListTileState extends State<ChatListTile> {
   Future<bool> confirmDismissed() async {
     final name = widget.tileData.userNames[widget.oppIndex];
 
-    const contentText = 'Blocked contacts cannot send you messages '
+    const contentText = 'Blocked contacts cannot send you messages. '
         'This contact will not be notified';
 
     final confirmed = await showDialog<bool>(

@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conta/models/chat.dart';
 import 'package:conta/utils/extensions.dart';
+import 'package:conta/utils/services/algolia_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -13,9 +14,27 @@ import '../utils/services/contacts_service.dart';
 class ChatProvider extends ChangeNotifier {
   List<String?> phoneNumbers = [];
 
+  bool emptyContacts = false;
+
+  void updateEmptyContacts(bool isEmpty) {
+    emptyContacts = isEmpty;
+
+    notifyListeners();
+  }
+
+  bool emptySearch = false;
+
+  void updateEmptySearch(bool isEmpty) {
+    emptySearch = isEmpty;
+
+    notifyListeners();
+  }
+
   String? _chatFilter;
 
-  String? get chatFilter => _chatFilter;
+  String? get chatFilter {
+    return _chatFilter;
+  }
 
   set chatFilter(String? value) {
     _chatFilter = value;
@@ -25,7 +44,9 @@ class ChatProvider extends ChangeNotifier {
 
   String? _contactFilter;
 
-  String? get contactFilter => _contactFilter;
+  String? get contactFilter {
+    return _contactFilter;
+  }
 
   set contactFilter(String? value) {
     _contactFilter = value;
@@ -35,10 +56,24 @@ class ChatProvider extends ChangeNotifier {
 
   String? _blockedFilter;
 
-  String? get blockedFilter => _blockedFilter;
+  String? get blockedFilter {
+    return _blockedFilter;
+  }
 
   set blockedFilter(String? value) {
     _blockedFilter = value;
+
+    notifyListeners();
+  }
+
+  clearBlockedFilter() {
+    _blockedFilter = '';
+
+    notifyListeners();
+  }
+
+  clearContactsFilter() {
+    _contactFilter = '';
 
     notifyListeners();
   }
@@ -58,7 +93,7 @@ class ChatProvider extends ChangeNotifier {
     }).toList();
   }
 
-  Future<List<Person>> findAppUsersFromContact() async {
+  Stream<List<Person>> findAppUsersFromContact() async* {
     await getContacts();
 
     final CollectionReference<Map<String, dynamic>> userRef =
@@ -69,27 +104,58 @@ class ChatProvider extends ChangeNotifier {
 
     final totalChunks = (phoneNumbers.length / chunkSize).ceil();
 
-    // Create a list to store the resulting List of matching users
-    final resultList = <Person>[];
-
+    // Iterate through the chunks and yield the filtered results
     for (var i = 0; i < totalChunks; i++) {
       final start = i * chunkSize;
       final end = (i + 1) * chunkSize;
+
       final chunkNumbers = phoneNumbers.sublist(
-          start, end < phoneNumbers.length ? end : phoneNumbers.length);
+        start,
+        end < phoneNumbers.length ? end : phoneNumbers.length,
+      );
 
       // Fetch data from Firestore for each chunk
       final querySnapshot =
           await userRef.where('phone', whereIn: chunkNumbers).get();
 
-      // Process the documents and add to the resultList
-      final chunkPersons =
-          querySnapshot.docs.map((doc) => Person.fromJson(doc.data()));
-      resultList.addAll(chunkPersons);
-    }
+      // Apply local filtering and yields filtered results
+      final personList = querySnapshot.docs
+          .map((doc) => Person.fromJson(doc.data()))
+          .where((person) => filterContactSearchQuery(person))
+          .toList();
 
-    // Return the aggregated resultList as a Stream
-    return resultList;
+      updateEmptyContacts(personList.isEmpty);
+
+      yield personList;
+    }
+  }
+
+  Stream<List<Person>> findAppUsersNotInContacts() async* {
+    const algolia = AlgoliaService.algolia;
+
+    final query =
+        algolia.instance.index('dev_conta').query(contactFilter ?? '');
+
+    final snapshot = await query.getObjects();
+
+    yield snapshot.hits
+        .map((doc) => Person.fromJson(doc.data))
+        .where((person) => !phoneNumbers.contains(person.phone))
+        .toList();
+
+    // updateEmptySearch(uniquePersons.isEmpty);
+
+    // yield uniquePersons;
+  }
+
+  bool filterContactSearchQuery(
+    Person person,
+  ) {
+    if (contactFilter == null || contactFilter!.isEmpty) {
+      return true;
+    }
+    final username = person.username.toLowerCase();
+    return username.contains(contactFilter!.toLowerCase());
   }
 
   Stream<List<Chat>> getBlockedChatStream() {

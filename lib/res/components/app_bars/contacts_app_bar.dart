@@ -1,8 +1,12 @@
-import 'package:conta/res/components/app_bar_icon.dart';
-import 'package:flutter/material.dart';
+import 'dart:developer';
 
-import '../../../utils/widget_functions.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../../view_model/chat_provider.dart';
 import '../../color.dart';
+import '../../style/component_style.dart';
+import '../app_bar_icon.dart';
 import '../custom/custom_back_button.dart';
 
 class ContactsAppBar extends StatefulWidget implements PreferredSizeWidget {
@@ -17,88 +21,101 @@ class ContactsAppBar extends StatefulWidget implements PreferredSizeWidget {
 
 class _ContactsAppBarState extends State<ContactsAppBar>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
+  bool _isTextFieldEmpty = true;
 
-  bool _isSearchModeActive = false;
+  final _searchController = TextEditingController();
 
-  final searchController = TextEditingController();
+  final double _myToolBarHeight = 50;
 
   @override
   void initState() {
+    _searchController.addListener(_updateCloseIcon);
+
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 500),
-    );
-    _animation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    );
+  }
+
+  void _updateCloseIcon() {
+    setState(() {
+      _isTextFieldEmpty = _searchController.text.isEmpty;
+    });
+  }
+
+  void onUpdate(String text, ChatProvider data) {
+    data.contactFilter = text;
+
+    log(data.contactFilter.toString());
+  }
+
+  void clearSearch(ChatProvider data) {
+    data.clearContactsFilter();
+
+    _searchController.clear();
+  }
+
+  Future<bool> onWillPop(ChatProvider data) async {
+    clearSearch(data);
+
+    return true;
   }
 
   @override
   void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+    _searchController.dispose();
 
-  void _toggleSearchMode() {
-    if (_isSearchModeActive) {
-      _controller.reverse();
-    } else {
-      _controller.forward();
-    }
-    setState(() {
-      _isSearchModeActive = !_isSearchModeActive;
-    });
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _animation,
-      builder: (context, child) {
-        return AppBar(
-          leading: const CustomBackButton(
-            color: AppColors.hintTextColor,
-            size: 24,
-            padding: EdgeInsets.only(left: 16),
-          ),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 20),
-              child: GestureDetector(
-                onTap: _toggleSearchMode,
-                child: _isSearchModeActive
-                    ? const AppBarIcon(
-                        icon: Icons.close,
-                        size: 28,
-                      )
-                    : searchIcon(),
-              ),
+    return Consumer<ChatProvider>(
+      builder: (_, data, __) {
+        return WillPopScope(
+          onWillPop: () => onWillPop(data),
+          child: AppBar(
+            toolbarHeight: _myToolBarHeight,
+            titleSpacing: 0,
+            key: const ValueKey<bool>(true),
+            leading: const CustomBackButton(
+              color: AppColors.hintTextColor,
+              size: 24,
+              padding: EdgeInsets.only(left: 20),
             ),
-          ],
-          title: _isSearchModeActive
-              ? const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 4),
-                  child: TextField(
-                    decoration: InputDecoration(
-                      fillColor: Colors.transparent,
-                      hintText: 'Search ...',
-                    ),
-                  ),
-                )
-              : const Column(
-                  children: [
-                    Text(
-                      'Select contact',
-                      style: TextStyle(
-                        color: AppColors.blackColor,
-                      ),
-                    ),
-                  ],
+            title: Column(
+              children: [
+                const SizedBox.square(
+                  dimension: 10,
                 ),
+                SizedBox(
+                  height: _myToolBarHeight,
+                  child: TextField(
+                    controller: _searchController,
+                    cursorColor: AppColors.blackColor,
+                    onChanged: (text) => onUpdate(text, data),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      height: 1.2,
+                      color: AppColors.blackColor,
+                    ),
+                    decoration: textFieldDecoration,
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(right: 20),
+                child: _isTextFieldEmpty
+                    ? const SizedBox.shrink()
+                    : GestureDetector(
+                        onTap: () => clearSearch(data),
+                        child: const AppBarIcon(
+                          icon: Icons.close,
+                          size: 28,
+                        ),
+                      ),
+              ),
+            ],
+          ),
         );
       },
     );

@@ -32,8 +32,8 @@ class _BlockedContactsScreenState extends State<BlockedContactsScreen> {
       child: Scaffold(
         appBar: const BlockedAccountsAppBar(),
         body: SafeArea(
-          child: Consumer<ChatProvider>(
-            builder: (_, data, __) {
+          child: Consumer2<ChatProvider, MessagesProvider>(
+            builder: (_, data, info, __) {
               return Column(
                 children: [
                   Expanded(
@@ -50,11 +50,7 @@ class _BlockedContactsScreenState extends State<BlockedContactsScreen> {
                               ),
                             );
                           }
-                          return Consumer<MessagesProvider>(
-                            builder: (_, info, __) {
-                              return buildChatList(info, tileData);
-                            },
-                          );
+                          return buildChatList(info, tileData);
                         } else if (snapshot.hasError) {
                           log('Error fetching chat tiles: ${snapshot.error}');
                           return const Text('Sorry, try again later');

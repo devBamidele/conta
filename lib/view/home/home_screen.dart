@@ -1,6 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:conta/res/components/custom/custom_fab.dart';
 import 'package:conta/res/components/custom/custom_text_field.dart';
+import 'package:conta/res/components/profile/profile_pic.dart';
 import 'package:conta/res/style/app_text_style.dart';
 import 'package:conta/res/style/component_style.dart';
 import 'package:conta/utils/app_router/router.dart';
@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../res/color.dart';
-import '../../res/components/shimmer/shimmer_widget.dart';
 import '../../utils/widget_functions.dart';
 import '../../view_model/chat_provider.dart';
 import '../../view_model/user_provider.dart';
@@ -101,12 +100,12 @@ class _HomeScreenState extends State<HomeScreen>
                         GestureDetector(
                           onTap: () =>
                               navPush(context, const ProfileScreenRoute()),
-                          child: Hero(
+                          child: const Hero(
                             tag: 'Avatar',
                             child: CircleAvatar(
                               radius: 25,
                               backgroundColor: Colors.white,
-                              child: _buildProfileImage(),
+                              child: ProfilePic(),
                             ),
                           ),
                         ),
@@ -169,27 +168,5 @@ class _HomeScreenState extends State<HomeScreen>
         ),
       ),
     );
-  }
-
-  Widget _buildProfileImage() {
-    final imageUrl = _userProvider.userData?.profilePicUrl;
-
-    return imageUrl != null
-        ? CachedNetworkImage(
-            imageUrl: imageUrl,
-            imageBuilder: (context, imageProvider) => Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                image: DecorationImage(
-                  image: imageProvider,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            placeholder: (context, url) =>
-                const ShimmerWidget.circular(width: 54, height: 54),
-            errorWidget: (context, url, error) => const Icon(Icons.error),
-          )
-        : noProfilePic();
   }
 }

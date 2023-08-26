@@ -24,6 +24,7 @@ class ConfirmationDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(title),
+      titlePadding: const EdgeInsets.only(left: 18, top: 20),
       content: Text(contentText),
       actions: [
         TextButton(
@@ -40,8 +41,7 @@ class ConfirmationDialog extends StatelessWidget {
           ),
         ),
       ],
-      contentPadding: const EdgeInsets.fromLTRB(24, 10, 24, 0),
-      actionsPadding: const EdgeInsets.fromLTRB(0, 5, 10, 10),
+      contentPadding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
     );
   }
 }

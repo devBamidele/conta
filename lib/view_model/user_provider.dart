@@ -27,6 +27,18 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Stream<String?> getProfilePic() {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+
+    final CollectionReference<Map<String, dynamic>> userRef =
+        FirebaseFirestore.instance.collection('users');
+
+    return userRef.doc(userId).snapshots().map((snapshot) {
+      return Person.fromJson(snapshot.data() as Map<String, dynamic>)
+          .profilePicUrl;
+    });
+  }
+
   Future<void> deleteAccount({
     required BuildContext context,
     required String password,

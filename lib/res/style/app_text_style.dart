@@ -68,24 +68,11 @@ class AppTextStyles {
     letterSpacing: 0.5,
     fontSize: 14,
   );
+
+  static const TextStyle contactText = TextStyle(
+    fontSize: 16,
+    height: 1.25,
+    color: AppColors.blackColor,
+    fontWeight: FontWeight.w500,
+  );
 }
-
-/*
- static const TextStyle bodyLarge = TextStyle(
-    // color: AppColors.textColor1,
-    fontSize: 18,
-    fontWeight: FontWeight.w600,
-  );
-
-  static const TextStyle bodyMedium = TextStyle(
-    color: Colors.black,
-    fontSize: 14,
-    fontWeight: FontWeight.w400,
-  );
-
-  static const TextStyle bodySmall = TextStyle(
-    // color: AppColors.fadedTextColor,
-    fontSize: 14,
-    fontWeight: FontWeight.w400,
-  );
- */
