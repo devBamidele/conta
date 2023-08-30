@@ -133,8 +133,11 @@ class Person {
       name: name ?? this.name,
       username: username ?? this.username,
       email: email ?? this.email,
+      // Restart the app !
       phone: phone ?? this.phone,
-      profilePicUrl: profilePicUrl ?? this.profilePicUrl,
+      profilePicUrl: profilePicUrl == 'null'
+          ? null
+          : (profilePicUrl ?? this.profilePicUrl),
       bio: bio ?? this.bio,
       lastSeen: lastSeen ?? this.lastSeen,
       online: online ?? this.online,

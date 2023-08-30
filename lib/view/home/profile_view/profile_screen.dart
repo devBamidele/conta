@@ -1,4 +1,5 @@
-import 'package:conta/res/components/profile/logout_sheet.dart';
+import 'dart:io';
+
 import 'package:conta/utils/app_router/router.dart';
 import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:conta/utils/widget_functions.dart';
@@ -6,14 +7,17 @@ import 'package:conta/view/account_setup/set_photo_page.dart';
 import 'package:conta/view_model/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../../../res/color.dart';
 import '../../../res/components/custom/custom_back_button.dart';
 import '../../../res/components/profile/delete_account_sheet.dart';
+import '../../../res/components/profile/logout_sheet.dart';
 import '../../../res/components/profile/profile_pic.dart';
 import '../../../res/components/profile/profile_tile.dart';
 import '../../../res/style/component_style.dart';
+import '../../../utils/app_utils.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -23,6 +27,48 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  final _picker = ImagePicker();
+  File? _imageFile;
+
+  bool _showSave = false;
+
+  /// Select image from gallery
+  Future<void> _pickImage(ImageSource source, UserProvider data) async {
+    final pickedImage = await _picker.pickImage(source: source);
+    setState(() {
+      _imageFile = pickedImage != null ? File(pickedImage.path) : _imageFile;
+      if (_imageFile != null) {
+        data.profilePic = _imageFile;
+        _showSave = true;
+      }
+    });
+  }
+
+  updateProfilePic(UserProvider data) {
+    data.updateProfilePic(
+      context: context,
+      showSnackbar: showSnackbar,
+      onUpdate: onUpdate,
+    );
+  }
+
+  void onUpdate() {
+    setState(() {
+      _showSave = false;
+
+      _imageFile = null;
+    });
+  }
+
+  void profilePreview(String url) =>
+      navPush(context, ProfileImagePreviewRoute(path: url));
+
+  void showSnackbar(String message) {
+    if (mounted) {
+      AppUtils.showSnackbar(message);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,27 +81,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
               builder: (_, data, Widget? child) {
                 return Column(
                   children: [
-                    const Row(
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        CustomBackButton(
+                        const CustomBackButton(
                           padding: EdgeInsets.only(top: 20),
                           color: AppColors.extraTextColor,
+                        ),
+                        Visibility(
+                          visible: _showSave,
+                          child: CustomBackButton(
+                            align: Alignment.centerRight,
+                            padding: const EdgeInsets.only(top: 20),
+                            icon: Icons.check_rounded,
+                            action: () => updateProfilePic(data),
+                          ),
                         ),
                       ],
                     ),
                     addHeight(15),
                     Stack(
                       children: [
-                        const Hero(
+                        Hero(
                           tag: 'Avatar',
-                          child: CircleAvatar(
-                            radius: 60,
-                            backgroundColor: Colors.white,
-                            child: ProfilePic(noPicSize: 42),
+                          child: GestureDetector(
+                            onTap: () {
+                              if (data.userData?.profilePicUrl != null) {
+                                profilePreview(data.userData!.profilePicUrl!);
+                              } else {
+                                AppUtils.showSnackbar(
+                                    'Upload a profile picture preview it');
+                              }
+                            },
+                            child: CircleAvatar(
+                              radius: 72,
+                              backgroundColor: Colors.white,
+                              child: _imageFile == null
+                                  ? const UrlProfilePic(noPicSize: 42)
+                                  : FileProfilePic(imageFile: _imageFile),
+                            ),
                           ),
                         ),
                         UploadPhotoWidget(
-                          onTap: () {},
+                          onTap: () => _pickImage(ImageSource.gallery, data),
                           bottom: 0,
                           right: 0,
                         ),

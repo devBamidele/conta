@@ -4,20 +4,21 @@ import 'package:conta/view/account_setup/verify_account_screen.dart';
 import 'package:conta/view/authentication/login_screen.dart';
 import 'package:conta/view/authentication/recover_password_screen.dart';
 import 'package:conta/view/authentication/update_password_screen.dart';
-import 'package:conta/view/home/edit_profile_info/blocked_contacts_screen.dart';
-import 'package:conta/view/home/edit_profile_info/edit_bio_screen.dart';
-import 'package:conta/view/home/edit_profile_info/edit_password_screen.dart';
 import 'package:conta/view/home/home_screen.dart';
 import 'package:conta/view/home/intermediary.dart';
+import 'package:conta/view/home/profile_view/profile_image_preview.dart';
+import 'package:conta/view/home/profile_view/profile_screen.dart';
 import 'package:conta/view/home/tab_views/message_view/chat_screen.dart';
 import 'package:conta/view/home/tab_views/message_view/contacts_view.dart';
 import 'package:conta/view/home/tab_views/message_view/preview_screen.dart';
-import 'package:conta/view/home/tab_views/profile_screen.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../res/components/image_views/view_image_screen.dart';
 import '../../view/account_setup/set_name_screen.dart';
 import '../../view/account_setup/set_photo_page.dart';
+import '../../view/home/profile_view/edit_profile_info/blocked_contacts_screen.dart';
+import '../../view/home/profile_view/edit_profile_info/edit_bio_screen.dart';
+import '../../view/home/profile_view/edit_profile_info/edit_password_screen.dart';
 import '../../view/onboard/splash_screen.dart';
 
 @AdaptiveAutoRouter(
@@ -63,6 +64,8 @@ import '../../view/onboard/splash_screen.dart';
       transitionsBuilder: TransitionsBuilders.slideLeft,
       durationInMilliseconds: 150,
     ),
+
+    AutoRoute(page: ProfileImagePreview),
   ],
 )
 class $AppRouter {}

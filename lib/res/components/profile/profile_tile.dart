@@ -36,6 +36,7 @@ class ProfileTile extends StatelessWidget {
       ),
       subtitleTextStyle: const TextStyle(
         fontSize: 16,
+        color: AppColors.blackColor,
       ),
       title: Text(
         titleText,

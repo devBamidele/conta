@@ -19,6 +19,15 @@ class AuthProvider extends ChangeNotifier {
   String? password;
   File? profilePic;
 
+  // Todo: Call this function when leaving the auth section
+  void clearData() {
+    username = null;
+    name = null;
+    email = null;
+    password = null;
+    profilePic = null;
+  }
+
   void setNameAndUserName(String name, String username) {
     this.name = name;
     this.username = username;
@@ -48,13 +57,15 @@ class AuthProvider extends ChangeNotifier {
     return result.docs.isEmpty;
   }
 
-  Future<void> createNewUser(String userId, File? file) async {
+  Future<void> createNewUser(String userId) async {
     try {
       final ref = FirebaseStorage.instance
           .ref()
           .child("profile_pictures")
           .child(userId);
+
       String? photoUrl;
+      final file = profilePic;
 
       // Upload the image to firebase cloud storage
       // And the download Url
@@ -119,7 +130,6 @@ class AuthProvider extends ChangeNotifier {
     required BuildContext context,
     required void Function(String) showSnackbar,
     required void Function(UserCredential) onAuthenticate,
-    File? imageFile,
   }) async {
     final username = this.username!;
     final email = this.email!;
@@ -139,7 +149,7 @@ class AuthProvider extends ChangeNotifier {
       final userId = userCredential.user!.uid;
 
       // Upload the image and create the User in firestore
-      createNewUser(userId, imageFile);
+      createNewUser(userId);
 
       // Update the display name
       await userCredential.user!.updateDisplayName(username);

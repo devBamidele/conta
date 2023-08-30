@@ -1,13 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:conta/view/account_setup/set_photo_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../utils/widget_functions.dart';
 import '../../../view_model/user_provider.dart';
-import '../shimmer/shimmer_widget.dart';
 
-class ProfilePic extends StatelessWidget {
-  const ProfilePic({
+class UrlProfilePic extends StatelessWidget {
+  const UrlProfilePic({
     super.key,
     this.noPicSize,
   });
@@ -19,6 +19,7 @@ class ProfilePic extends StatelessWidget {
     return Consumer<UserProvider>(
       builder: (_, data, __) {
         return StreamBuilder<String?>(
+          initialData: data.userData?.profilePicUrl,
           stream: data.getProfilePic(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
@@ -36,8 +37,10 @@ class ProfilePic extends StatelessWidget {
                   ),
                 ),
                 placeholder: (context, url) =>
-                    const ShimmerWidget.circular(width: 54, height: 54),
+                    FileProfilePic(imageFile: data.profilePic),
                 errorWidget: (context, url, error) => const Icon(Icons.error),
+                fadeOutDuration: Duration.zero,
+                fadeInDuration: Duration.zero,
               );
             } else {
               return noProfilePic(size: noPicSize ?? 25);

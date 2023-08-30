@@ -50,13 +50,13 @@ class ViewImageScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: media.length == 1
-            ? Center(child: ImagePreview(path: media[0]))
+            ? Center(child: ImagePreview(url: media[0]))
             : ListView.builder(
                 itemCount: media.length,
                 itemBuilder: (__, int index) {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 10),
-                    child: ImagePreview(path: media[index]),
+                    child: ImagePreview(url: media[index]),
                   );
                 },
               ),
@@ -66,16 +66,21 @@ class ViewImageScreen extends StatelessWidget {
 }
 
 class ImagePreview extends StatelessWidget {
-  final String path;
+  final String url;
+  final String? tag;
 
-  const ImagePreview({Key? key, required this.path}) : super(key: key);
+  const ImagePreview({
+    Key? key,
+    required this.url,
+    this.tag,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Hero(
-      tag: path,
+      tag: tag ?? url,
       child: Image(
-        image: CachedNetworkImageProvider(path),
+        image: CachedNetworkImageProvider(url),
         loadingBuilder: (context, child, progress) {
           return progress == null
               ? child

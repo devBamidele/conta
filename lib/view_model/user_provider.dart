@@ -1,7 +1,9 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 import '../models/Person.dart';
@@ -9,6 +11,90 @@ import '../utils/app_utils.dart';
 
 class UserProvider extends ChangeNotifier {
   Person? userData;
+
+  File? profilePic;
+
+  void clearProfilePic() {
+    profilePic = null;
+  }
+
+  void updateNameData(String newBio) {
+    if (userData != null) {
+      userData = userData!.copy(bio: newBio);
+      notifyListeners();
+    }
+  }
+
+  void updatePicData(String? newUrl) {
+    if (userData != null) {
+      userData = userData!.copy(profilePicUrl: newUrl);
+      notifyListeners();
+    }
+  }
+
+  Future<void> updateProfilePic({
+    required BuildContext context,
+    required void Function(String) showSnackbar,
+    required void Function() onUpdate,
+  }) async {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final firestore = FirebaseFirestore.instance;
+    final storage = FirebaseStorage.instance;
+
+    AppUtils.showLoadingDialog1(context);
+
+    try {
+      final ref = storage.ref().child("profile_pictures").child(userId);
+
+      String? photoUrl;
+      final file = profilePic;
+
+      if (file != null) {
+        await ref.putFile(file);
+        photoUrl = await ref.getDownloadURL();
+      }
+
+      final docRef = firestore.doc('users/$userId');
+
+      await docRef.update({
+        'profilePicUrl': photoUrl,
+      });
+
+      updatePicData(photoUrl);
+
+      onUpdate();
+    } catch (e) {
+      log('Error updating profile pic $e');
+      showSnackbar('An error occurred while updating the profile picture');
+    }
+    if (!context.mounted) return;
+    Navigator.of(context).pop();
+  }
+
+  Future<void> removeProfilePic({
+    required void Function(String) showSnackbar,
+  }) async {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final firestore = FirebaseFirestore.instance;
+    final storage = FirebaseStorage.instance;
+
+    try {
+      final picRef = storage.ref().child("profile_pictures").child(userId);
+
+      final docRef = firestore.doc('users/$userId');
+
+      await docRef.update({
+        'profilePicUrl': null,
+      });
+
+      picRef.delete().then((value) => log('Deleted file successfully'));
+
+      updatePicData('null');
+    } catch (e) {
+      log('Error removing profile pic $e');
+      showSnackbar('An error occurred while removing the profile picture');
+    }
+  }
 
   Future<void> getUserInfo() async {
     final uid = FirebaseAuth.instance.currentUser!.uid;
@@ -65,16 +151,9 @@ class UserProvider extends ChangeNotifier {
         showSnackbar('Password is incorrect');
 
         log('Error: $e');
-      } finally {
-        Navigator.of(context).pop();
       }
-    }
-  }
-
-  void updateNameData(String newBio) {
-    if (userData != null) {
-      userData = userData!.copy(bio: newBio);
-      notifyListeners();
+      if (!context.mounted) return;
+      Navigator.of(context).pop();
     }
   }
 
@@ -103,9 +182,9 @@ class UserProvider extends ChangeNotifier {
       } catch (error) {
         // Error updating bio
         showSnackbar('Error updating bio');
-      } finally {
-        Navigator.of(context).pop();
       }
+      if (!context.mounted) return;
+      Navigator.of(context).pop();
     }
   }
 

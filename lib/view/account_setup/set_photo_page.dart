@@ -57,17 +57,17 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
 
   void addPhoto() {
     if (_imageFile == null) {
-      _pickImage(ImageSource.gallery);
+      _pickImage();
     } else {
       createUser();
     }
   }
 
   /// Select image from gallery
-  Future<void> _pickImage(ImageSource source) async {
-    final pickedImage = await _picker.pickImage(source: source);
+  Future<void> _pickImage() async {
+    final pickedImage = await _picker.pickImage(source: ImageSource.gallery);
     setState(() {
-      _imageFile = pickedImage != null ? File(pickedImage.path) : null;
+      _imageFile = pickedImage != null ? File(pickedImage.path) : _imageFile;
       if (_imageFile != null) {
         authProvider.profilePic = _imageFile;
       }
@@ -129,8 +129,7 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
                                     ),
                                   ),
                                   UploadPhotoWidget(
-                                    onTap: () =>
-                                        _pickImage(ImageSource.gallery),
+                                    onTap: () => _pickImage(),
                                   )
                                 ],
                               ),

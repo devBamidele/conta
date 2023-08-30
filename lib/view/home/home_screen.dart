@@ -105,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen>
                             child: CircleAvatar(
                               radius: 25,
                               backgroundColor: Colors.white,
-                              child: ProfilePic(),
+                              child: UrlProfilePic(),
                             ),
                           ),
                         ),

@@ -4,9 +4,9 @@ import 'package:conta/view_model/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../res/color.dart';
-import '../../../res/components/custom/custom_back_button.dart';
-import '../../../utils/app_utils.dart';
+import '../../../../res/color.dart';
+import '../../../../res/components/custom/custom_back_button.dart';
+import '../../../../utils/app_utils.dart';
 
 class EditBioScreen extends StatefulWidget {
   const EditBioScreen({super.key});

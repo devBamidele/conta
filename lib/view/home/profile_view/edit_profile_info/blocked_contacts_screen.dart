@@ -4,15 +4,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../models/chat.dart';
-import '../../../res/components/app_bars/blocked_app_bar.dart';
-import '../../../res/components/chat_list_tile.dart';
-import '../../../res/components/empty/empty.dart';
-import '../../../utils/app_router/router.dart';
-import '../../../utils/app_router/router.gr.dart';
-import '../../../utils/widget_functions.dart';
-import '../../../view_model/chat_provider.dart';
-import '../../../view_model/messages_provider.dart';
+import '../../../../models/chat.dart';
+import '../../../../res/components/app_bars/blocked_app_bar.dart';
+import '../../../../res/components/chat_list_tile.dart';
+import '../../../../res/components/empty/empty.dart';
+import '../../../../utils/app_router/router.dart';
+import '../../../../utils/app_router/router.gr.dart';
+import '../../../../utils/widget_functions.dart';
+import '../../../../view_model/chat_provider.dart';
+import '../../../../view_model/messages_provider.dart';
 
 class BlockedContactsScreen extends StatefulWidget {
   const BlockedContactsScreen({super.key});
