@@ -133,7 +133,6 @@ class Person {
       name: name ?? this.name,
       username: username ?? this.username,
       email: email ?? this.email,
-      // Restart the app !
       phone: phone ?? this.phone,
       profilePicUrl: profilePicUrl == 'null'
           ? null

@@ -22,37 +22,39 @@ class ProfileImagePreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserProvider>(builder: (_, data, __) {
-      return Scaffold(
-        appBar: AppBar(
-          leading: const CustomBackButton(
-            padding: EdgeInsets.only(left: 15),
-            color: AppColors.extraTextColor,
+    return Consumer<UserProvider>(
+      builder: (_, data, __) {
+        return Scaffold(
+          appBar: AppBar(
+            leading: const CustomBackButton(
+              padding: EdgeInsets.only(left: 15),
+              color: AppColors.extraTextColor,
+            ),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(right: 20),
+                child: AppBarIcon(
+                  icon: IconlyLight.delete,
+                  size: 27,
+                  onTap: () => confirmDelete(context, data),
+                ),
+              ),
+            ],
           ),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 20),
-              child: AppBarIcon(
-                icon: IconlyLight.delete,
-                size: 27,
-                onTap: () => confirmDelete(context, data),
+          body: SafeArea(
+            child: Padding(
+              padding: pagePadding.copyWith(left: 10, right: 10),
+              child: Center(
+                child: ImagePreview(
+                  url: path,
+                  tag: 'Avatar',
+                ),
               ),
             ),
-          ],
-        ),
-        body: SafeArea(
-          child: Padding(
-            padding: pagePadding.copyWith(left: 10, right: 10),
-            child: Center(
-              child: ImagePreview(
-                url: path,
-                tag: 'Avatar',
-              ),
-            ),
           ),
-        ),
-      );
-    });
+        );
+      },
+    );
   }
 
   void confirmDelete(BuildContext context, UserProvider data) async {

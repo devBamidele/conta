@@ -175,7 +175,8 @@ class _ChatListTileState extends State<ChatListTile> {
   }
 
   Widget _buildProfileImage() {
-    final imageUrl = widget.tileData.profilePicUrls[widget.oppIndex];
+    final imageUrl =
+        widget.tileData.profilePicUrls[widget.samePerson ? 0 : widget.oppIndex];
 
     return imageUrl != null
         ? CachedNetworkImage(

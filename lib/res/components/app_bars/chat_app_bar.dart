@@ -4,8 +4,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:conta/res/components/app_bar_icon.dart';
 import 'package:conta/res/components/custom/custom_back_button.dart';
 import 'package:conta/res/components/online_status.dart';
-import 'package:conta/res/components/shimmer/shimmer_widget.dart';
-import 'package:conta/res/components/snackbar_label.dart';
 import 'package:conta/res/style/app_text_style.dart';
 import 'package:conta/utils/app_utils.dart';
 import 'package:flutter/material.dart';
@@ -15,8 +13,9 @@ import 'package:provider/provider.dart';
 import '../../../../../res/color.dart';
 import '../../../utils/widget_functions.dart';
 import '../../../view_model/messages_provider.dart';
-import '../confirmation_dialog.dart';
 import '../message_counter.dart';
+import '../profile_avatar.dart';
+import '../shimmer/shimmer_widget.dart';
 
 class ChatAppBar extends StatefulWidget implements PreferredSizeWidget {
   const ChatAppBar({
@@ -32,6 +31,15 @@ class ChatAppBar extends StatefulWidget implements PreferredSizeWidget {
 
 class _ChatAppBarState extends State<ChatAppBar> {
   final double customSize = 27;
+
+  userDialog(BuildContext context, String? imageUrl) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return const ProfileDialog();
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,53 +74,28 @@ class _ChatAppBarState extends State<ChatAppBar> {
                       ),
                     ),
                   ],
-                  title: Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 23,
-                        backgroundColor: Colors.white,
-                        child: currentChat.profilePicUrl != null
-                            ? CachedNetworkImage(
-                                imageUrl: currentChat.profilePicUrl!,
-                                imageBuilder: (context, imageProvider) =>
-                                    Container(
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    image: DecorationImage(
-                                      image: imageProvider,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                                placeholder: (context, url) =>
-                                    const ShimmerWidget.circular(
-                                        width: 46, height: 46),
-                                errorWidget: (context, url, error) =>
-                                    const ShimmerWidget.circular(
-                                        width: 46, height: 46),
-                              )
-                            : const Icon(
-                                IconlyBold.profile,
-                                color: AppColors.hintTextColor,
-                                size: 25,
+                  title: GestureDetector(
+                    onTap: () => userDialog(context, currentChat.profilePicUrl),
+                    child: Row(
+                      children: [
+                        ProfileAvatar(imageUrl: currentChat.profilePicUrl),
+                        addWidth(10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                currentChat.username,
+                                overflow: TextOverflow.fade,
+                                style: AppTextStyles.titleMedium,
                               ),
-                      ),
-                      addWidth(10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              currentChat.username,
-                              overflow: TextOverflow.fade,
-                              style: AppTextStyles.titleMedium,
-                            ),
-                            addHeight(2),
-                            const OnlineStatus(),
-                          ],
+                              addHeight(2),
+                              const OnlineStatus(),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 )
               : AppBar(
@@ -174,36 +157,135 @@ class _ChatAppBarState extends State<ChatAppBar> {
   }
 }
 
-void confirmDelete(BuildContext context, MessagesProvider data) {
-  final length = data.selectedMessages.length;
-  final isSingleMessage = length == 1;
-  final contentText = isSingleMessage
-      ? 'Are you sure you want to delete this message?'
-      : 'Are you sure you want to delete these messages?';
+class ProfileDialog extends StatelessWidget {
+  const ProfileDialog({super.key});
 
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return ConfirmationDialog(
-        title: isSingleMessage ? 'Delete message' : 'Delete $length messages',
-        contentText: contentText,
-        onConfirmPressed: () {
-          data.deleteMessage();
-          Navigator.of(context).pop();
-          _showSnackbar(data, context);
-        },
-      );
-    },
-  );
-}
-
-void _showSnackbar(MessagesProvider data, BuildContext context) {
-  AppUtils.showSnackbar(
-    'Message Deleted',
-    delay: const Duration(seconds: 3),
-    label: SnackBarLabel(
-      onTap: () => data.undoDelete(),
-    ),
-    onClosed: () => data.clearDeletedMessages(),
-  );
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<MessagesProvider>(
+      builder: (_, data, __) {
+        String? imageUrl = data.currentChat!.profilePicUrl;
+        return Dialog(
+          clipBehavior: Clip.hardEdge,
+          child: Container(
+            color: Colors.white,
+            height: 450,
+            child: Stack(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    imageUrl != null
+                        ? SizedBox(
+                            height: 220,
+                            width: double.infinity,
+                            child: Stack(
+                              children: [
+                                CachedNetworkImage(
+                                  imageUrl: imageUrl,
+                                  imageBuilder: (context, imageProvider) =>
+                                      Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.rectangle,
+                                      image: DecorationImage(
+                                        image: imageProvider,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                  placeholder: (context, url) =>
+                                      const ShimmerWidget.circular(
+                                    width: 46,
+                                    height: 46,
+                                  ),
+                                  errorWidget: (context, url, error) =>
+                                      const ShimmerWidget.circular(
+                                    width: 46,
+                                    height: 46,
+                                  ),
+                                ),
+                                const Align(
+                                  alignment: Alignment.bottomLeft,
+                                  child: Padding(
+                                    padding: EdgeInsets.fromLTRB(18, 0, 0, 18),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          'Demilade',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          )
+                        : const Icon(
+                            IconlyBold.profile,
+                            color: AppColors.hintTextColor,
+                            size: 25,
+                          ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(18, 18, 0, 0),
+                      child: Column(
+                        children: [
+                          const Text(
+                            'Info',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.primaryShadeColor,
+                              fontSize: 16,
+                            ),
+                          ),
+                          ListTile(
+                            title: const Text('Bio'),
+                            titleTextStyle: TextStyle(
+                              fontSize: 13,
+                              color: AppColors.blackColor.withOpacity(0.7),
+                            ),
+                            subtitle: const Text('Bio'),
+                            subtitleTextStyle: const TextStyle(
+                              fontSize: 16,
+                              color: AppColors.blackColor,
+                            ),
+                          ),
+                          addHeight(4),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 16),
+                    child: SizedBox.square(
+                      dimension: 50,
+                      child: FloatingActionButton(
+                        elevation: 2,
+                        backgroundColor: Colors.white,
+                        onPressed: () {},
+                        shape: const CircleBorder(),
+                        child: const Icon(
+                          IconlyLight.chat,
+                          size: 28,
+                          color: AppColors.extraTextColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 }

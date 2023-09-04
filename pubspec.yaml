@@ -74,6 +74,7 @@ dependencies:
   contacts_service: ^0.6.3
   permission_handler: ^10.4.3
 
+  image_downloader: ^0.31.0
   algolia: ^1.1.2
 
 dev_dependencies:

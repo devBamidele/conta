@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
+import '../res/components/confirmation_dialog.dart';
+import '../res/components/snackbar_label.dart';
+import '../view_model/messages_provider.dart';
+
 /// Utility class for displaying SnackBars using a global key.
 class AppUtils {
   /// Global key for accessing the ScaffoldMessengerState to show SnackBars.
@@ -89,4 +93,38 @@ class AppUtils {
       ),
     );
   }
+}
+
+void confirmDelete(BuildContext context, MessagesProvider data) {
+  final length = data.selectedMessages.length;
+  final isSingleMessage = length == 1;
+  final contentText = isSingleMessage
+      ? 'Are you sure you want to delete this message?'
+      : 'Are you sure you want to delete these messages?';
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return ConfirmationDialog(
+        title: isSingleMessage ? 'Delete message' : 'Delete $length messages',
+        contentText: contentText,
+        onConfirmPressed: () {
+          data.deleteMessage();
+          Navigator.of(context).pop();
+          _showSnackbar(data, context);
+        },
+      );
+    },
+  );
+}
+
+void _showSnackbar(MessagesProvider data, BuildContext context) {
+  AppUtils.showSnackbar(
+    'Message Deleted',
+    delay: const Duration(seconds: 3),
+    label: SnackBarLabel(
+      onTap: () => data.undoDelete(),
+    ),
+    onClosed: () => data.clearDeletedMessages(),
+  );
 }

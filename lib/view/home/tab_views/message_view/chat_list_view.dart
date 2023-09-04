@@ -102,7 +102,9 @@ class _ChatListViewState extends State<ChatListView> {
       username: tile.userNames[oppIndex],
       uidUser1: currentUser,
       uidUser2: tile.participants[oppIndex],
-      profilePicUrl: tile.profilePicUrls[oppIndex],
+      profilePicUrl: tile.participants[0] == tile.participants[1]
+          ? tile.profilePicUrls[0]
+          : tile.profilePicUrls[oppIndex],
     );
 
     data.cancelReplyAndClearCache();

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conta/models/chat.dart';
@@ -8,6 +9,7 @@ import 'package:conta/view_model/user_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_downloader/image_downloader.dart';
 import 'package:uuid/uuid.dart';
 
 import '../models/Person.dart';
@@ -136,6 +138,40 @@ class MessagesProvider extends ChangeNotifier {
     replyMessage = null;
 
     notifyListeners();
+  }
+
+  Future<void> downloadImages({required List<String> imageUrls}) async {
+    final futures = imageUrls.map((image) => _downloadImage(image)).toList();
+
+    try {
+      await Future.wait(futures);
+    } catch (error) {
+      log('Error occurred during image download: $error');
+    }
+  }
+
+  Future<void> _downloadImage(String imageUrl) async {
+    try {
+      var imageId = await ImageDownloader.downloadImage(
+        imageUrl,
+        destination: AndroidDestinationType.directoryPictures,
+      );
+
+      if (imageId == null) {
+        AppUtils.showToast(' Cannot Access Storage, permission denied');
+        return;
+      }
+
+      var path = await ImageDownloader.findPath(imageId);
+
+      AppUtils.showSnackbar('Downloaded image from $imageUrl');
+
+      log('Downloaded image from $imageUrl. Image ID: $imageId, Path: $path');
+    } on PlatformException catch (error) {
+      log('A platform error occurred $error');
+    } catch (error) {
+      log('Error occurred during image download for $imageUrl: $error');
+    }
   }
 
   Stream<List<Message>> getChatMessagesStream({

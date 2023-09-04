@@ -1,7 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:conta/res/components/app_bar_icon.dart';
 import 'package:conta/utils/extensions.dart';
+import 'package:conta/utils/widget_functions.dart';
+import 'package:conta/view_model/messages_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:iconly/iconly.dart';
+import 'package:provider/provider.dart';
 
 import '../../color.dart';
 import '../custom/custom_back_button.dart';
@@ -27,26 +32,46 @@ class ViewImageScreen extends StatelessWidget {
           padding: EdgeInsets.only(left: 15),
           color: AppColors.extraTextColor,
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              sender,
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 19,
+        title: DefaultTextStyle(
+          style: const TextStyle(
+            color: AppColors.blackColor,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                sender,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 19,
+                ),
               ),
-            ),
-            Text(
-              media.length > 1
-                  ? timeSent.toStringForMultiplePics()
-                  : timeSent.toStringForSinglePic(),
-              style: const TextStyle(
-                fontSize: 14,
+              addHeight(2),
+              Text(
+                media.length > 1
+                    ? timeSent.toStringForMultiplePics()
+                    : timeSent.toStringForSinglePic(),
+                style: const TextStyle(
+                  fontSize: 14,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
+        actions: [
+          Consumer<MessagesProvider>(
+            builder: (_, data, __) {
+              return Padding(
+                padding: const EdgeInsets.only(right: 20),
+                child: AppBarIcon(
+                  icon: IconlyLight.download,
+                  size: 27,
+                  onTap: () => data.downloadImages(imageUrls: media),
+                ),
+              );
+            },
+          )
+        ],
       ),
       body: SafeArea(
         child: media.length == 1
