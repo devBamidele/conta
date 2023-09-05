@@ -19,6 +19,7 @@ class AppColors {
   static const Color continueWithColor = Color(0xFF616161);
   static const Color extraTextColor = Color(0xFF999999);
   static const Color blackColor = Color(0xff424242);
+  static Color blackShade = blackColor.withOpacity(0.8);
 
   // For the text fields
   static const Color selectedFieldColor = Color(0xFFFD9787);

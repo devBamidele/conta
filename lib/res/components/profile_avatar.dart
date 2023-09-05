@@ -17,39 +17,36 @@ class ProfileAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Hero(
-      tag: 'Avatar',
-      child: CircleAvatar(
-        radius: radius,
-        backgroundColor: Colors.white,
-        child: imageUrl != null
-            ? CachedNetworkImage(
-                imageUrl: imageUrl!,
-                imageBuilder: (context, imageProvider) => Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                      image: imageProvider,
-                      fit: BoxFit.cover,
-                    ),
+    return CircleAvatar(
+      radius: radius,
+      backgroundColor: Colors.white,
+      child: imageUrl != null
+          ? CachedNetworkImage(
+              imageUrl: imageUrl!,
+              imageBuilder: (context, imageProvider) => Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    image: imageProvider,
+                    fit: BoxFit.cover,
                   ),
                 ),
-                placeholder: (context, url) => const ShimmerWidget.circular(
-                  width: 46,
-                  height: 46,
-                ),
-                errorWidget: (context, url, error) =>
-                    const ShimmerWidget.circular(
-                  width: 46,
-                  height: 46,
-                ),
-              )
-            : const Icon(
-                IconlyBold.profile,
-                color: AppColors.hintTextColor,
-                size: 25,
               ),
-      ),
+              placeholder: (context, url) => const ShimmerWidget.circular(
+                width: 46,
+                height: 46,
+              ),
+              errorWidget: (context, url, error) =>
+                  const ShimmerWidget.circular(
+                width: 46,
+                height: 46,
+              ),
+            )
+          : const Icon(
+              IconlyBold.profile,
+              color: AppColors.hintTextColor,
+              size: 25,
+            ),
     );
   }
 }

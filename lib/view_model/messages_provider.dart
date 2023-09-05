@@ -209,6 +209,8 @@ class MessagesProvider extends ChangeNotifier {
     required String uidUser1,
     required String uidUser2,
     String? profilePicUrl,
+    String? bio,
+    String? name,
   }) {
     final chatId = generateChatId(uidUser1, uidUser2);
 
@@ -218,6 +220,8 @@ class MessagesProvider extends ChangeNotifier {
       uidUser1: uidUser1,
       uidUser2: uidUser2,
       profilePicUrl: profilePicUrl,
+      bio: bio,
+      name: name,
     );
 
     oppUserId = uidUser2;

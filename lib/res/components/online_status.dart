@@ -8,7 +8,12 @@ import '../../models/Person.dart';
 import '../color.dart';
 
 class OnlineStatus extends StatelessWidget {
-  const OnlineStatus({Key? key}) : super(key: key);
+  final bool isDialog;
+
+  const OnlineStatus({
+    Key? key,
+    this.isDialog = false,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +25,7 @@ class OnlineStatus extends StatelessWidget {
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return ShimmerWidget.rectangular(
-                width: width * 0.1,
+                width: width * 0.3,
                 height: 10,
                 border: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5),
@@ -33,9 +38,11 @@ class OnlineStatus extends StatelessWidget {
             return Text(
               isOnline ? 'Online' : lastSeen,
               style: TextStyle(
-                color: isOnline
-                    ? AppColors.primaryColor
-                    : AppColors.extraTextColor,
+                color: isDialog
+                    ? Colors.white
+                    : isOnline
+                        ? AppColors.primaryColor
+                        : AppColors.extraTextColor,
                 fontSize: 13,
               ),
             );

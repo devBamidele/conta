@@ -173,6 +173,8 @@ class _ContactsViewState extends State<ContactsView> {
       uidUser1: currentUser,
       uidUser2: person.id,
       profilePicUrl: person.profilePicUrl,
+      bio: person.bio,
+      name: person.name,
     );
 
     data.cancelReplyAndClearCache();

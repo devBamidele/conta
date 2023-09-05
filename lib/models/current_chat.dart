@@ -11,6 +11,8 @@ class CurrentChat {
   final String uidUser2;
   final String? profilePicUrl;
   final String? chatId;
+  final String? bio;
+  final String? name;
 
   /// Constructs a [CurrentChat] object.
   ///
@@ -25,5 +27,7 @@ class CurrentChat {
     required this.uidUser2,
     this.profilePicUrl,
     this.chatId,
+    this.bio,
+    this.name,
   });
 }

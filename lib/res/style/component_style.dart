@@ -95,6 +95,17 @@ final bottomShade = BoxDecoration(
   ),
 );
 
+final profileDialogShade = BoxDecoration(
+  gradient: LinearGradient(
+    end: const Alignment(0.00, -0.4),
+    begin: const Alignment(0, 1),
+    colors: [
+      AppColors.blackShade,
+      Colors.transparent,
+    ],
+  ),
+);
+
 const pagePadding = EdgeInsets.symmetric(horizontal: 20);
 
 const chatFieldPadding = EdgeInsets.fromLTRB(10, 5, 10, 10);

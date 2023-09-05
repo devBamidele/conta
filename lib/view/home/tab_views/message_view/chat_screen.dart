@@ -223,7 +223,7 @@ class _ChatScreenState extends State<ChatScreen>
 
                     // Record audio / Send message button
                     CircleAvatar(
-                      radius: 20,
+                      radius: 24,
                       backgroundColor: AppColors.primaryColor,
                       child: typing
                           ? GestureDetector(

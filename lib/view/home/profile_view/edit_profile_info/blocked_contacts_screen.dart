@@ -99,7 +99,11 @@ class _BlockedContactsScreenState extends State<BlockedContactsScreen> {
   }
 
   void onTileTap(
-      MessagesProvider data, Chat tile, bool sameUser, int oppIndex) {
+    MessagesProvider data,
+    Chat tile,
+    bool sameUser,
+    int oppIndex,
+  ) {
     data.setCurrentChat(
       username: tile.userNames[oppIndex],
       uidUser1: currentUser,
