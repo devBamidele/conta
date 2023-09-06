@@ -20,3 +20,5 @@ enum MessageStatus {
 }
 
 enum MessageCategory { all, unread, muted }
+
+enum StreamType { bio, name, onlineStatus }

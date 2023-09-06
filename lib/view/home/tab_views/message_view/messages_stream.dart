@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:conta/res/components/empty/empty_chat.dart';
 import 'package:conta/res/components/message_bubble.dart';
 import 'package:conta/utils/extensions.dart';
@@ -38,7 +36,7 @@ class _MessagesStreamState extends State<MessagesStream> {
   bool showTail = true;
   bool showDate = true;
 
-  int messageLimit = 10;
+  int messageLimit = 30;
 
   @override
   void initState() {
@@ -56,7 +54,6 @@ class _MessagesStreamState extends State<MessagesStream> {
       // Load the next batch of messages
       setState(() {
         messageLimit += 10;
-        log('Loaded Message Count $messageLimit');
       });
     }
   }

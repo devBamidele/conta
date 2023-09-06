@@ -2,24 +2,30 @@ class Response {
   final String username;
   final String uidUser2;
   final String senderProfilePic;
-  final String bio;
-  final String name;
+  final String? bio;
+  final String? name;
+  final bool notifications;
+  final int oppIndex;
 
   Response({
     required this.username,
     required this.uidUser2,
     required this.senderProfilePic,
-    required this.bio,
-    required this.name,
+    this.bio,
+    this.name,
+    required this.notifications,
+    required this.oppIndex,
   });
 
   factory Response.fromJson(Map<String, dynamic> json) {
     return Response(
-      username: json['username'] ?? '',
-      uidUser2: json['uidUser2'] ?? '',
+      username: json['username'] as String,
+      uidUser2: json['uidUser2'] as String,
       senderProfilePic: json['senderProfilePic'] ?? 'null',
-      bio: json['bio'] ?? '',
-      name: json['name'] ?? '',
+      bio: json['bio'] as String?,
+      name: json['name'] as String?,
+      notifications: true,
+      oppIndex: json['oppIndex'] as int,
     );
   }
 
@@ -29,6 +35,8 @@ class Response {
         ' uidUser2: $uidUser2,\n'
         ' bio: $bio,\n'
         ' name: $name,\n'
+        ' notifications $notifications, \n'
+        ' oppIndex $oppIndex, \n  '
         'senderProfilePic: $senderProfilePic)';
   }
 }

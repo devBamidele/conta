@@ -175,7 +175,10 @@ class _ContactsViewState extends State<ContactsView> {
       profilePicUrl: person.profilePicUrl,
       bio: person.bio,
       name: person.name,
+      notifications: true,
     );
+
+    data.updateOppIndex();
 
     data.cancelReplyAndClearCache();
     navigateToNextScreen(context);

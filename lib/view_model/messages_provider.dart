@@ -208,9 +208,11 @@ class MessagesProvider extends ChangeNotifier {
     required String username,
     required String uidUser1,
     required String uidUser2,
+    required bool notifications,
     String? profilePicUrl,
     String? bio,
     String? name,
+    int? oppIndex,
   }) {
     final chatId = generateChatId(uidUser1, uidUser2);
 
@@ -222,11 +224,41 @@ class MessagesProvider extends ChangeNotifier {
       profilePicUrl: profilePicUrl,
       bio: bio,
       name: name,
+      notifications: notifications,
+      oppIndex: oppIndex,
     );
 
     oppUserId = uidUser2;
 
     notifyListeners();
+  }
+
+  void updateCurrentChat({
+    String? username,
+    String? uidUser1,
+    String? uidUser2,
+    bool? notifications,
+    String? profilePicUrl,
+    String? chatId,
+    String? bio,
+    String? name,
+    int? oppIndex,
+  }) {
+    if (currentChat != null) {
+      currentChat = currentChat!.copyWith(
+        username: username,
+        uidUser1: uidUser1,
+        uidUser2: uidUser2,
+        notifications: notifications,
+        profilePicUrl: profilePicUrl,
+        chatId: chatId,
+        bio: bio,
+        name: name,
+        oppIndex: oppIndex,
+      );
+
+      notifyListeners();
+    }
   }
 
   void updateUserData(UserProvider userData) {
@@ -501,7 +533,7 @@ class MessagesProvider extends ChangeNotifier {
     final chatRef = firestore.collection('chats').doc(chatId);
 
     final chatSnapshot = await chatRef.get();
-    final shouldCreateNewChat = !chatSnapshot.exists;
+    final shouldCreateNewChat = chatSnapshot.exists;
 
     if (shouldCreateNewChat) {
       final newChat = Chat(
@@ -529,7 +561,39 @@ class MessagesProvider extends ChangeNotifier {
     );
   }
 
-  Stream<Person> getOnlineStatusStream() async* {
+  Future<void> updateOppIndex() async {
+    final chatId = currentChat!.chatId;
+    final currentUser = FirebaseAuth.instance.currentUser!.uid;
+
+    try {
+      final chatDocument = await FirebaseFirestore.instance
+          .collection('chats')
+          .doc(chatId)
+          .get();
+
+      if (chatDocument.exists) {
+        // Document exists, map it to a Chat object
+        final chat = Chat.fromJson(chatDocument.data() as Map<String, dynamic>);
+
+        final oppIndex = chat.participants.indexOf(currentUser) == 0 ? 1 : 0;
+
+        final notifications = !chat.userMuted[oppIndex];
+
+        // Update existing values
+        updateCurrentChat(
+          oppIndex: oppIndex,
+          notifications: notifications,
+        );
+      } else {
+        // Document doesn't exist
+        log('Chat document does not exist');
+      }
+    } catch (e) {
+      log('Error checking chat document: $e');
+    }
+  }
+
+  Stream<Person> getStatusStream() async* {
     final userDocRef =
         FirebaseFirestore.instance.doc('users/${currentChat!.uidUser2}');
 

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conta/res/components/shimmer/shimmer_widget.dart';
+import 'package:conta/utils/enums.dart';
 import 'package:conta/view_model/messages_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -7,48 +8,81 @@ import 'package:provider/provider.dart';
 import '../../models/Person.dart';
 import '../color.dart';
 
-class OnlineStatus extends StatelessWidget {
+class Status extends StatelessWidget {
   final bool isDialog;
+  final StreamType type;
 
-  const OnlineStatus({
+  const Status({
     Key? key,
     this.isDialog = false,
+    this.type = StreamType.onlineStatus,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
     return Consumer<MessagesProvider>(
-      builder: (_, data, Widget? child) {
+      builder: (_, data, __) {
         return StreamBuilder<Person>(
-          stream: data.getOnlineStatusStream(),
+          stream: data.getStatusStream(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
-              return ShimmerWidget.rectangular(
-                width: width * 0.3,
-                height: 10,
-                border: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5),
-                ),
-              );
+              return buildShimmer(context);
             }
             Person person = snapshot.data!;
-            bool isOnline = person.online;
-            String lastSeen = person.formatLastSeen(Timestamp.now());
-            return Text(
-              isOnline ? 'Online' : lastSeen,
-              style: TextStyle(
-                color: isDialog
-                    ? Colors.white
-                    : isOnline
-                        ? AppColors.primaryColor
-                        : AppColors.extraTextColor,
-                fontSize: 13,
-              ),
-            );
+            return buildStatusText(person);
           },
         );
       },
     );
+  }
+
+  Widget buildShimmer(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    return ShimmerWidget.rectangular(
+      width: width * 0.3,
+      height: 10,
+      border: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(5),
+      ),
+    );
+  }
+
+  Widget buildStatusText(Person person) {
+    switch (type) {
+      case StreamType.bio:
+        return Text(
+          person.bio,
+          style: const TextStyle(
+            fontSize: 15,
+            color: AppColors.blackColor,
+            fontWeight: FontWeight.w500,
+          ),
+        );
+      case StreamType.name:
+        return Text(
+          person.name,
+          style: const TextStyle(
+            fontSize: 15,
+            color: AppColors.blackColor,
+            fontWeight: FontWeight.w500,
+          ),
+        );
+      case StreamType.onlineStatus:
+        bool isOnline = person.online;
+        String lastSeen = person.formatLastSeen(Timestamp.now());
+        return Text(
+          isOnline ? 'Online' : lastSeen,
+          style: TextStyle(
+            color: isDialog
+                ? Colors.white
+                : isOnline
+                    ? AppColors.primaryColor
+                    : AppColors.extraTextColor,
+            fontSize: 13,
+          ),
+        );
+      default:
+        return const SizedBox.shrink(); // Handle other cases as needed
+    }
   }
 }

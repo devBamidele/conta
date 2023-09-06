@@ -105,6 +105,8 @@ class _ChatListViewState extends State<ChatListView> {
       profilePicUrl: tile.participants[0] == tile.participants[1]
           ? tile.profilePicUrls[0]
           : tile.profilePicUrls[oppIndex],
+      notifications: !tile.userMuted[oppIndex],
+      oppIndex: oppIndex,
     );
 
     data.cancelReplyAndClearCache();

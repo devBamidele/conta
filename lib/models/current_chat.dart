@@ -9,10 +9,12 @@ class CurrentChat {
   final String username;
   final String uidUser1;
   final String uidUser2;
+  final bool notifications;
   final String? profilePicUrl;
   final String? chatId;
   final String? bio;
   final String? name;
+  final int? oppIndex;
 
   /// Constructs a [CurrentChat] object.
   ///
@@ -25,9 +27,36 @@ class CurrentChat {
     required this.username,
     required this.uidUser1,
     required this.uidUser2,
+    required this.notifications,
     this.profilePicUrl,
     this.chatId,
     this.bio,
     this.name,
+    this.oppIndex,
   });
+
+  // Create a copyWith method to clone the object with some modified properties.
+  CurrentChat copyWith({
+    String? username,
+    String? uidUser1,
+    String? uidUser2,
+    bool? notifications,
+    String? profilePicUrl,
+    String? chatId,
+    String? bio,
+    String? name,
+    int? oppIndex,
+  }) {
+    return CurrentChat(
+      username: username ?? this.username,
+      uidUser1: uidUser1 ?? this.uidUser1,
+      uidUser2: uidUser2 ?? this.uidUser2,
+      notifications: notifications ?? this.notifications,
+      profilePicUrl: profilePicUrl ?? this.profilePicUrl,
+      chatId: chatId ?? this.chatId,
+      bio: bio ?? this.bio,
+      name: name ?? this.name,
+      oppIndex: oppIndex ?? this.oppIndex,
+    );
+  }
 }

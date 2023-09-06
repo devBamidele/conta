@@ -38,13 +38,11 @@ class ChatListTile extends StatefulWidget {
 }
 
 class _ChatListTileState extends State<ChatListTile> {
-  bool chatMuted = false;
   bool chatBlocked = false;
 
   @override
   void initState() {
     super.initState();
-    chatMuted = widget.tileData.userMuted[widget.oppIndex];
 
     chatBlocked = widget.tileData.userBlocked[widget.oppIndex];
   }
@@ -65,10 +63,12 @@ class _ChatListTileState extends State<ChatListTile> {
     Future.delayed(const Duration(milliseconds: 100), () {
       final name = widget.tileData.userNames[widget.oppIndex];
 
+      bool chatMuted = widget.tileData.userMuted[widget.oppIndex];
+
       setState(() => chatMuted = !chatMuted);
 
       AppUtils.showToast(
-          '${chatMuted ? 'muted' : 'Un-muted'} notifications from $name');
+          '${chatMuted ? 'Muted' : 'Un-muted'} notifications from $name');
 
       data.toggleMutedStatus(
         chatId: widget.tileData.id!,
@@ -140,7 +140,9 @@ class _ChatListTileState extends State<ChatListTile> {
                     CustomSlidableAction(
                       backgroundColor: Colors.transparent,
                       onPressed: (context) => onMutePressed(data),
-                      child: MuteButton(chatMuted: chatMuted),
+                      child: MuteButton(
+                        chatMuted: widget.tileData.userMuted[widget.oppIndex],
+                      ),
                     ),
                   ],
                 ),
@@ -228,7 +230,7 @@ class _ChatListTileState extends State<ChatListTile> {
           ],
         ),
         Visibility(
-          visible: chatMuted,
+          visible: widget.tileData.userMuted[widget.oppIndex],
           child: const Padding(
             padding: EdgeInsets.only(left: 4),
             child: Icon(

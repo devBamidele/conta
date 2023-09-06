@@ -72,7 +72,7 @@ class _ChatAppBarState extends State<ChatAppBar> {
                                 style: AppTextStyles.titleMedium,
                               ),
                               addHeight(2),
-                              const OnlineStatus(),
+                              const Status(),
                             ],
                           ),
                         ),

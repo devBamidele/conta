@@ -39,6 +39,8 @@ class _IntermediaryState extends State<Intermediary> {
       profilePicUrl: profilePic,
       bio: widget.data.bio,
       name: widget.data.name,
+      notifications: widget.data.notifications,
+      oppIndex: widget.data.oppIndex,
     );
 
     navReplace(context, const ChatScreenRoute());

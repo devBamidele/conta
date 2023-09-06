@@ -2,11 +2,14 @@ import 'package:auto_route/auto_route.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:conta/res/components/online_status.dart';
 import 'package:conta/res/style/component_style.dart';
+import 'package:conta/view_model/chat_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../res/color.dart';
+import '../../../utils/app_utils.dart';
+import '../../../utils/enums.dart';
 import '../../../utils/widget_functions.dart';
 import '../../../view_model/messages_provider.dart';
 import '../shimmer/shimmer_widget.dart';
@@ -83,7 +86,7 @@ class ProfileDialog extends StatelessWidget {
                                             fontWeight: FontWeight.w500,
                                           ),
                                         ),
-                                        const OnlineStatus(
+                                        const Status(
                                           isDialog: true,
                                         ),
                                       ],
@@ -106,7 +109,7 @@ class ProfileDialog extends StatelessWidget {
                           const Text(
                             'Info',
                             style: TextStyle(
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.bold,
                               color: AppColors.primaryShadeColor,
                               fontSize: 16,
                             ),
@@ -119,13 +122,15 @@ class ProfileDialog extends StatelessWidget {
                               color: AppColors.blackShade,
                             ),
                           ),
-                          Text(
-                            data.currentChat!.bio ?? 'Null bio',
-                            style: const TextStyle(
-                              fontSize: 15,
-                              color: AppColors.blackColor,
-                            ),
-                          ),
+                          data.currentChat!.bio != null
+                              ? Text(
+                                  data.currentChat!.bio!,
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    color: AppColors.blackColor,
+                                  ),
+                                )
+                              : const Status(type: StreamType.bio),
                           addHeight(8),
                           Text(
                             'Name',
@@ -134,27 +139,32 @@ class ProfileDialog extends StatelessWidget {
                               color: AppColors.blackShade,
                             ),
                           ),
-                          Text(
-                            data.currentChat!.name ?? 'Null name',
-                            style: const TextStyle(
-                              fontSize: 15,
-                              color: AppColors.blackColor,
-                            ),
-                          ),
+                          data.currentChat!.name != null
+                              ? Text(
+                                  data.currentChat!.name!,
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    color: AppColors.blackColor,
+                                  ),
+                                )
+                              : const Status(type: StreamType.name),
                           addHeight(4),
-                          const Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Notifications',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: AppColors.blackColor,
+                          if (data.currentChat!.oppIndex != null)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  'Notifications',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: AppColors.blackColor,
+                                  ),
                                 ),
-                              ),
-                              NotificationSwitch(),
-                            ],
-                          )
+                                NotificationSwitch(
+                                  enabled: data.currentChat!.notifications,
+                                ),
+                              ],
+                            )
                         ],
                       ),
                     ),
@@ -190,14 +200,26 @@ class ProfileDialog extends StatelessWidget {
 }
 
 class NotificationSwitch extends StatefulWidget {
-  const NotificationSwitch({super.key});
+  const NotificationSwitch({
+    super.key,
+    required this.enabled,
+  });
+
+  final bool enabled;
 
   @override
   State<NotificationSwitch> createState() => _NotificationSwitchState();
 }
 
 class _NotificationSwitchState extends State<NotificationSwitch> {
-  bool light = true;
+  bool enabled = true;
+
+  @override
+  void initState() {
+    enabled = widget.enabled;
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -231,18 +253,39 @@ class _NotificationSwitchState extends State<NotificationSwitch> {
       },
     );
 
-    onSwitchChanged(bool value) {
+    onSwitchChanged(bool value, MessagesProvider data, ChatProvider chat) {
+      final currentChat = data.currentChat!;
+
       setState(() {
-        light = value;
+        enabled = value;
       });
+
+      AppUtils.showToast(
+          '${enabled ? 'Un-muted' : 'Muted'} notifications from ${currentChat.username}');
+
+      final oppIndex = currentChat.oppIndex!;
+
+      chat.toggleMutedStatus(
+        chatId: currentChat.chatId!,
+        index: oppIndex,
+        newValue: !enabled,
+      );
+
+      data.updateCurrentChat(notifications: value);
     }
 
-    return Switch.adaptive(
-      value: light,
-      trackOutlineColor: trackOutlineColor,
-      trackColor: trackColor,
-      thumbColor: thumbColor,
-      onChanged: onSwitchChanged,
+    return Consumer2<MessagesProvider, ChatProvider>(
+      builder: (_, data, chat, __) {
+        return Switch.adaptive(
+          value: enabled,
+          trackOutlineColor: trackOutlineColor,
+          trackColor: trackColor,
+          thumbColor: thumbColor,
+          onChanged: (newValue) {
+            onSwitchChanged(newValue, data, chat);
+          },
+        );
+      },
     );
   }
 }

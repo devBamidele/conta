@@ -109,6 +109,8 @@ class _BlockedContactsScreenState extends State<BlockedContactsScreen> {
       uidUser1: currentUser,
       uidUser2: tile.participants[oppIndex],
       profilePicUrl: tile.profilePicUrls[oppIndex],
+      notifications: !tile.userMuted[oppIndex],
+      oppIndex: oppIndex,
     );
 
     data.cancelReplyAndClearCache();
