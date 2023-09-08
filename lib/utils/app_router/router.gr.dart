@@ -11,6 +11,8 @@
 // ignore_for_file: type=lint
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'dart:io' as _i27;
+
 import 'package:auto_route/auto_route.dart' as _i21;
 import 'package:cloud_firestore/cloud_firestore.dart' as _i26;
 import 'package:conta/models/response.dart' as _i25;
@@ -201,9 +203,14 @@ class AppRouter extends _i21.RootStackRouter {
       );
     },
     FileImagePreviewRoute.name: (routeData) {
+      final args = routeData.argsAs<FileImagePreviewRouteArgs>(
+          orElse: () => const FileImagePreviewRouteArgs());
       return _i21.AdaptivePage<dynamic>(
         routeData: routeData,
-        child: const _i20.FileImagePreview(),
+        child: _i20.FileImagePreview(
+          key: args.key,
+          imageFile: args.imageFile,
+        ),
       );
     },
   };
@@ -647,12 +654,35 @@ class ProfileImagePreviewRouteArgs {
 
 /// generated route for
 /// [_i20.FileImagePreview]
-class FileImagePreviewRoute extends _i21.PageRouteInfo<void> {
-  const FileImagePreviewRoute()
-      : super(
+class FileImagePreviewRoute
+    extends _i21.PageRouteInfo<FileImagePreviewRouteArgs> {
+  FileImagePreviewRoute({
+    _i23.Key? key,
+    _i27.File? imageFile,
+  }) : super(
           FileImagePreviewRoute.name,
           path: '/file-image-preview',
+          args: FileImagePreviewRouteArgs(
+            key: key,
+            imageFile: imageFile,
+          ),
         );
 
   static const String name = 'FileImagePreviewRoute';
+}
+
+class FileImagePreviewRouteArgs {
+  const FileImagePreviewRouteArgs({
+    this.key,
+    this.imageFile,
+  });
+
+  final _i23.Key? key;
+
+  final _i27.File? imageFile;
+
+  @override
+  String toString() {
+    return 'FileImagePreviewRouteArgs{key: $key, imageFile: $imageFile}';
+  }
 }

@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../models/person.dart';
@@ -167,7 +168,8 @@ class AuthProvider extends ChangeNotifier {
             'Please try again later.');
       }
     } finally {
-      Navigator.of(context).pop();
+      // Close the loading dialog when login attempt is finished
+      if (context.mounted) Navigator.of(context).pop();
     }
   }
 
@@ -206,7 +208,8 @@ class AuthProvider extends ChangeNotifier {
         showSnackbar('Error sending password reset email');
       }
     } finally {
-      Navigator.of(context).pop();
+      // Close the loading dialog when login attempt is finished
+      if (context.mounted) Navigator.of(context).pop();
     }
   }
 
@@ -292,7 +295,7 @@ class AuthProvider extends ChangeNotifier {
           ' Please try again later.');
     } finally {
       // Close the loading dialog when login attempt is finished
-      Navigator.of(context).pop();
+      if (context.mounted) Navigator.of(context).pop();
     }
   }
 
@@ -338,7 +341,7 @@ class AuthProvider extends ChangeNotifier {
           'Please try again later.');
     } finally {
       // Close the loading dialog when login attempt is finished
-      Navigator.of(context).pop();
+      if (context.mounted) Navigator.of(context).pop();
     }
   }
 
@@ -351,12 +354,16 @@ class AuthProvider extends ChangeNotifier {
 
     try {
       // Sign in with Google and get user credential
-      UserCredential userCredential = await handleGoogleLogin();
+      UserCredential? userCredential = await handleGoogleLogin();
 
-      User? user = userCredential.user;
+      User? user = userCredential?.user;
+
+      if (user == null) {
+        return;
+      }
 
       // Check if user is authenticated and email is verified
-      if (user == null || !user.emailVerified) {
+      if (!user.emailVerified) {
         showSnackbar('Please verify your email before logging in');
         return;
       }
@@ -371,8 +378,6 @@ class AuthProvider extends ChangeNotifier {
       // Set up token for the user
       updateUserToken(user.uid);
 
-      // Todo: Show the appropriate message here
-
       onAuthenticate();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'account-exists-with-different-credential') {
@@ -380,33 +385,69 @@ class AuthProvider extends ChangeNotifier {
       } else if (e.code == 'invalid-credential') {
         showSnackbar('Invalid credential');
       } else {
-        showSnackbar('An error occurred, please try again later');
+        showSnackbar('An error occurred, please try again later 1');
       }
     } on SocketException {
       showSnackbar('No internet connection');
+    } on UnregisteredEmailException catch (e) {
+      showSnackbar(e.message);
+    } on PlatformException catch (e) {
+      if (e.code == 'network_error') {
+        showSnackbar('No internet connection');
+      } else {
+        showSnackbar('A platform error occurred');
+      }
     } catch (_) {
-      showSnackbar('An error occurred, please try again later');
+      showSnackbar('No account selected');
     } finally {
       // Close the loading dialog when login attempt is finished
-      Navigator.of(context).pop();
+      if (context.mounted) Navigator.of(context).pop();
     }
   }
 
-  Future<UserCredential> handleGoogleLogin() async {
+  Future<UserCredential?> handleGoogleLogin() async {
+    final isSignedIn = await GoogleSignIn().isSignedIn();
+
+    if (isSignedIn) {
+      await GoogleSignIn().disconnect();
+    }
+
     // Trigger the authentication flow
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
+    if (googleUser == null) {
+      // User canceled the Google sign-in
+      return null;
+    }
+
     // Obtain the auth details from the request
-    final GoogleSignInAuthentication? googleAuth =
-        await googleUser?.authentication;
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
 
     // Create a new credential
     final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
     );
+
+    // Check if the email associated with the Google account is already registered
+    final email = googleUser.email;
+
+    // Check if the email is registered with the app
+    final List<String> methods =
+        await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
+
+    if (methods.isEmpty) {
+      throw UnregisteredEmailException('Account not registered with app');
+    }
 
     // Once signed in, return the UserCredential
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
+}
+
+class UnregisteredEmailException implements Exception {
+  final String message;
+
+  UnregisteredEmailException(this.message);
 }

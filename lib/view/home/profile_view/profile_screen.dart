@@ -64,11 +64,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
       navPush(context, ProfileImagePreviewRoute(path: url));
 
   void fileProfilePreview(File? imageFile) =>
-      navPush(context, const FileImagePreviewRoute());
+      navPush(context, FileImagePreviewRoute(imageFile: imageFile));
 
   void showSnackbar(String message) {
     if (mounted) {
       AppUtils.showSnackbar(message);
+    }
+  }
+
+  void update(File? imageFile, String? profilePicUrl) {
+    if (profilePicUrl != null && imageFile == null) {
+      profilePreview(profilePicUrl);
+    } else if (imageFile != null) {
+      fileProfilePreview(imageFile);
+    } else {
+      AppUtils.showSnackbar('Upload a profile picture to preview it');
     }
   }
 
@@ -108,14 +118,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Hero(
                           tag: 'Avatar',
                           child: GestureDetector(
-                            onTap: () {
-                              if (data.userData?.profilePicUrl != null) {
-                                profilePreview(data.userData!.profilePicUrl!);
-                              } else {
-                                // Work continues here
-                                fileProfilePreview(_imageFile);
-                              }
-                            },
+                            onTap: () => update(
+                              _imageFile,
+                              data.userData?.profilePicUrl,
+                            ),
                             child: CircleAvatar(
                               radius: 72,
                               backgroundColor: Colors.white,

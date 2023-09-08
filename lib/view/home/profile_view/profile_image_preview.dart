@@ -67,6 +67,7 @@ class ProfileImagePreview extends StatelessWidget {
         return ConfirmationDialog(
           title: 'Remove Picture ?',
           contentText: contextText,
+          validateText: 'Remove',
           onConfirmPressed: () {
             data.removeProfilePic(showSnackbar: showSnackbar);
             context.router.popUntilRouteWithName('ProfileScreenRoute');

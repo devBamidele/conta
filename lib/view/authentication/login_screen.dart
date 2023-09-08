@@ -156,7 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
     Vibrate.feedback(FeedbackType.success);
   }
 
-  Future<void> loginWithGoogle() async {
+  Future<void> loginWithGoogle(BuildContext context) async {
     await authProvider.loginWithGoogle(
       context: context,
       showSnackbar: showSnackbar,
@@ -347,7 +347,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 30),
                     child: Center(
                       child: LoginOptions(
-                        onTap: () => loginWithGoogle(),
+                        onTap: () => loginWithGoogle(context),
                         path: 'assets/images/google.svg',
                       ),
                     ),
