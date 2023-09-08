@@ -25,7 +25,7 @@
     <application
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:label="conta">
+        android:label="Duo Talk">
 
         <activity
             android:name=".MainActivity"

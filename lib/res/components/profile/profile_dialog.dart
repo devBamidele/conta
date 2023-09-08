@@ -22,11 +22,13 @@ class ProfileDialog extends StatelessWidget {
     return Consumer<MessagesProvider>(
       builder: (_, data, __) {
         String? imageUrl = data.currentChat!.profilePicUrl;
+        bool extraPadding = (data.currentChat!.oppIndex != null &&
+            data.currentChat!.uidUser1 != data.currentChat!.uidUser2);
         return Dialog(
           clipBehavior: Clip.hardEdge,
           child: Container(
             color: Colors.white,
-            height: 410,
+            height: extraPadding ? 410 : 367,
             child: Stack(
               children: [
                 Column(
@@ -149,7 +151,7 @@ class ProfileDialog extends StatelessWidget {
                                 )
                               : const Status(type: StreamType.name),
                           addHeight(4),
-                          if (data.currentChat!.oppIndex != null)
+                          if (extraPadding)
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -173,7 +175,8 @@ class ProfileDialog extends StatelessWidget {
                 Align(
                   alignment: Alignment.centerRight,
                   child: Padding(
-                    padding: const EdgeInsets.only(right: 12, top: 30),
+                    padding:
+                        EdgeInsets.only(right: 12, top: extraPadding ? 30 : 68),
                     child: SizedBox.square(
                       dimension: 46,
                       child: FloatingActionButton(

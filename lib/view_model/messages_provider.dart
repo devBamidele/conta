@@ -510,7 +510,8 @@ class MessagesProvider extends ChangeNotifier {
     await batch.commit();
   }
 
-  /// Uploads a new chat message to Firestore, creating a new chat document if necessary.
+  /// Uploads a new chat message to Firestore,
+  /// creating a new chat document if necessary.
   Future<void> uploadChat(
     String content, {
     MessageType type = MessageType.text,
@@ -533,7 +534,7 @@ class MessagesProvider extends ChangeNotifier {
     final chatRef = firestore.collection('chats').doc(chatId);
 
     final chatSnapshot = await chatRef.get();
-    final shouldCreateNewChat = chatSnapshot.exists;
+    final shouldCreateNewChat = !chatSnapshot.exists;
 
     if (shouldCreateNewChat) {
       final newChat = Chat(
@@ -597,9 +598,17 @@ class MessagesProvider extends ChangeNotifier {
     final userDocRef =
         FirebaseFirestore.instance.doc('users/${currentChat!.uidUser2}');
 
-    await for (DocumentSnapshot<Map<String, dynamic>> snapshot
-        in userDocRef.snapshots()) {
+    await for (var snapshot in userDocRef.snapshots()) {
       yield Person.fromJson(snapshot.data()!);
+    }
+  }
+
+  Stream<Chat> getUnreadCountStream() async* {
+    final chatDocRef =
+        FirebaseFirestore.instance.doc('chats/${currentChat!.chatId}');
+
+    await for (var snapshot in chatDocRef.snapshots()) {
+      yield Chat.fromJson(snapshot.data()!);
     }
   }
 }

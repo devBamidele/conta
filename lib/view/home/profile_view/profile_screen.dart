@@ -63,6 +63,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void profilePreview(String url) =>
       navPush(context, ProfileImagePreviewRoute(path: url));
 
+  void fileProfilePreview(File? imageFile) =>
+      navPush(context, const FileImagePreviewRoute());
+
   void showSnackbar(String message) {
     if (mounted) {
       AppUtils.showSnackbar(message);
@@ -109,8 +112,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               if (data.userData?.profilePicUrl != null) {
                                 profilePreview(data.userData!.profilePicUrl!);
                               } else {
-                                AppUtils.showSnackbar(
-                                    'Upload a profile picture preview it');
+                                // Work continues here
+                                fileProfilePreview(_imageFile);
                               }
                             },
                             child: CircleAvatar(

@@ -78,8 +78,8 @@ class _SplashScreenState extends State<SplashScreen>
           'assets/anim/splash.json',
           controller: _controller,
           onLoaded: onLoaded,
-          height: 400,
-          width: 400,
+          height: 500,
+          width: 500,
         ),
       ),
     );

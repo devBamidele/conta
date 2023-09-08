@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 
 import '../../res/color.dart';
 import '../../res/components/custom/custom_back_button.dart';
+import '../../res/components/shimmer/shimmer_widget.dart';
 import '../../res/style/app_text_style.dart';
 import '../../res/style/component_style.dart';
 import '../../utils/app_router/router.dart';
@@ -224,16 +225,23 @@ class UploadPhotoWidget extends StatelessWidget {
 
 class FileProfilePic extends StatelessWidget {
   final File? imageFile;
+  final bool isHomeScreen;
 
   const FileProfilePic({
     Key? key,
     this.imageFile,
+    this.isHomeScreen = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     if (imageFile == null) {
       // If imageFile is null, return the noProfilePic widget
+
+      if (isHomeScreen) {
+        return const ShimmerWidget.circular(width: 54, height: 54);
+      }
+
       return CircleAvatar(
         backgroundColor: AppColors.photoContainerColor,
         child: noProfilePic(size: 48),

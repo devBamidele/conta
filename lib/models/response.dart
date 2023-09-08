@@ -25,7 +25,7 @@ class Response {
       bio: json['bio'] as String?,
       name: json['name'] as String?,
       notifications: true,
-      oppIndex: json['oppIndex'] as int,
+      oppIndex: int.tryParse(json['oppIndex'] as String) ?? 0,
     );
   }
 

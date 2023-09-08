@@ -12,12 +12,12 @@ class UnReadIdentifier extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 15,
-      height: 15,
+      width: 18,
+      height: 18,
       alignment: Alignment.center,
       decoration: const BoxDecoration(
         shape: BoxShape.circle,
-        color: AppColors.unreadColor,
+        color: AppColors.primaryShadeColor,
       ),
       child: Text(
         unread.toString(),

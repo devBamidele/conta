@@ -30,8 +30,8 @@ class ShimmerWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: Colors.grey[400]!,
-      highlightColor: Colors.grey[300]!,
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[200]!,
       child: Container(
         width: width ?? double.infinity,
         height: height,

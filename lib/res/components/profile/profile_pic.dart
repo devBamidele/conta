@@ -36,8 +36,10 @@ class UrlProfilePic extends StatelessWidget {
                     ),
                   ),
                 ),
-                placeholder: (context, url) =>
-                    FileProfilePic(imageFile: data.profilePic),
+                placeholder: (context, url) => FileProfilePic(
+                  imageFile: data.profilePic,
+                  isHomeScreen: true,
+                ),
                 errorWidget: (context, url, error) => const Icon(Icons.error),
                 fadeOutDuration: Duration.zero,
                 fadeInDuration: Duration.zero,

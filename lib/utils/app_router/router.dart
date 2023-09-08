@@ -6,6 +6,7 @@ import 'package:conta/view/authentication/recover_password_screen.dart';
 import 'package:conta/view/authentication/update_password_screen.dart';
 import 'package:conta/view/home/home_screen.dart';
 import 'package:conta/view/home/intermediary.dart';
+import 'package:conta/view/home/profile_view/file_image_preview.dart';
 import 'package:conta/view/home/profile_view/profile_image_preview.dart';
 import 'package:conta/view/home/profile_view/profile_screen.dart';
 import 'package:conta/view/home/tab_views/message_view/chat_screen.dart';
@@ -66,6 +67,7 @@ import '../../view/onboard/splash_screen.dart';
     ),
 
     AutoRoute(page: ProfileImagePreview),
+    AutoRoute(page: FileImagePreview)
   ],
 )
 class $AppRouter {}
