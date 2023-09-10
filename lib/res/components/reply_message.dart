@@ -56,14 +56,6 @@ class ReplyMessage extends StatelessWidget {
                             ),
                           ),
                         ),
-                        if (onCancelReply != null)
-                          GestureDetector(
-                            onTap: onCancelReply,
-                            child: const Icon(
-                              Icons.close,
-                              size: 18,
-                            ),
-                          )
                       ],
                     ),
                     addHeight(3),
@@ -85,6 +77,22 @@ class ReplyMessage extends StatelessWidget {
                 width: 5,
                 color: AppColors.replyMessageColor,
                 height: 100,
+              ),
+            ),
+            Align(
+              alignment: Alignment.topRight,
+              child: Visibility(
+                visible: onCancelReply != null,
+                child: GestureDetector(
+                  onTap: onCancelReply,
+                  child: const Padding(
+                    padding: EdgeInsets.only(top: 4, right: 4),
+                    child: Icon(
+                      Icons.close,
+                      size: 24,
+                    ),
+                  ),
+                ),
               ),
             )
           ],

@@ -53,13 +53,13 @@ class _HomeScreenState extends State<HomeScreen>
 
     searchFocusNode.dispose();
     _searchController.dispose();
+
     super.dispose();
   }
 
-  _updateFilter() {
-    // Update the value in the provider
-    _chatProvider.chatFilter = _searchController.text;
-  }
+  _updateFilter() =>
+      // Update the value in the provider
+      _chatProvider.chatFilter = _searchController.text;
 
   final _tabs = [
     const Tab(text: 'All'),
