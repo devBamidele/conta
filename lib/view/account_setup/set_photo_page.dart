@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:conta/utils/app_router/router.gr.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 import 'package:image_picker/image_picker.dart';
@@ -45,7 +44,7 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
     );
   }
 
-  verifyAccount(UserCredential credential) => navReplaceAll(
+  verifyAccount(credential) => navReplaceAll(
         context,
         [VerifyAccountScreenRoute(userCredential: credential)],
       ).then((value) => onScreenPop());

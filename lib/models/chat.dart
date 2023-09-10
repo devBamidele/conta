@@ -12,10 +12,11 @@ class Chat {
   final String lastSenderUserId;
   final Timestamp lastMessageTimestamp;
   final num unreadCount;
-  final List<bool> userMuted;
   final MessageStatus lastMessageStatus;
   final String lastMessageId;
+  final List<bool> userMuted;
   final List<bool> userBlocked;
+  final List<bool> deletedAccount;
 
   Chat({
     this.id,
@@ -30,8 +31,10 @@ class Chat {
     required this.lastMessageId,
     List<bool>? userMuted,
     List<bool>? userBlocked,
+    List<bool>? deletedAccount,
   })  : userMuted = userMuted ?? List.filled(2, false),
-        userBlocked = userBlocked ?? List.filled(2, false);
+        userBlocked = userBlocked ?? List.filled(2, false),
+        deletedAccount = deletedAccount ?? List.filled(2, false);
 
   Chat.fromJson(Map<String, dynamic> json)
       : id = json['id'],
@@ -44,6 +47,8 @@ class Chat {
         unreadCount = json['unreadCount'],
         userMuted = List<bool>.from(json['userMuted']),
         userBlocked = List<bool>.from(json['userBlocked']),
+        deletedAccount =
+            List<bool>.from(json['deletedAccount'] ?? [false, false]),
         lastMessageId = json['lastMessageId'] ?? '',
         lastMessageStatus =
             MessageStatusExtension.fromString(json['lastMessageStatus']);
@@ -59,6 +64,7 @@ class Chat {
         'userMuted': userMuted,
         'userBlocked': userBlocked,
         "lastMessageId": lastMessageId,
+        'deletedAccount': deletedAccount,
         'lastMessageStatus': lastMessageStatus.name.toString(),
       };
 }

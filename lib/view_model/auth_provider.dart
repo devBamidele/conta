@@ -20,7 +20,6 @@ class AuthProvider extends ChangeNotifier {
   String? password;
   File? profilePic;
 
-  // Todo: Call this function when leaving the auth section
   void clearData() {
     username = null;
     name = null;
@@ -89,6 +88,7 @@ class AuthProvider extends ChangeNotifier {
           .doc(userId)
           .set(person);
     } catch (e) {
+      log('An exception occurred while uploading the users profile picture ${e.toString()}');
       throw 'An error occurred while uploading the image';
     }
   }
@@ -139,13 +139,17 @@ class AuthProvider extends ChangeNotifier {
     AppUtils.showLoadingDialog1(context);
 
     try {
-      UserCredential userCredential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      // Email and password sign-in
+      final credential =
+          EmailAuthProvider.credential(email: email, password: password);
 
-      await linkAnonymousUserWithEmailPassword(userCredential);
+      final userCredential =
+          await linkAnonymousUserWithEmailPassword(credential);
+
+      if (userCredential == null) {
+        showSnackbar('An error occurred while creating the user');
+        return;
+      }
 
       final userId = userCredential.user!.uid;
 
@@ -214,21 +218,21 @@ class AuthProvider extends ChangeNotifier {
   }
 
   // Function to link the anonymous user with the new credentials
-  Future<void> linkAnonymousUserWithEmailPassword(
-    UserCredential newCredential,
+  Future<UserCredential?> linkAnonymousUserWithEmailPassword(
+    AuthCredential credential,
   ) async {
     try {
       // Get the currently signed-in anonymous user
       User? anonymousUser = FirebaseAuth.instance.currentUser;
 
-      if (anonymousUser == null || newCredential.user == null) {
+      if (anonymousUser == null) {
         log('Anonymous user or new credentials not found');
-        return;
+        return null;
       }
 
       // Link the anonymous user with the new credentials
       UserCredential linkedCredential =
-          await anonymousUser.linkWithCredential(newCredential.credential!);
+          await anonymousUser.linkWithCredential(credential);
 
       // Use the linkedCredential to get the updated user information
       User? user = linkedCredential.user;
@@ -240,10 +244,29 @@ class AuthProvider extends ChangeNotifier {
         // Linking failed
         log('Linking with new credentials failed');
       }
+
+      return linkedCredential;
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case "provider-already-linked":
+          log("The provider has already been linked to the user.");
+          break;
+        case "invalid-credential":
+          log("The provider's credential is not valid.");
+          break;
+        case "credential-already-in-use":
+          log("The account corresponding to the credential already exists, "
+              "or is already linked to a Firebase User.");
+          break;
+        // See the API reference for the full list of error codes.
+        default:
+          log("Unknown error.");
+      }
     } catch (e) {
       // Handle any errors that occur during linking
       log('Error during linking: $e');
     }
+    return null;
   }
 
   Future<void> anonymousSignIn() async {

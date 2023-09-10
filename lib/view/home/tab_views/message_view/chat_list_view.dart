@@ -107,6 +107,7 @@ class _ChatListViewState extends State<ChatListView> {
           : tile.profilePicUrls[oppIndex],
       notifications: !tile.userMuted[oppIndex],
       oppIndex: oppIndex,
+      isDeleted: tile.deletedAccount[oppIndex],
     );
 
     data.cancelReplyAndClearCache();

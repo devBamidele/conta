@@ -1,3 +1,4 @@
+import 'package:conta/models/current_chat.dart';
 import 'package:conta/res/components/app_bar_icon.dart';
 import 'package:conta/res/components/custom/custom_back_button.dart';
 import 'package:conta/res/components/online_status.dart';
@@ -38,6 +39,16 @@ class _ChatAppBarState extends State<ChatAppBar> {
     );
   }
 
+  chooseDisplay(CurrentChat currentChat) {
+    final delete = currentChat.isDeleted;
+
+    if (delete != null && delete == true) {
+      AppUtils.showToast('Account Deleted');
+    } else {
+      userDialog(context, currentChat.profilePicUrl);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<MessagesProvider>(
@@ -57,7 +68,7 @@ class _ChatAppBarState extends State<ChatAppBar> {
                     color: AppColors.extraTextColor,
                   ),
                   title: GestureDetector(
-                    onTap: () => userDialog(context, currentChat.profilePicUrl),
+                    onTap: () => chooseDisplay(currentChat),
                     child: Row(
                       children: [
                         ProfileAvatar(imageUrl: currentChat.profilePicUrl),
@@ -70,9 +81,9 @@ class _ChatAppBarState extends State<ChatAppBar> {
                                 currentChat.username,
                                 overflow: TextOverflow.fade,
                                 style: AppTextStyles.titleMedium,
-                              ),
+                              ), //
                               addHeight(2),
-                              const Status(),
+                              Status(isDeleted: currentChat.isDeleted),
                             ],
                           ),
                         ),
@@ -117,7 +128,7 @@ class _ChatAppBarState extends State<ChatAppBar> {
                           AppBarIcon(
                             icon: IconlyLight.delete,
                             size: customSize,
-                            onTap: () => confirmDelete(context, data),
+                            onTap: () => confirmMessageDelete(context, data),
                           ),
                         ],
                       ),

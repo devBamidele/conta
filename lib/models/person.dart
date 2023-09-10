@@ -69,6 +69,18 @@ class Person {
         'token': token,
       };
 
+  Person.defaultPerson()
+      : id = '',
+        name = '',
+        username = '',
+        email = '',
+        phone = null,
+        profilePicUrl = null,
+        bio = 'Hello there, I\'m a new user.',
+        lastSeen = Timestamp.now(),
+        online = false,
+        token = null;
+
   static dynamic _parseTimestamp(dynamic timestamp) {
     if (timestamp is int) {
       return Timestamp.fromMillisecondsSinceEpoch((timestamp));

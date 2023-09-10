@@ -1,7 +1,10 @@
 import 'dart:math' as math;
 
+import 'package:auto_route/auto_route.dart';
 import 'package:conta/res/components/app_bars/chat_app_bar.dart';
 import 'package:conta/res/components/chat_text_form_field.dart';
+import 'package:conta/res/components/confirmation_dialog.dart';
+import 'package:conta/res/style/app_text_style.dart';
 import 'package:conta/res/style/component_style.dart';
 import 'package:conta/utils/app_router/router.dart';
 import 'package:conta/utils/widget_functions.dart';
@@ -46,7 +49,7 @@ class _ChatScreenState extends State<ChatScreen>
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 500),
     );
 
     chatProvider = Provider.of<MessagesProvider>(context, listen: false);
@@ -136,130 +139,195 @@ class _ChatScreenState extends State<ChatScreen>
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: onWillPop,
-      child: Scaffold(
-        appBar: const ChatAppBar(),
-        body: SafeArea(
-          child: Stack(
-            children: [
-              Container(
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/extras/wallpaper.jpg'),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              Column(
+      child: Consumer<MessagesProvider>(
+        builder: (_, data, Widget? child) {
+          bool isReplying = data.replyChat;
+
+          final currentChat = data.currentChat!;
+
+          if (isReplying) {
+            _controller.forward();
+          } else {
+            _controller.reverse();
+          }
+          return Scaffold(
+            appBar: const ChatAppBar(),
+            body: SafeArea(
+              child: Stack(
                 children: [
-                  Expanded(
-                    child: Stack(
-                      children: [
-                        MessagesStream(
-                          scrollController: scrollController,
-                        ),
-                        Positioned(
-                          bottom: 10,
-                          right: 20,
-                          child: CustomScrollButton(
-                            showIcon: showIcon,
-                            onPressed: _scrollToBottom,
-                          ),
-                        )
-                      ],
+                  Container(
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('assets/extras/wallpaper.jpg'),
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
-                  Padding(
-                    padding: chatFieldPadding,
-                    child: Row(
-                      children: [
-                        // Text field for chatting
-
-                        Expanded(
-                          child: Consumer<MessagesProvider>(
-                            builder: (_, data, Widget? child) {
-                              bool isReplying = data.replyChat;
-                              if (isReplying) {
-                                _controller.forward();
-                              } else {
-                                _controller.reverse();
-                              }
-                              return Column(
-                                children: [
-                                  if (isReplying && data.replyMessage != null)
-                                    SlideTransition(
-                                      position: Tween<Offset>(
-                                        begin: const Offset(0, 1),
-                                        end: Offset.zero,
-                                      ).animate(_controller),
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                          left: 1,
-                                          right: 1,
-                                        ),
-                                        child: ReplyMessage(
-                                          isYou: currentUser!.uid ==
-                                              data.replyMessage!.senderId,
-                                          message: data.replyMessage!,
-                                          senderName:
-                                              data.currentChat?.username,
-                                          onCancelReply: () =>
-                                              data.cancelReplyAndClearCache(),
-                                        ),
-                                      ),
-                                    ),
-                                  ConstrainedBox(
-                                    constraints: const BoxConstraints(
-                                      maxHeight: 5 * 16 * 1.4,
-                                    ),
-                                    child: SingleChildScrollView(
-                                      scrollDirection: Axis.vertical,
-                                      reverse: true,
-                                      child: ChatTextFormField(
-                                        node: messagesFocusNode,
-                                        controller: messagesController,
-                                        onPrefixIconTap: _onPrefixIconTap,
-                                        isReplying: isReplying,
-                                        onFieldSubmitted: sendMessage,
-                                      ),
-                                    ),
-                                  ), //
-                                ],
-                              );
-                            },
-                          ),
+                  Column(
+                    children: [
+                      Expanded(
+                        child: Stack(
+                          children: [
+                            MessagesStream(
+                              scrollController: scrollController,
+                            ),
+                            Positioned(
+                              bottom: 10,
+                              right: 20,
+                              child: CustomScrollButton(
+                                showIcon: showIcon,
+                                onPressed: _scrollToBottom,
+                              ),
+                            )
+                          ],
                         ),
-
-                        // Some horizontal spacing
-                        addWidth(8),
-
-                        // Record audio / Send message button
-                        CircleAvatar(
-                          radius: 24,
-                          backgroundColor: AppColors.primaryColor,
-                          child: typing
-                              ? GestureDetector(
-                                  onTap: () => sendMessage(
-                                      messagesController.text.trim()),
-                                  child: Transform.rotate(
-                                    angle: math.pi / 4,
-                                    child: sendIcon(),
+                      ),
+                      currentChat.isDeleted ?? false
+                          ? Padding(
+                              padding: const EdgeInsets.only(top: 5),
+                              child: GestureDetector(
+                                onTap: () => confirmChatDelete(context, data),
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  height: 44,
+                                  color: Colors.white,
+                                  child: const Text(
+                                    'Delete Chat',
+                                    style: AppTextStyles.deleteChatText,
                                   ),
-                                )
-                              : GestureDetector(
-                                  onTap: () => AppUtils.showToast(
-                                      'That feature is not yet available'),
-                                  child: voiceIcon(),
                                 ),
-                        )
-                      ],
-                    ),
+                              ),
+                            )
+                          : Padding(
+                              padding: chatFieldPadding,
+                              child: Row(
+                                children: [
+                                  // Text field for chatting
+
+                                  Expanded(
+                                    child: Column(
+                                      children: [
+                                        if (isReplying &&
+                                            data.replyMessage != null)
+                                          SlideTransition(
+                                            position: Tween<Offset>(
+                                              begin: const Offset(0, 1),
+                                              end: Offset.zero,
+                                            ).animate(_controller),
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                left: 1,
+                                                right: 1,
+                                              ),
+                                              child: ReplyMessage(
+                                                isYou: currentUser!.uid ==
+                                                    data.replyMessage!.senderId,
+                                                message: data.replyMessage!,
+                                                senderName:
+                                                    data.currentChat?.username,
+                                                onCancelReply: () => data
+                                                    .cancelReplyAndClearCache(),
+                                              ),
+                                            ),
+                                          ),
+                                        ConstrainedBox(
+                                          constraints: const BoxConstraints(
+                                            maxHeight: 5 * 16 * 1.4,
+                                          ),
+                                          child: SingleChildScrollView(
+                                            scrollDirection: Axis.vertical,
+                                            reverse: true,
+                                            child: ChatTextFormField(
+                                              node: messagesFocusNode,
+                                              controller: messagesController,
+                                              onPrefixIconTap: _onPrefixIconTap,
+                                              isReplying: isReplying,
+                                              onFieldSubmitted: sendMessage,
+                                            ),
+                                          ),
+                                        ), //
+                                      ],
+                                    ),
+                                  ),
+
+                                  // Some horizontal spacing
+                                  addWidth(8),
+
+                                  // Record audio / Send message button
+                                  CircleAvatar(
+                                    radius: 24,
+                                    backgroundColor: AppColors.primaryColor,
+                                    child: typing
+                                        ? GestureDetector(
+                                            onTap: () => sendMessage(
+                                                messagesController.text.trim()),
+                                            child: Transform.rotate(
+                                              angle: math.pi / 4,
+                                              child: sendIcon(),
+                                            ),
+                                          )
+                                        : GestureDetector(
+                                            onTap: () => AppUtils.showToast(
+                                                'That feature is not yet available'),
+                                            child: voiceIcon(),
+                                          ),
+                                  )
+                                ],
+                              ),
+                            ),
+                    ],
                   ),
                 ],
               ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
+}
+
+void confirmChatDelete(BuildContext context, MessagesProvider data) {
+  final name = data.currentChat!.username;
+
+  final contentWidget = RichText(
+    text: TextSpan(
+      style: TextStyle(
+        fontSize: 16,
+        color: Colors.black.withOpacity(0.8),
+        letterSpacing: 0.2,
+      ),
+      children: [
+        const TextSpan(
+          text: 'Permanently delete chat with ',
+          style: TextStyle(),
+        ),
+        TextSpan(
+          text: name,
+          style: const TextStyle(
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    ),
+  );
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return ConfirmationDialog(
+        title: 'Delete chat',
+        contentWidget: contentWidget,
+        onConfirmPressed: () {
+          data.deleteChat();
+
+          // a simplified version of the above line
+          context.router.popUntilRouteWithName('HomeScreenRoute');
+
+          // Display a message
+          AppUtils.showToast('Chat with $name deleted');
+        },
+      );
+    },
+  );
 }

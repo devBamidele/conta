@@ -5,17 +5,19 @@ import 'package:conta/view_model/messages_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/Person.dart';
+import '../../models/person.dart';
 import '../color.dart';
 
 class Status extends StatelessWidget {
   final bool isDialog;
   final StreamType type;
+  final bool? isDeleted;
 
   const Status({
     Key? key,
     this.isDialog = false,
     this.type = StreamType.onlineStatus,
+    this.isDeleted,
   }) : super(key: key);
 
   @override
@@ -25,11 +27,13 @@ class Status extends StatelessWidget {
         return StreamBuilder<Person>(
           stream: data.getStatusStream(),
           builder: (context, snapshot) {
+            if (isDeleted != null && isDeleted!) {
+              return buildDeletedText();
+            }
             if (!snapshot.hasData) {
               return buildShimmer(context);
             }
-            Person person = snapshot.data!;
-            return buildStatusText(person);
+            return buildStatusText(snapshot.data!);
           },
         );
       },
@@ -43,6 +47,16 @@ class Status extends StatelessWidget {
       height: 10,
       border: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(5),
+      ),
+    );
+  }
+
+  Widget buildDeletedText() {
+    return const Text(
+      'Account Deleted',
+      style: TextStyle(
+        color: AppColors.extraTextColor,
+        fontSize: 13,
       ),
     );
   }

@@ -36,6 +36,7 @@ class CustomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //
     return TextFormField(
       style: TextStyle(color: textColor),
       maxLength: maxLength,

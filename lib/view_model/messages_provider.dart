@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conta/models/chat.dart';
+import 'package:conta/models/person.dart';
 import 'package:conta/utils/enums.dart';
 import 'package:conta/utils/extensions.dart';
 import 'package:conta/view_model/user_provider.dart';
@@ -12,7 +13,6 @@ import 'package:flutter/services.dart';
 import 'package:image_downloader/image_downloader.dart';
 import 'package:uuid/uuid.dart';
 
-import '../models/Person.dart';
 import '../models/current_chat.dart';
 import '../models/message.dart';
 import '../models/response.dart';
@@ -150,6 +150,7 @@ class MessagesProvider extends ChangeNotifier {
     }
   }
 
+  // Todo: Test this thoroughly
   Future<void> _downloadImage(String imageUrl) async {
     try {
       var imageId = await ImageDownloader.downloadImage(
@@ -164,7 +165,7 @@ class MessagesProvider extends ChangeNotifier {
 
       var path = await ImageDownloader.findPath(imageId);
 
-      AppUtils.showSnackbar('Downloaded image from $imageUrl');
+      AppUtils.showSnackbar('Successfully downloaded image');
 
       log('Downloaded image from $imageUrl. Image ID: $imageId, Path: $path');
     } on PlatformException catch (error) {
@@ -213,6 +214,7 @@ class MessagesProvider extends ChangeNotifier {
     String? bio,
     String? name,
     int? oppIndex,
+    bool? isDeleted,
   }) {
     final chatId = generateChatId(uidUser1, uidUser2);
 
@@ -226,6 +228,7 @@ class MessagesProvider extends ChangeNotifier {
       name: name,
       notifications: notifications,
       oppIndex: oppIndex,
+      isDeleted: isDeleted,
     );
 
     oppUserId = uidUser2;
@@ -243,6 +246,7 @@ class MessagesProvider extends ChangeNotifier {
     String? bio,
     String? name,
     int? oppIndex,
+    bool? isDeleted,
   }) {
     if (currentChat != null) {
       currentChat = currentChat!.copyWith(
@@ -255,6 +259,7 @@ class MessagesProvider extends ChangeNotifier {
         bio: bio,
         name: name,
         oppIndex: oppIndex,
+        isDeleted: isDeleted,
       );
 
       notifyListeners();
@@ -562,6 +567,8 @@ class MessagesProvider extends ChangeNotifier {
     );
   }
 
+  Future<void> deleteChat() async {}
+
   Future<void> updateOppIndex() async {
     final chatId = currentChat!.chatId;
     final currentUser = FirebaseAuth.instance.currentUser!.uid;
@@ -594,13 +601,16 @@ class MessagesProvider extends ChangeNotifier {
     }
   }
 
-  Stream<Person> getStatusStream() async* {
+  Stream<Person> getStatusStream() {
     final userDocRef =
         FirebaseFirestore.instance.doc('users/${currentChat!.uidUser2}');
 
-    await for (var snapshot in userDocRef.snapshots()) {
-      yield Person.fromJson(snapshot.data()!);
-    }
+    return userDocRef.snapshots().map(
+      (snapshot) {
+        final data = snapshot.data();
+        return data != null ? Person.fromJson(data) : Person.defaultPerson();
+      },
+    );
   }
 
   Stream<Chat> getUnreadCountStream() async* {

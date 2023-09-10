@@ -15,6 +15,7 @@ class CurrentChat {
   final String? bio;
   final String? name;
   final int? oppIndex;
+  final bool? isDeleted;
 
   /// Constructs a [CurrentChat] object.
   ///
@@ -33,6 +34,7 @@ class CurrentChat {
     this.bio,
     this.name,
     this.oppIndex,
+    this.isDeleted = false,
   });
 
   // Create a copyWith method to clone the object with some modified properties.
@@ -46,6 +48,7 @@ class CurrentChat {
     String? bio,
     String? name,
     int? oppIndex,
+    bool? isDeleted,
   }) {
     return CurrentChat(
       username: username ?? this.username,
@@ -57,6 +60,7 @@ class CurrentChat {
       bio: bio ?? this.bio,
       name: name ?? this.name,
       oppIndex: oppIndex ?? this.oppIndex,
+      isDeleted: isDeleted ?? this.isDeleted,
     );
   }
 }

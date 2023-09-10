@@ -1,8 +1,9 @@
 import 'package:conta/res/style/component_style.dart';
-import 'package:conta/utils/extensions.dart';
 import 'package:conta/utils/widget_functions.dart';
+import 'package:conta/view_model/auth_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../res/color.dart';
 import '../../res/components/countdown_timer.dart';
@@ -26,6 +27,7 @@ class _VerifyAccountScreenState extends State<VerifyAccountScreen> {
   final _countdownTimerKey = GlobalKey<CountdownTimerState>();
 
   late String email;
+  late AuthProvider authProvider;
 
   // Activates the resend button
   bool activateResend = false;
@@ -45,7 +47,7 @@ class _VerifyAccountScreenState extends State<VerifyAccountScreen> {
       );
 
   setMail() {
-    email = widget.userCredential.user!.email!.shortenEmail();
+    email = widget.userCredential.user!.email!;
   }
 
   resendEmail() async {
@@ -66,107 +68,119 @@ class _VerifyAccountScreenState extends State<VerifyAccountScreen> {
   @override
   void initState() {
     super.initState();
+
+    authProvider = Provider.of<AuthProvider>(context, listen: false);
+
     setMail();
+  }
+
+  Future<bool> onWillPop() async {
+    authProvider.clearData();
+
+    return true;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Padding(
-          padding: pagePadding,
-          child: Stack(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  addHeight(70),
-                  const Text(
-                    'Verify your email',
-                    style: AppTextStyles.headlineLarge,
-                  ),
-                  addHeight(10),
-                  Container(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      'A link has been sent to $email',
-                      textAlign: TextAlign.left,
-                      style: AppTextStyles.headlineSmall,
-                    ),
-                  ),
-                  addHeight(60),
-                  Visibility(
-                    visible: !activateResend,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          'Resend code in',
-                          style: AppTextStyles.titleSmall,
-                        ),
-                        addWidth(3),
-                        CountdownTimer(
-                          key: _countdownTimerKey,
-                          textStyle: AppTextStyles.titleSmall,
-                          durationInSeconds: countDownDuration,
-                          onTimerTick: (duration) {
-                            setState(() {});
-                          },
-                          onFinished: () {
-                            setState(() {
-                              activateResend = true;
-                              buttonColor = AppColors.primaryColor;
-                              tappedColor = AppColors.selectedBackgroundColor;
-                            });
-                          },
-                        ),
-                        addWidth(3),
-                        const Text('s')
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              Positioned(
-                bottom: 40,
-                left: 0,
-                right: 0,
-                child: Column(
+    return WillPopScope(
+      onWillPop: onWillPop,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: Padding(
+            padding: pagePadding,
+            child: Stack(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    OutlinedButton(
-                      style: resendButtonStyle(
-                        foregroundColor: tappedColor,
-                        sideColor: buttonColor,
-                      ),
-                      onPressed: () => activateResend ? resendEmail() : null,
+                    addHeight(70),
+                    const Text(
+                      'Verify your email',
+                      style: AppTextStyles.headlineLarge,
+                    ),
+                    addHeight(10),
+                    Container(
+                      alignment: Alignment.topLeft,
                       child: Text(
-                        'Resend',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: buttonColor,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        'A link has been sent to $email',
+                        textAlign: TextAlign.left,
+                        style: AppTextStyles.headlineSmall,
                       ),
                     ),
-                    addHeight(20),
-                    Container(
-                      decoration: BoxDecoration(
-                        boxShadow: [shadow],
-                      ),
-                      child: ElevatedButton(
-                        style: elevatedButton,
-                        onPressed: () => navigateToLogin(),
-                        child: const Text(
-                          'Proceed to Login',
-                          style: AppTextStyles.labelMedium,
-                        ),
+                    addHeight(60),
+                    Visibility(
+                      visible: !activateResend,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'Resend code in',
+                            style: AppTextStyles.titleSmall,
+                          ),
+                          addWidth(3),
+                          CountdownTimer(
+                            key: _countdownTimerKey,
+                            textStyle: AppTextStyles.titleSmall,
+                            durationInSeconds: countDownDuration,
+                            onTimerTick: (duration) {
+                              setState(() {});
+                            },
+                            onFinished: () {
+                              setState(() {
+                                activateResend = true;
+                                buttonColor = AppColors.primaryColor;
+                                tappedColor = AppColors.selectedBackgroundColor;
+                              });
+                            },
+                          ),
+                          addWidth(3),
+                          const Text('s')
+                        ],
                       ),
                     ),
                   ],
                 ),
-              ),
-            ],
+                Positioned(
+                  bottom: 40,
+                  left: 0,
+                  right: 0,
+                  child: Column(
+                    children: [
+                      OutlinedButton(
+                        style: resendButtonStyle(
+                          foregroundColor: tappedColor,
+                          sideColor: buttonColor,
+                        ),
+                        onPressed: () => activateResend ? resendEmail() : null,
+                        child: Text(
+                          'Resend',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: buttonColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      addHeight(20),
+                      Container(
+                        decoration: BoxDecoration(
+                          boxShadow: [shadow],
+                        ),
+                        child: ElevatedButton(
+                          style: elevatedButton,
+                          onPressed: () => navigateToLogin(),
+                          child: const Text(
+                            'Proceed to Login',
+                            style: AppTextStyles.labelMedium,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

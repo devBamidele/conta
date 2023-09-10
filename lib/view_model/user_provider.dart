@@ -6,7 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
-import '../models/Person.dart';
+import '../models/person.dart';
 import '../utils/app_utils.dart';
 
 class UserProvider extends ChangeNotifier {
@@ -66,9 +66,10 @@ class UserProvider extends ChangeNotifier {
     } catch (e) {
       log('Error updating profile pic $e');
       showSnackbar('An error occurred while updating the profile picture');
+    } finally {
+      // Close the loading dialog when login attempt is finished
+      if (context.mounted) Navigator.of(context).pop();
     }
-    if (!context.mounted) return;
-    Navigator.of(context).pop();
   }
 
   Future<void> removeProfilePic({
@@ -129,6 +130,7 @@ class UserProvider extends ChangeNotifier {
     required BuildContext context,
     required String password,
     required void Function(String) showSnackbar,
+    required VoidCallback onDelete,
   }) async {
     AppUtils.showLoadingDialog1(context);
 
@@ -144,16 +146,18 @@ class UserProvider extends ChangeNotifier {
       try {
         await user.reauthenticateWithCredential(credential);
 
-        // Password is correct, proceed with your logic
+        await user.delete().then((value) => onDelete());
+
         showSnackbar('Successfully Deleted Account');
       } catch (e) {
         // Password is incorrect failed
         showSnackbar('Password is incorrect');
 
         log('Error: $e');
+      } finally {
+        // Close the loading dialog when login attempt is finished
+        if (context.mounted) Navigator.of(context).pop();
       }
-      if (!context.mounted) return;
-      Navigator.of(context).pop();
     }
   }
 
@@ -182,9 +186,10 @@ class UserProvider extends ChangeNotifier {
       } catch (error) {
         // Error updating bio
         showSnackbar('Error updating bio');
+      } finally {
+        // Close the loading dialog when login attempt is finished
+        if (context.mounted) Navigator.of(context).pop();
       }
-      if (!context.mounted) return;
-      Navigator.of(context).pop();
     }
   }
 
@@ -209,6 +214,4 @@ class UserProvider extends ChangeNotifier {
       log('Error updating user email: $error');
     }
   }
-
-// Add other methods to update profile properties (e.g., profile picture, bio, etc.) as needed
 }

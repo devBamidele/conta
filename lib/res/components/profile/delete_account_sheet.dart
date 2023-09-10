@@ -1,4 +1,6 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:conta/utils/app_router/router.dart';
+import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:conta/utils/extensions.dart';
 import 'package:conta/view_model/user_provider.dart';
 import 'package:flutter/material.dart';
@@ -99,6 +101,14 @@ class _DeleteAccountSheetState extends State<DeleteAccountSheet> {
       context: context,
       password: password,
       showSnackbar: showSnackbar,
+      onDelete: onDelete,
+    );
+  }
+
+  void onDelete() {
+    navReplaceAll(
+      context,
+      [const LoginScreenRoute()],
     );
   }
 
@@ -191,7 +201,13 @@ class _DeleteAccountSheetState extends State<DeleteAccountSheet> {
                         Expanded(
                           child: ElevatedButton(
                             style: elevatedButton,
-                            onPressed: onContinuePressed,
+                            onPressed: () {
+                              // Remove focus
+                              FocusScope.of(context).unfocus();
+
+                              // Perform callback
+                              onContinuePressed();
+                            },
                             child: Text(
                               'Yes, Delete',
                               style: AppTextStyles.labelMedium

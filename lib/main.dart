@@ -1,11 +1,11 @@
 import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:conta/utils/services/contacts_service.dart';
+import 'package:conta/utils/services/crashlytics_service.dart';
 import 'package:conta/utils/services/notification_service.dart';
 import 'package:conta/view_model/auth_provider.dart';
 import 'package:conta/view_model/chat_provider.dart';
 import 'package:conta/view_model/messages_provider.dart';
 import 'package:conta/view_model/photo_provider.dart';
-import 'package:conta/view_model/search_provider.dart';
 import 'package:conta/view_model/user_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +27,9 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
 
+  // Start up necessary services
+  await CrashlyticsService().initCrashlytics();
+
   await NotificationService().initNotifications();
 
   await ContactService().initContactService();
@@ -39,7 +42,6 @@ void main() async {
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => PhotoProvider()),
-        ChangeNotifierProvider(create: (_) => SearchProvider()),
         ChangeNotifierProvider(create: (_) => ChatProvider()),
         ChangeNotifierProxyProvider<UserProvider, MessagesProvider>(
           create: (_) => MessagesProvider(),

@@ -75,4 +75,10 @@ class AppTextStyles {
     color: AppColors.blackColor,
     fontWeight: FontWeight.w500,
   );
+
+  static const TextStyle deleteChatText = TextStyle(
+    fontWeight: FontWeight.w500,
+    fontSize: 16,
+    color: AppColors.primaryShadeColor,
+  );
 }

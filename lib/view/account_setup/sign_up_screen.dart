@@ -165,166 +165,176 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   gotoNext() => navPush(context, const SetNameScreenRoute());
 
+  Future<bool> onWillPop() async {
+    authProvider.clearData();
+
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        resizeToAvoidBottomInset: false,
-        body: SafeArea(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: pagePadding,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  addHeight(70),
-                  const Text(
-                    'Create your Account',
-                    style: AppTextStyles.headlineLarge,
-                  ),
-                  addHeight(10),
-                  Container(
-                    alignment: Alignment.topLeft,
-                    child: const Text(
-                      'Enter your email and password below',
-                      textAlign: TextAlign.left,
-                      style: AppTextStyles.headlineSmall,
+      child: WillPopScope(
+        onWillPop: onWillPop,
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          resizeToAvoidBottomInset: false,
+          body: SafeArea(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: pagePadding,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    addHeight(70),
+                    const Text(
+                      'Create your Account',
+                      style: AppTextStyles.headlineLarge,
                     ),
-                  ),
-                  addHeight(55),
-                  Form(
-                    key: formKey1,
-                    child: ShakeWidget(
-                      key: shakeState1,
-                      shakeCount: 3,
-                      shakeOffset: 6,
-                      child: CustomTextField(
-                        focusNode: emailFocusNode,
-                        textController: myEmailController,
-                        customFillColor: fillEmailColor,
-                        hintText: 'Email',
-                        prefixIcon: Icon(
-                          IconlyBold.message,
-                          color: emailColor,
-                        ),
-                        validation: (email) => email?.trim().validateEmail(),
-                      ),
-                    ),
-                  ),
-                  Form(
-                    key: formKey2,
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        top: 20,
-                        bottom: 20,
-                      ),
-                      child: ShakeWidget(
-                        key: shakeState2,
-                        child: CustomTextField(
-                          focusNode: passwordFocusNode,
-                          textController: myPasswordController,
-                          customFillColor: fillPasswordColor,
-                          action: TextInputAction.done,
-                          hintText: 'Password',
-                          obscureText: _passwordVisible,
-                          validation: (value) => value.validatePassword(),
-                          onFieldSubmitted: (password) => validate(),
-                          prefixIcon: lockIcon(passwordColor),
-                          suffixIcon: IconButton(
-                            icon:
-                                visibilityIcon(_passwordVisible, passwordColor),
-                            onPressed: toggleVisibility,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  addHeight(40),
-                  Container(
-                    decoration: BoxDecoration(
-                      boxShadow: [shadow],
-                    ),
-                    child: ElevatedButton(
-                      style: elevatedButton,
-                      onPressed: validate,
+                    addHeight(10),
+                    Container(
+                      alignment: Alignment.topLeft,
                       child: const Text(
-                        'Continue',
-                        style: AppTextStyles.labelMedium,
+                        'Enter your email and password below',
+                        textAlign: TextAlign.left,
+                        style: AppTextStyles.headlineSmall,
                       ),
                     ),
-                  ),
-                  addHeight(28),
-                  RichText(
-                    textAlign: TextAlign.center,
-                    text: TextSpan(
-                      children: [
-                        const TextSpan(
-                          text: 'Already have an account? ',
-                          style: AppTextStyles.headlineSmall,
-                        ),
-                        TextSpan(
-                          text: ' Login',
-                          style: AppTextStyles.labelSmall.copyWith(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 17,
+                    addHeight(55),
+                    Form(
+                      key: formKey1,
+                      child: ShakeWidget(
+                        key: shakeState1,
+                        shakeCount: 3,
+                        shakeOffset: 6,
+                        child: CustomTextField(
+                          focusNode: emailFocusNode,
+                          textController: myEmailController,
+                          customFillColor: fillEmailColor,
+                          hintText: 'Email',
+                          prefixIcon: Icon(
+                            IconlyBold.message,
+                            color: emailColor,
                           ),
-                          recognizer: TapGestureRecognizer()
-                            // handle click event for the Login link
-                            ..onTap = () =>
-                                navReplace(context, const LoginScreenRoute()),
+                          validation: (email) => email?.trim().validateEmail(),
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                  addHeight(20),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 40,
-                      vertical: 30,
+                    Form(
+                      key: formKey2,
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          top: 20,
+                          bottom: 20,
+                        ),
+                        child: ShakeWidget(
+                          key: shakeState2,
+                          child: CustomTextField(
+                            focusNode: passwordFocusNode,
+                            textController: myPasswordController,
+                            customFillColor: fillPasswordColor,
+                            action: TextInputAction.done,
+                            hintText: 'Password',
+                            obscureText: _passwordVisible,
+                            validation: (value) => value.validatePassword(),
+                            onFieldSubmitted: (password) => validate(),
+                            prefixIcon: lockIcon(passwordColor),
+                            suffixIcon: IconButton(
+                              icon: visibilityIcon(
+                                  _passwordVisible, passwordColor),
+                              onPressed: toggleVisibility,
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-                    child: RichText(
+                    addHeight(40),
+                    Container(
+                      decoration: BoxDecoration(
+                        boxShadow: [shadow],
+                      ),
+                      child: ElevatedButton(
+                        style: elevatedButton,
+                        onPressed: validate,
+                        child: const Text(
+                          'Continue',
+                          style: AppTextStyles.labelMedium,
+                        ),
+                      ),
+                    ),
+                    addHeight(28),
+                    RichText(
                       textAlign: TextAlign.center,
                       text: TextSpan(
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: AppColors.opaqueTextColor,
-                        ),
                         children: [
                           const TextSpan(
-                            text: 'By tapping Continue, you agree to our ',
+                            text: 'Already have an account? ',
+                            style: AppTextStyles.headlineSmall,
                           ),
                           TextSpan(
-                            text: 'Terms',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black,
+                            text: ' Login',
+                            style: AppTextStyles.labelSmall.copyWith(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 17,
                             ),
                             recognizer: TapGestureRecognizer()
-                              ..onTap = () {
-                                // handle click event for the Terms link
-                              },
-                          ),
-                          const TextSpan(
-                            text: ' & ',
-                          ),
-                          TextSpan(
-                            text: 'Privacy policy',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black,
-                            ),
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () {
-                                // handle click event for the Privacy policy link
-                              },
+                              // handle click event for the Login link
+                              ..onTap = () => navReplace(
+                                      context, const LoginScreenRoute())
+                                  .then((value) => authProvider.clearData()),
                           ),
                         ],
                       ),
                     ),
-                  )
-                ],
+                    addHeight(20),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 40,
+                        vertical: 30,
+                      ),
+                      child: RichText(
+                        textAlign: TextAlign.center,
+                        text: TextSpan(
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: AppColors.opaqueTextColor,
+                          ),
+                          children: [
+                            const TextSpan(
+                              text: 'By tapping Continue, you agree to our ',
+                            ),
+                            TextSpan(
+                              text: 'Terms',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  // handle click event for the Terms link
+                                },
+                            ),
+                            const TextSpan(
+                              text: ' & ',
+                            ),
+                            TextSpan(
+                              text: 'Privacy policy',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  // handle click event for the Privacy policy link
+                                },
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           ),

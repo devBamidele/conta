@@ -21,7 +21,7 @@ class AppTheme {
         // Set the shape of the dialog.
         shape: dialogShape,
 
-        actionsPadding: EdgeInsets.fromLTRB(0, 0, 8, 8),
+        actionsPadding: EdgeInsets.fromLTRB(0, 0, 8, 0),
       ),
 
       // Configure the app bar theme.

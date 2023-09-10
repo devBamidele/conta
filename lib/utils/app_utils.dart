@@ -95,7 +95,7 @@ class AppUtils {
   }
 }
 
-void confirmDelete(BuildContext context, MessagesProvider data) {
+void confirmMessageDelete(BuildContext context, MessagesProvider data) {
   final length = data.selectedMessages.length;
   final isSingleMessage = length == 1;
   final contentText = isSingleMessage
@@ -122,9 +122,7 @@ void _showSnackbar(MessagesProvider data, BuildContext context) {
   AppUtils.showSnackbar(
     'Message Deleted',
     delay: const Duration(seconds: 3),
-    label: SnackBarLabel(
-      onTap: () => data.undoDelete(),
-    ),
+    label: SnackBarLabel(onTap: () => data.undoDelete()),
     onClosed: () => data.clearDeletedMessages(),
   );
 }
