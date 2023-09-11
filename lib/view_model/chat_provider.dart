@@ -185,6 +185,7 @@ class ChatProvider extends ChangeNotifier {
         .orderBy('lastMessageTimestamp', descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs
+            .where((chat) => filterDeleted(chat.data(), userId))
             .where((chat) => filterBlocked(chat.data(), userId))
             .where((chat) => filterChatSearchQuery(chat.data(), userId))
             .map((doc) => Chat.fromJson({...doc.data(), 'id': doc.id}))
@@ -201,6 +202,7 @@ class ChatProvider extends ChangeNotifier {
         .orderBy('lastMessageTimestamp', descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs
+            .where((chat) => filterDeleted(chat.data(), userId))
             .where((chat) => filterBlocked(chat.data(), userId))
             .where((chat) => filterUnread(chat.data(), userId))
             .where((chat) => filterChatSearchQuery(chat.data(), userId))
@@ -218,6 +220,7 @@ class ChatProvider extends ChangeNotifier {
         .orderBy('lastMessageTimestamp', descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs
+            .where((chat) => filterDeleted(chat.data(), userId))
             .where((chat) => filterMuted(chat.data(), userId))
             .where((chat) => filterBlocked(chat.data(), userId))
             .where((chat) => filterChatSearchQuery(chat.data(), userId))
@@ -244,6 +247,21 @@ class ChatProvider extends ChangeNotifier {
 
     // Check if the opposite user is muted, default to false if not found
     return chatData['userMuted'][oppositeUserIndex] ?? false;
+  }
+
+  bool filterDeleted(Map<String, dynamic> chatData, String uid) {
+    final participants = chatData['participants'] as List<dynamic>?;
+
+    final deletedAccount = chatData['deletedAccount'] as List<dynamic>?;
+
+    if (participants == null || deletedAccount == null) {
+      return true; // Handle missing data gracefully
+    }
+
+    int currentUserIndex = participants.indexOf(uid);
+    final data = deletedAccount[currentUserIndex] as bool?;
+
+    return data != null ? !data : false;
   }
 
   bool filterBlocked(

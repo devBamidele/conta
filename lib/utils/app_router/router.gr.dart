@@ -205,11 +205,12 @@ class AppRouter extends _i21.RootStackRouter {
     FileImagePreviewRoute.name: (routeData) {
       final args = routeData.argsAs<FileImagePreviewRouteArgs>(
           orElse: () => const FileImagePreviewRouteArgs());
-      return _i21.AdaptivePage<dynamic>(
+      return _i21.AdaptivePage<bool?>(
         routeData: routeData,
         child: _i20.FileImagePreview(
           key: args.key,
           imageFile: args.imageFile,
+          fromSignUp: args.fromSignUp,
         ),
       );
     },
@@ -659,12 +660,14 @@ class FileImagePreviewRoute
   FileImagePreviewRoute({
     _i23.Key? key,
     _i27.File? imageFile,
+    bool fromSignUp = false,
   }) : super(
           FileImagePreviewRoute.name,
           path: '/file-image-preview',
           args: FileImagePreviewRouteArgs(
             key: key,
             imageFile: imageFile,
+            fromSignUp: fromSignUp,
           ),
         );
 
@@ -675,14 +678,17 @@ class FileImagePreviewRouteArgs {
   const FileImagePreviewRouteArgs({
     this.key,
     this.imageFile,
+    this.fromSignUp = false,
   });
 
   final _i23.Key? key;
 
   final _i27.File? imageFile;
 
+  final bool fromSignUp;
+
   @override
   String toString() {
-    return 'FileImagePreviewRouteArgs{key: $key, imageFile: $imageFile}';
+    return 'FileImagePreviewRouteArgs{key: $key, imageFile: $imageFile, fromSignUp: $fromSignUp}';
   }
 }

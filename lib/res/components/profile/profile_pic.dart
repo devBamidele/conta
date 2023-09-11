@@ -1,10 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:conta/view/account_setup/set_photo_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../utils/widget_functions.dart';
 import '../../../view_model/user_provider.dart';
+import 'file_profile_pic.dart';
 
 class UrlProfilePic extends StatelessWidget {
   const UrlProfilePic({

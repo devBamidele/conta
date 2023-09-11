@@ -67,7 +67,10 @@ import '../../view/onboard/splash_screen.dart';
     ),
 
     AutoRoute(page: ProfileImagePreview),
-    AutoRoute(page: FileImagePreview)
+
+    AutoRoute<bool?>(
+      page: FileImagePreview,
+    ),
   ],
 )
 class $AppRouter {}

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:auto_route/auto_route.dart';
 import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
@@ -8,7 +9,7 @@ import 'package:provider/provider.dart';
 
 import '../../res/color.dart';
 import '../../res/components/custom/custom_back_button.dart';
-import '../../res/components/shimmer/shimmer_widget.dart';
+import '../../res/components/profile/file_profile_pic.dart';
 import '../../res/style/app_text_style.dart';
 import '../../res/style/component_style.dart';
 import '../../utils/app_router/router.dart';
@@ -55,28 +56,51 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
     }
   }
 
-  void addPhoto() {
-    if (_imageFile == null) {
-      _pickImage();
-    } else {
-      createUser();
-    }
-  }
-
   /// Select image from gallery
   Future<void> _pickImage() async {
     final pickedImage = await _picker.pickImage(source: ImageSource.gallery);
-    setState(() {
-      _imageFile = pickedImage != null ? File(pickedImage.path) : _imageFile;
-      if (_imageFile != null) {
+    if (pickedImage != null) {
+      setState(() {
+        _imageFile = File(pickedImage.path);
         authProvider.profilePic = _imageFile;
-      }
-    });
-  } //
+      });
+    }
+  }
 
-  Future<bool> onScreenPop() async {
+  /// Clear cached profile picture and return `true`.
+  Future<bool> onScreenPop() {
     authProvider.clearCachedPic();
-    return true;
+    return Future.value(true);
+  }
+
+  /// Preview profile picture and return the result.
+  Future<bool?> profilePicPreview(File imageFile) async {
+    return await context.router.push<bool?>(
+      FileImagePreviewRoute(
+        imageFile: imageFile,
+        fromSignUp: true,
+      ),
+    );
+  }
+
+  /// View profile picture and clear it if result is `true`.
+  Future<void> viewPic() async {
+    if (_imageFile != null) {
+      final result = await profilePicPreview(_imageFile!);
+      if (result == true) {
+        clearImage();
+      }
+    } else {
+      AppUtils.showSnackbar('Upload a profile picture to preview it');
+    }
+  }
+
+  /// Clear the current image file and cached profile picture.
+  void clearImage() {
+    setState(() {
+      _imageFile = null;
+      authProvider.clearCachedPic();
+    });
   }
 
   @override
@@ -121,11 +145,17 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
                             children: [
                               Stack(
                                 children: [
-                                  SizedBox(
-                                    height: 170,
-                                    width: 170,
-                                    child: FileProfilePic(
-                                      imageFile: data.profilePic,
+                                  Hero(
+                                    tag: 'Avatar',
+                                    child: GestureDetector(
+                                      onTap: viewPic,
+                                      child: SizedBox(
+                                        height: 170,
+                                        width: 170,
+                                        child: FileProfilePic(
+                                          imageFile: data.profilePic,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                   UploadPhotoWidget(
@@ -142,6 +172,7 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
                             style: const TextStyle(
                               fontSize: 26,
                               fontWeight: FontWeight.w600,
+                              color: AppColors.blackColor,
                             ),
                           ),
                         ],
@@ -156,7 +187,7 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
                           ),
                           child: ElevatedButton(
                             style: elevatedButton,
-                            onPressed: () => addPhoto(),
+                            onPressed: createUser,
                             child: Text(
                               data.profilePic == null ? 'Skip' : 'Continue',
                               style: AppTextStyles.labelMedium,
@@ -219,43 +250,5 @@ class UploadPhotoWidget extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class FileProfilePic extends StatelessWidget {
-  final File? imageFile;
-  final bool isHomeScreen;
-
-  const FileProfilePic({
-    Key? key,
-    this.imageFile,
-    this.isHomeScreen = false,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    if (imageFile == null) {
-      // If imageFile is null, return the noProfilePic widget
-
-      if (isHomeScreen) {
-        return const ShimmerWidget.circular(width: 54, height: 54);
-      }
-
-      return CircleAvatar(
-        backgroundColor: AppColors.photoContainerColor,
-        child: noProfilePic(size: 48),
-      );
-    } else {
-      // If imageFile is not null, display the profile picture
-      return Container(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          image: DecorationImage(
-            image: FileImage(imageFile!),
-            fit: BoxFit.cover,
-          ),
-        ),
-      );
-    }
   }
 }

@@ -289,6 +289,7 @@ class _ChatScreenState extends State<ChatScreen>
 
 void confirmChatDelete(BuildContext context, MessagesProvider data) {
   final name = data.currentChat!.username;
+  final chatId = data.currentChat!.chatId!;
 
   final contentWidget = RichText(
     text: TextSpan(
@@ -299,7 +300,7 @@ void confirmChatDelete(BuildContext context, MessagesProvider data) {
       ),
       children: [
         const TextSpan(
-          text: 'Permanently delete chat with ',
+          text: 'Permanently delete the chat with ',
           style: TextStyle(),
         ),
         TextSpan(
@@ -319,15 +320,30 @@ void confirmChatDelete(BuildContext context, MessagesProvider data) {
         title: 'Delete chat',
         contentWidget: contentWidget,
         onConfirmPressed: () {
-          data.deleteChat();
+          data.toggleChatDeletionStatus(chatId, true);
 
           // a simplified version of the above line
           context.router.popUntilRouteWithName('HomeScreenRoute');
 
           // Display a message
-          AppUtils.showToast('Chat with $name deleted');
+          _showSnackbar(data, context, name, chatId);
         },
       );
     },
+  );
+}
+
+void _showSnackbar(
+  MessagesProvider data,
+  BuildContext context,
+  String name,
+  String chatId,
+) {
+  AppUtils.showSnackbar(
+    'Chat with $name deleted',
+    delay: const Duration(seconds: 5),
+    label: 'UNDO',
+    onLabelTapped: () => data.toggleChatDeletionStatus(chatId, false),
+    onClosed: () => data.confirmDeleteChat(chatId),
   );
 }

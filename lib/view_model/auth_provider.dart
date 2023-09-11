@@ -418,7 +418,7 @@ class AuthProvider extends ChangeNotifier {
       if (e.code == 'network_error') {
         showSnackbar('No internet connection');
       } else {
-        showSnackbar('A platform error occurred');
+        showSnackbar('Oops, an error occurred. Try Again');
       }
     } catch (_) {
       showSnackbar('No account selected');

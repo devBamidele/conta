@@ -13,6 +13,7 @@ import 'package:provider/provider.dart';
 import '../../../res/color.dart';
 import '../../../res/components/custom/custom_back_button.dart';
 import '../../../res/components/profile/delete_account_sheet.dart';
+import '../../../res/components/profile/file_profile_pic.dart';
 import '../../../res/components/profile/logout_sheet.dart';
 import '../../../res/components/profile/profile_pic.dart';
 import '../../../res/components/profile/profile_tile.dart';

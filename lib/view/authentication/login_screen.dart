@@ -12,7 +12,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:provider/provider.dart';
 
-import '../../data/logins.dart';
 import '../../res/color.dart';
 import '../../res/components/custom/custom_text_field.dart';
 import '../../res/components/shake_error.dart';
@@ -137,7 +136,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void onContinuePressed() {
-    AppLogins.useFourthLogin(myEmailController, myPasswordController);
+    // AppLogins.useFourthLogin(myEmailController, myPasswordController);
 
     final email = formKey1.currentState?.validate();
     final password = formKey2.currentState?.validate();

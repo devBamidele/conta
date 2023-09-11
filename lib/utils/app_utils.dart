@@ -4,7 +4,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import '../res/components/confirmation_dialog.dart';
-import '../res/components/snackbar_label.dart';
 import '../view_model/messages_provider.dart';
 
 /// Utility class for displaying SnackBars using a global key.
@@ -20,7 +19,8 @@ class AppUtils {
   static showSnackbar(
     String? text, {
     Duration delay = const Duration(seconds: 2),
-    Widget? label,
+    String? label,
+    VoidCallback? onLabelTapped, // Add this parameter
     VoidCallback? onClosed,
   }) {
     if (text == null) return;
@@ -43,15 +43,29 @@ class AppUtils {
               fontSize: 16,
             ),
           ),
-          label ?? const SizedBox.shrink(),
+          const SizedBox.shrink(),
         ],
       ),
       backgroundColor: AppColors.selectedBackgroundColor,
+      action: label != null
+          ? SnackBarAction(
+              label: label,
+              textColor: AppColors.primaryColor,
+
+              // Call the custom label callback
+              onPressed: () => onLabelTapped?.call(),
+            )
+          : null,
     );
 
     messengerKey.currentState!
       ..removeCurrentSnackBar()
-      ..showSnackBar(snackBar).closed.then((_) => onClosed?.call());
+      ..showSnackBar(snackBar).closed.then((reason) {
+        // Check if the snackbar is closed by tapping the label
+        if (reason != SnackBarClosedReason.action) {
+          onClosed?.call(); // Call the onClosed callback for other reasons
+        }
+      });
   }
 
   /// Displays a Toast message with the specified [message].
@@ -122,7 +136,8 @@ void _showSnackbar(MessagesProvider data, BuildContext context) {
   AppUtils.showSnackbar(
     'Message Deleted',
     delay: const Duration(seconds: 3),
-    label: SnackBarLabel(onTap: () => data.undoDelete()),
+    onLabelTapped: () => data.undoDelete(),
+    label: 'UNDO',
     onClosed: () => data.clearDeletedMessages(),
   );
 }
