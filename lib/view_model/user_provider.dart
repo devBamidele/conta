@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
 
 import '../models/person.dart';
 import '../utils/app_utils.dart';
@@ -29,6 +31,31 @@ class UserProvider extends ChangeNotifier {
     if (userData != null) {
       userData = userData!.copy(profilePicUrl: newUrl);
       notifyListeners();
+    }
+  }
+
+  Future<void> updateUserProfilePicture({required String? profilePic}) async {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+
+    final baseUrl = Uri.parse(dotenv.env['UPDATE_PROFILE_PIC'] as String);
+
+    final queryParameters = {
+      'userId': userId,
+      'profilePic': profilePic,
+    };
+
+    final url = baseUrl.replace(queryParameters: queryParameters);
+
+    try {
+      final response = await http.post(url);
+
+      if (response.statusCode == 200) {
+        log('Profile picture updated successfully.');
+      } else {
+        log('Failed to update profile picture. Status code: ${response.statusCode}, ${response.body}');
+      }
+    } catch (error) {
+      log('Error updating profile picture: $error');
     }
   }
 
@@ -60,6 +87,9 @@ class UserProvider extends ChangeNotifier {
         'profilePicUrl': photoUrl,
       });
 
+      // Call the cloud function to update all the chats
+      updateUserProfilePicture(profilePic: photoUrl);
+
       updatePicData(photoUrl);
 
       onUpdate();
@@ -89,6 +119,9 @@ class UserProvider extends ChangeNotifier {
       });
 
       picRef.delete().then((value) => log('Deleted file successfully'));
+
+      // Call the cloud function to update all the chats
+      updateUserProfilePicture(profilePic: null);
 
       updatePicData('null');
     } catch (e) {

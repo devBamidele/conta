@@ -56,9 +56,7 @@ class ChatProvider extends ChangeNotifier {
 
   String? _blockedFilter;
 
-  String? get blockedFilter {
-    return _blockedFilter;
-  }
+  String? get blockedFilter => _blockedFilter;
 
   set blockedFilter(String? value) {
     _blockedFilter = value;
@@ -366,6 +364,62 @@ class ChatProvider extends ChangeNotifier {
       log('User muted status updated successfully.');
     } else {
       log('Chat not found.');
+    }
+  }
+
+  Future<void> confirmDeleteChat(String chatId) async {
+    final chatReference =
+        FirebaseFirestore.instance.collection('chats').doc(chatId);
+
+    try {
+      await chatReference
+          .delete()
+          .then((_) => log('Deleted chat from Firestore'));
+    } on FirebaseException catch (e) {
+      // Handle other errors
+      log('A Firebase error occurred: $e');
+    } catch (e) {
+      log('A non Firebase Exception occurred ${e.toString()}');
+    }
+  }
+
+  Future<void> toggleChatDeletionStatus(String chatId, bool delete) async {
+    final chatRef = FirebaseFirestore.instance.collection('chats').doc(chatId);
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+
+    try {
+      final chatSnapshot = await chatRef.get();
+      final chatData = chatSnapshot.data();
+
+      if (chatData == null) {
+        // Document doesn't exist, handle accordingly
+        log('Document $chatId does not exist.');
+        return;
+      }
+
+      final participants = chatData['participants'] as List<dynamic>?;
+      final deletedAccount = chatData['deletedAccount'] as List<dynamic>?;
+
+      if (participants == null ||
+          deletedAccount == null ||
+          participants.length != deletedAccount.length) {
+        log('Invalid data in the chat document.');
+        return;
+      }
+
+      int currentUserIndex = participants.indexOf(userId);
+
+      if (currentUserIndex == -1) {
+        log('User $userId is not a participant in the chat.');
+        return;
+      }
+
+      deletedAccount[currentUserIndex] = delete;
+
+      chatRef.update({'deletedAccount': deletedAccount});
+      log('Chat $chatId ${delete ? 'deleted' : 'undeleted'} successfully.');
+    } catch (e) {
+      log('Error undoing chat ${delete ? 'deleted' : 'undeleted'} : $e');
     }
   }
 }

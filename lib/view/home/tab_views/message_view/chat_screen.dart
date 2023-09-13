@@ -8,6 +8,7 @@ import 'package:conta/res/style/app_text_style.dart';
 import 'package:conta/res/style/component_style.dart';
 import 'package:conta/utils/app_router/router.dart';
 import 'package:conta/utils/widget_functions.dart';
+import 'package:conta/view_model/chat_provider.dart';
 import 'package:conta/view_model/messages_provider.dart';
 import 'package:conta/view_model/photo_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -139,8 +140,8 @@ class _ChatScreenState extends State<ChatScreen>
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: onWillPop,
-      child: Consumer<MessagesProvider>(
-        builder: (_, data, Widget? child) {
+      child: Consumer2<MessagesProvider, ChatProvider>(
+        builder: (_, data, chat, Widget? child) {
           bool isReplying = data.replyChat;
 
           final currentChat = data.currentChat!;
@@ -186,7 +187,8 @@ class _ChatScreenState extends State<ChatScreen>
                           ? Padding(
                               padding: const EdgeInsets.only(top: 5),
                               child: GestureDetector(
-                                onTap: () => confirmChatDelete(context, data),
+                                onTap: () =>
+                                    confirmChatDelete(context, data, chat),
                                 child: Container(
                                   alignment: Alignment.center,
                                   height: 44,
@@ -287,7 +289,8 @@ class _ChatScreenState extends State<ChatScreen>
   }
 }
 
-void confirmChatDelete(BuildContext context, MessagesProvider data) {
+void confirmChatDelete(
+    BuildContext context, MessagesProvider data, ChatProvider chat) {
   final name = data.currentChat!.username;
   final chatId = data.currentChat!.chatId!;
 
@@ -320,13 +323,13 @@ void confirmChatDelete(BuildContext context, MessagesProvider data) {
         title: 'Delete chat',
         contentWidget: contentWidget,
         onConfirmPressed: () {
-          data.toggleChatDeletionStatus(chatId, true);
+          chat.toggleChatDeletionStatus(chatId, true);
 
           // a simplified version of the above line
           context.router.popUntilRouteWithName('HomeScreenRoute');
 
           // Display a message
-          _showSnackbar(data, context, name, chatId);
+          _showSnackbar(chat, context, name, chatId);
         },
       );
     },
@@ -334,7 +337,7 @@ void confirmChatDelete(BuildContext context, MessagesProvider data) {
 }
 
 void _showSnackbar(
-  MessagesProvider data,
+  ChatProvider chat,
   BuildContext context,
   String name,
   String chatId,
@@ -343,7 +346,7 @@ void _showSnackbar(
     'Chat with $name deleted',
     delay: const Duration(seconds: 5),
     label: 'UNDO',
-    onLabelTapped: () => data.toggleChatDeletionStatus(chatId, false),
-    onClosed: () => data.confirmDeleteChat(chatId),
+    onLabelTapped: () => chat.toggleChatDeletionStatus(chatId, false),
+    onClosed: () => chat.confirmDeleteChat(chatId),
   );
 }

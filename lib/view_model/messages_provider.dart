@@ -8,7 +8,6 @@ import 'package:conta/utils/enums.dart';
 import 'package:conta/utils/extensions.dart';
 import 'package:conta/view_model/user_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_downloader/image_downloader.dart';
@@ -566,76 +565,6 @@ class MessagesProvider extends ChangeNotifier {
       uIds: uIds,
       updateInfo: chatSnapshot.exists,
     );
-  }
-
-  Future<void> confirmDeleteChat(String chatId) async {
-    final chatReference =
-        FirebaseFirestore.instance.collection('chats').doc(chatId);
-
-    final dataReference = FirebaseStorage.instanceFor(
-            bucket: 'gs://conta---instant-messaging-app-appimages')
-        .ref('images/chats/$chatId');
-
-    try {
-      await chatReference.delete().then(
-            (value) => log('Deleted chat from Firestore'),
-          );
-
-      // This doesn't work
-      await dataReference.delete().then(
-            (value) => log('Deleted chat data from Firestore'),
-          );
-    } on FirebaseException catch (e) {
-      if (e.code == 'object-not-found') {
-        // Handle the "No object exists at the desired reference" error here
-        log('Object not found: ${e.message}');
-      } else {
-        // Handle other errors
-        log('A Firebase error occurred: $e');
-      }
-    } catch (e) {
-      log('A non Firebase Exception occurred ${e.toString()}');
-    }
-  }
-
-  Future<void> toggleChatDeletionStatus(String chatId, bool delete) async {
-    final chatRef = FirebaseFirestore.instance.collection('chats').doc(chatId);
-    final userId = FirebaseAuth.instance.currentUser!.uid;
-
-    try {
-      final chatSnapshot = await chatRef.get();
-      final chatData = chatSnapshot.data();
-
-      if (chatData == null) {
-        // Document doesn't exist, handle accordingly
-        log('Document $chatId does not exist.');
-        return;
-      }
-
-      final participants = chatData['participants'] as List<dynamic>?;
-      final deletedAccount = chatData['deletedAccount'] as List<dynamic>?;
-
-      if (participants == null ||
-          deletedAccount == null ||
-          participants.length != deletedAccount.length) {
-        log('Invalid data in the chat document.');
-        return;
-      }
-
-      int currentUserIndex = participants.indexOf(userId);
-
-      if (currentUserIndex == -1) {
-        log('User $userId is not a participant in the chat.');
-        return;
-      }
-
-      deletedAccount[currentUserIndex] = delete;
-
-      chatRef.update({'deletedAccount': deletedAccount});
-      log('Chat $chatId ${delete ? 'deleted' : 'undeleted'} successfully.');
-    } catch (e) {
-      log('Error undoing chat ${delete ? 'deleted' : 'undeleted'} : $e');
-    }
   }
 
   Future<void> updateOppIndex() async {
