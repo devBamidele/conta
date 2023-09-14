@@ -12,7 +12,7 @@ Widget addHeight(double height) => SizedBox(height: height);
 
 Widget addWidth(double width) => SizedBox(width: width);
 
-Widget displayLoading(BuildContext context) {
+Widget displayLoading() {
   return Center(
     child: LoadingAnimationWidget.prograssiveDots(
       color: Colors.white,
@@ -32,17 +32,25 @@ Icon visibilityIcon(bool isVisible, Color passwordColor) {
 
 Widget emailIcon(Color color) {
   return Icon(
-    IconlyBold.message,
+    IconlyLight.message,
     color: color,
-    size: 20,
+    size: 22,
   );
 }
 
 Icon lockIcon(Color iconColor) {
   return Icon(
-    IconlyBold.lock,
+    IconlyLight.lock,
     color: iconColor,
-    size: 20,
+    size: 22,
+  );
+}
+
+Icon phoneIcon(Color iconColor) {
+  return Icon(
+    IconlyLight.call,
+    color: iconColor,
+    size: 22,
   );
 }
 

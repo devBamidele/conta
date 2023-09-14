@@ -1,5 +1,6 @@
 import 'package:conta/res/style/component_style.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../color.dart';
 
@@ -18,6 +19,8 @@ class CustomTextField extends StatelessWidget {
     this.onFieldSubmitted,
     this.focusedBorderColor,
     this.maxLength,
+    this.lengthLimit,
+    this.isPhone = false,
   }) : super(key: key);
 
   final FocusNode focusNode;
@@ -33,11 +36,13 @@ class CustomTextField extends StatelessWidget {
   final Color? focusedBorderColor;
   final Color textColor = AppColors.blackColor;
   final int? maxLength;
+  final int? lengthLimit;
+  final bool isPhone;
 
   @override
   Widget build(BuildContext context) {
-    //
     return TextFormField(
+      keyboardType: isPhone ? TextInputType.phone : null,
       style: TextStyle(color: textColor),
       maxLength: maxLength,
       cursorColor: textColor,
@@ -48,6 +53,12 @@ class CustomTextField extends StatelessWidget {
       textInputAction: action,
       validator: validation,
       onFieldSubmitted: onFieldSubmitted,
+      inputFormatters: [
+        isPhone
+            ? _PhoneNumberFormatter()
+            : FilteringTextInputFormatter(RegExp('.'), allow: true),
+        LengthLimitingTextInputFormatter(maxLength ?? lengthLimit),
+      ],
       decoration: InputDecoration(
         focusedBorder: inputBorder.copyWith(
           borderSide: BorderSide(
@@ -62,12 +73,48 @@ class CustomTextField extends StatelessWidget {
         contentPadding: const EdgeInsets.all(18),
         prefixIcon: prefixIcon != null
             ? Padding(
-                padding: const EdgeInsets.only(left: 22, right: 14),
+                padding: EdgeInsets.only(
+                  left: 22,
+                  right: isPhone ? 4 : 14,
+                  top: isPhone ? 1 : 0,
+                ),
                 child: prefixIcon,
               )
             : null,
         suffixIcon: suffixIcon,
       ),
+    );
+  }
+}
+
+class _PhoneNumberFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final text = newValue.text;
+
+    if (text.isEmpty) {
+      return newValue;
+    }
+
+    final buffer = StringBuffer();
+    int count = 0;
+
+    for (int i = 0; i < text.length; i++) {
+      if (text[i].contains(RegExp(r'[0-9]'))) {
+        if (count == 3 || count == 6) {
+          buffer.write(' ');
+        }
+        buffer.write(text[i]);
+        count++;
+      }
+    }
+
+    return TextEditingValue(
+      text: buffer.toString(),
+      selection: TextSelection.collapsed(offset: buffer.length),
     );
   }
 }

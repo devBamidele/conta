@@ -44,16 +44,26 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // a method to check if the username already exists in Firestore
-  Future<bool> isUnique(String username) async {
-    // perform a query on the Firestore collection to
-    // check if the username already exists
+  /*
+   Todo: I need to come back to this and find a way to make it case insensitive
+   */
+  Future<bool> isUsernameUnique(String username) async {
     var result = await FirebaseFirestore.instance
         .collection('users')
         .where('username', isEqualTo: username)
         .get();
 
     // if the query returns any documents, it means the username already exists
+    return result.docs.isEmpty;
+  }
+
+  Future<bool> isPhoneUnique(String phone) async {
+    var result = await FirebaseFirestore.instance
+        .collection('users')
+        .where('phone', isEqualTo: phone)
+        .get();
+
+    // if the query returns any documents, it means the phone number already exists
     return result.docs.isEmpty;
   }
 
@@ -312,10 +322,18 @@ class AuthProvider extends ChangeNotifier {
 
         onAuthenticate();
       }
+    } on FirebaseException catch (e) {
+      if (e.code == 'network-request-failed') {
+        showSnackbar('Poor internet connection');
+      } else {
+        showSnackbar('Oops, an error occurred');
+      }
     } catch (e) {
       // Handle exceptions
       showSnackbar('An error occurred while checking email and password.'
           ' Please try again later.');
+
+      log(e.toString());
     } finally {
       // Close the loading dialog when login attempt is finished
       if (context.mounted) Navigator.of(context).pop();

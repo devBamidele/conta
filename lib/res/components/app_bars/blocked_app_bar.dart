@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../../utils/widget_functions.dart';
@@ -106,6 +107,9 @@ class _BlockedAccountsAppBarState extends State<BlockedAccountsAppBar> {
                             controller: _searchController,
                             cursorColor: AppColors.blackColor,
                             onChanged: (text) => onUpdate(text, data),
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(15)
+                            ],
                             style: const TextStyle(
                               fontSize: 18,
                               height: 1.2,

@@ -62,16 +62,30 @@ extension StringExtentions on String? {
 
   /// Validates the name input.
   /// Returns null if the name is valid, otherwise returns an error message.
-  String? validateName() {
+  String? validatePhoneNumber(String? existingPhoneNumber) {
     final value = this?.trim();
     if (value == null || value.isEmpty) {
-      return 'Please enter your full name';
-    } else if (!RegExp(r'^[a-zA-Z0-9\s]+$').hasMatch(value)) {
-      return 'Only letters, numbers, underscores, and spaces are allowed.';
-    } else if (value.length < 4 || value.length > 25) {
-      return 'Username must be between 4 and 20 characters long';
+      return 'Please enter a phone number';
+    } else if (!RegExp(r'^\+?[0-9 -]+$').hasMatch(value)) {
+      return 'Invalid character';
+    } else if (value.length != 12) {
+      return 'Invalid length';
     } else {
-      return null;
+      return existingPhoneNumber;
+    }
+  }
+
+  String addCountryCode() {
+    // Remove any leading or trailing whitespace
+    var input = this!.trim();
+
+    // Check if the input string starts with a '+' sign
+    if (input.startsWith('+')) {
+      // If it already starts with '+', return it as is
+      return input;
+    } else {
+      // Otherwise, add the country code '+234' at the beginning
+      return '+234 $input';
     }
   }
 
@@ -82,7 +96,7 @@ extension StringExtentions on String? {
     final value = this?.trim();
     if (value == null || value.isEmpty) {
       return 'Please enter your username';
-    } else if (!RegExp(r'^[a-zA-Z0-9_\s]+$').hasMatch(value)) {
+    } else if (!RegExp(r"^[a-zA-Z0-9_@\s']+$").hasMatch(value)) {
       return 'Only letters, numbers, underscores, and spaces are allowed.';
     } else if (value.length < 4 || value.length > 20) {
       return 'Username must be between 4 and 20 characters long';
@@ -91,13 +105,26 @@ extension StringExtentions on String? {
     }
   }
 
-  bool validateInput() {
+  bool validatePhoneNumberInput() {
     final value = this?.trim();
     if (value == null || value.isEmpty) {
       return false;
-    } else if (!RegExp(r'^[a-zA-Z0-9_\s]+$').hasMatch(value)) {
+    } else if (!RegExp(r'^\+?[0-9 -]+$').hasMatch(value)) {
       return false;
-    } else if (value.length < 4 || value.length > 30) {
+    } else if (value.length != 12) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  bool validateUserNameInput() {
+    final value = this?.trim();
+    if (value == null || value.isEmpty) {
+      return false;
+    } else if (!RegExp(r"^[a-zA-Z0-9_@\s']+$").hasMatch(value)) {
+      return false;
+    } else if (value.length < 4 || value.length > 20) {
       return false;
     } else {
       return true;

@@ -138,6 +138,7 @@ class _HomeScreenState extends State<HomeScreen>
                   Padding(
                     padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
                     child: CustomTextField(
+                      lengthLimit: 30,
                       focusNode: searchFocusNode,
                       textController: _searchController,
                       customFillColor: fillSearchColor,

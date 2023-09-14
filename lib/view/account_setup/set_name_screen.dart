@@ -6,7 +6,6 @@ import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:conta/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
-import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
 import '../../res/color.dart';
@@ -29,11 +28,13 @@ class SetNameScreen extends StatefulWidget {
 class _SetNameScreenState extends State<SetNameScreen> {
   late AuthProvider authProvider;
 
-  final myNameController = TextEditingController();
-  final myUserNameController = TextEditingController();
   String? existingUserName;
+  String? existingPhoneNumber;
 
-  final nameFocusNode = FocusNode();
+  final myPhoneController = TextEditingController();
+  final myUserNameController = TextEditingController();
+
+  final phoneFocusNode = FocusNode();
   final usernameFocusNode = FocusNode();
 
   final formKey1 = GlobalKey<FormState>();
@@ -42,13 +43,13 @@ class _SetNameScreenState extends State<SetNameScreen> {
   final shakeState1 = GlobalKey<ShakeWidgetState>();
   final shakeState2 = GlobalKey<ShakeWidgetState>();
 
-  Color nameColor = AppColors.hintTextColor;
-  Color fillNameColor = AppColors.inputBackGround;
+  Color phoneColor = AppColors.hintTextColor;
+  Color fillPhoneColor = AppColors.inputBackGround;
 
   Color usernameColor = AppColors.hintTextColor;
   Color fillUserNameColor = AppColors.inputBackGround;
 
-  bool _isNameEmpty = true;
+  bool _isPhoneEmpty = true;
   bool _isUserNameEmpty = true;
 
   Timer? _debounce;
@@ -60,31 +61,33 @@ class _SetNameScreenState extends State<SetNameScreen> {
 
     authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-    myNameController.addListener(_updateNameEmpty);
+    myPhoneController.addListener(_updatePhoneEmpty);
 
-    nameFocusNode.addListener(_updateNameColor);
+    myPhoneController.addListener(_onPhoneNumberChanged);
+
+    phoneFocusNode.addListener(_updatePhoneColor);
 
     myUserNameController.addListener(_updateUserNameEmpty);
 
-    myUserNameController.addListener(_onSearchChanged);
+    myUserNameController.addListener(_onUserNameChanged);
 
     usernameFocusNode.addListener(_updateUserNameColor);
   }
 
-  void _updateNameEmpty() {
+  void _updatePhoneEmpty() {
     setState(() {
-      _isNameEmpty = myNameController.text.isEmpty;
+      _isPhoneEmpty = myPhoneController.text.isEmpty;
     });
   }
 
-  void _updateNameColor() {
+  void _updatePhoneColor() {
     setState(() {
-      nameColor = nameFocusNode.hasFocus
+      phoneColor = phoneFocusNode.hasFocus
           ? AppColors.selectedFieldColor
-          : _isNameEmpty
+          : _isPhoneEmpty
               ? AppColors.hintTextColor
-              : Colors.black87;
-      fillNameColor = nameFocusNode.hasFocus
+              : AppColors.blackColor;
+      fillPhoneColor = phoneFocusNode.hasFocus
           ? AppColors.selectedBackgroundColor
           : AppColors.inputBackGround;
     });
@@ -102,16 +105,42 @@ class _SetNameScreenState extends State<SetNameScreen> {
           ? AppColors.selectedFieldColor
           : _isUserNameEmpty
               ? AppColors.hintTextColor
-              : Colors.black87;
+              : AppColors.blackColor;
       fillUserNameColor = usernameFocusNode.hasFocus
           ? AppColors.selectedBackgroundColor
           : AppColors.inputBackGround;
     });
   }
 
-  _onSearchChanged() async {
-    final text = myUserNameController.text;
-    if (text.validateInput()) {
+  _onPhoneNumberChanged() async {
+    String text = myPhoneController.text.trim();
+
+    if (text.validatePhoneNumberInput()) {
+      setState(() {
+        isLoading = true;
+        existingPhoneNumber = 'Checking ...';
+      });
+
+      if (_debounce?.isActive ?? false) _debounce?.cancel();
+      _debounce = Timer(
+        const Duration(milliseconds: 1000),
+        () async {
+          // Perform the phone number availability check here
+          bool unique = await authProvider.isPhoneUnique(text.addCountryCode());
+
+          setState(() {
+            existingPhoneNumber =
+                unique ? null : 'Already registered with another account';
+            isLoading = false;
+          });
+        },
+      );
+    }
+  }
+
+  _onUserNameChanged() async {
+    final text = myUserNameController.text.trim();
+    if (text.validateUserNameInput()) {
       setState(() {
         isLoading = true;
         existingUserName = 'Checking ...';
@@ -122,7 +151,7 @@ class _SetNameScreenState extends State<SetNameScreen> {
         const Duration(milliseconds: 1000),
         () async {
           // Perform the username availability check here
-          bool unique = await authProvider.isUnique(text);
+          bool unique = await authProvider.isUsernameUnique(text);
 
           setState(() {
             existingUserName = unique ? null : 'Oops that username is taken';
@@ -135,8 +164,8 @@ class _SetNameScreenState extends State<SetNameScreen> {
 
   @override
   void dispose() {
-    myNameController.dispose();
-    nameFocusNode.dispose();
+    myPhoneController.dispose();
+    phoneFocusNode.dispose();
 
     myUserNameController.dispose();
     usernameFocusNode.dispose();
@@ -152,13 +181,13 @@ class _SetNameScreenState extends State<SetNameScreen> {
   }
 
   void onContinuePressed() {
-    final name = formKey1.currentState?.validate();
+    final phone = formKey1.currentState?.validate();
     final username = formKey2.currentState?.validate();
 
-    if (!name! && !username!) {
+    if (!phone! && !username!) {
       shakeState1.currentState?.shake();
       shakeState2.currentState?.shake();
-    } else if (!name) {
+    } else if (!phone) {
       shakeState1.currentState?.shake();
     } else if (!username!) {
       shakeState2.currentState?.shake();
@@ -171,10 +200,10 @@ class _SetNameScreenState extends State<SetNameScreen> {
 
   // Save the values to the authentication provider and proceed
   void setValues() {
-    final name = myNameController.text.trim();
+    final phone = myPhoneController.text.trim();
     final userName = myUserNameController.text.trim();
 
-    authProvider.setNameAndUserName(name, userName);
+    authProvider.setNameAndUserName(phone, userName);
 
     navPush(context, const SetPhotoScreenRoute());
   }
@@ -198,39 +227,19 @@ class _SetNameScreenState extends State<SetNameScreen> {
                   ),
                   addHeight(20),
                   const Text(
-                    'What\'s your name?',
+                    'Personal Information',
                     style: AppTextStyles.headlineLarge,
                   ),
                   addHeight(10),
                   Container(
                     alignment: Alignment.topLeft,
                     child: const Text(
-                      'This will be displayed on your profile',
+                      'We want to get to know you better',
                       textAlign: TextAlign.left,
                       style: AppTextStyles.headlineSmall,
                     ),
                   ),
                   addHeight(55),
-                  Form(
-                    key: formKey1,
-                    child: ShakeWidget(
-                      key: shakeState1,
-                      shakeCount: 3,
-                      shakeOffset: 6,
-                      child: CustomTextField(
-                        focusNode: nameFocusNode,
-                        textController: myNameController,
-                        customFillColor: fillNameColor,
-                        hintText: 'Full Name',
-                        prefixIcon: Icon(
-                          IconlyBold.profile,
-                          color: nameColor,
-                          size: 20,
-                        ),
-                        validation: (name) => name?.trim().validateName(),
-                      ),
-                    ),
-                  ),
                   Form(
                     key: formKey2,
                     child: Padding(
@@ -243,6 +252,7 @@ class _SetNameScreenState extends State<SetNameScreen> {
                         shakeCount: 3,
                         shakeOffset: 6,
                         child: CustomTextField(
+                          lengthLimit: 25,
                           focusNode: usernameFocusNode,
                           textController: myUserNameController,
                           customFillColor: fillUserNameColor,
@@ -250,11 +260,45 @@ class _SetNameScreenState extends State<SetNameScreen> {
                           prefixIcon: Icon(
                             Icons.alternate_email_rounded,
                             color: usernameColor,
-                            size: 20,
+                            size: 22,
                           ),
                           validation: (username) =>
                               username.validateUsername(existingUserName),
                         ),
+                      ),
+                    ),
+                  ),
+                  Form(
+                    key: formKey1,
+                    child: ShakeWidget(
+                      key: shakeState1,
+                      shakeCount: 3,
+                      shakeOffset: 6,
+                      child: CustomTextField(
+                        lengthLimit: 12,
+                        focusNode: phoneFocusNode,
+                        textController: myPhoneController,
+                        customFillColor: fillPhoneColor,
+                        hintText: 'Phone Number',
+                        isPhone: true,
+                        prefixIcon: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            phoneIcon(phoneColor),
+                            addWidth(12),
+                            const Text(
+                              '+234',
+                              style: TextStyle(
+                                color: AppColors.blackColor,
+                                letterSpacing: 1,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                        validation: (name) => name
+                            ?.trim()
+                            .validatePhoneNumber(existingPhoneNumber),
                       ),
                     ),
                   ),
@@ -269,7 +313,7 @@ class _SetNameScreenState extends State<SetNameScreen> {
                         style: elevatedButton,
                         onPressed: onContinuePressed,
                         child: isLoading
-                            ? displayLoading(context)
+                            ? displayLoading()
                             : const Text(
                                 'Continue',
                                 style: AppTextStyles.labelMedium,

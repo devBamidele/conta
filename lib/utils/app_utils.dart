@@ -35,12 +35,16 @@ class AppUtils {
             ? MainAxisAlignment.center
             : MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            text,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Colors.black87,
-              fontSize: 16,
+          Flexible(
+            child: Text(
+              text,
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+              style: const TextStyle(
+                color: Colors.black87,
+                fontSize: 16,
+              ),
             ),
           ),
           const SizedBox.shrink(),

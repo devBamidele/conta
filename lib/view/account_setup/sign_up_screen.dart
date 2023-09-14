@@ -9,7 +9,6 @@ import 'package:conta/view_model/auth_provider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
-import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
 import '../../res/components/custom/custom_text_field.dart';
@@ -213,10 +212,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           textController: myEmailController,
                           customFillColor: fillEmailColor,
                           hintText: 'Email',
-                          prefixIcon: Icon(
-                            IconlyBold.message,
-                            color: emailColor,
-                          ),
+                          prefixIcon: emailIcon(emailColor),
                           validation: (email) => email?.trim().validateEmail(),
                         ),
                       ),

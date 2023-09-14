@@ -1,6 +1,5 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../../view_model/chat_provider.dart';
@@ -40,12 +39,6 @@ class _ContactsAppBarState extends State<ContactsAppBar>
     });
   }
 
-  void onUpdate(String text, ChatProvider data) {
-    data.contactFilter = text;
-
-    log(data.contactFilter.toString());
-  }
-
   void clearSearch(ChatProvider data) {
     data.clearContactsFilter();
 
@@ -82,15 +75,14 @@ class _ContactsAppBarState extends State<ContactsAppBar>
             ),
             title: Column(
               children: [
-                const SizedBox.square(
-                  dimension: 10,
-                ),
+                const SizedBox.square(dimension: 10),
                 SizedBox(
                   height: _myToolBarHeight,
                   child: TextField(
                     controller: _searchController,
+                    inputFormatters: [LengthLimitingTextInputFormatter(15)],
                     cursorColor: AppColors.blackColor,
-                    onChanged: (text) => onUpdate(text, data),
+                    onChanged: (text) => data.contactFilter = text,
                     style: const TextStyle(
                       fontSize: 18,
                       height: 1.2,
