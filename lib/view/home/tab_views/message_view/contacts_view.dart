@@ -174,7 +174,7 @@ class _ContactsViewState extends State<ContactsView> {
       uidUser2: person.id,
       profilePicUrl: person.profilePicUrl,
       bio: person.bio,
-      name: person.name,
+      name: person.phone ?? 'No phone',
       notifications: true,
     );
 

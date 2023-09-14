@@ -66,7 +66,7 @@ dependencies:
   visibility_detector: ^0.4.0+2
   swipe_to: ^1.0.2
   lottie: ^2.3.2
-  connectivity_plus: ^2.2.0
+  connectivity_plus: ^4.0.1
   http: ^0.13.0
   flutter_dotenv: ^5.1.0
 

@@ -15,21 +15,21 @@ import '../utils/app_utils.dart';
 
 class AuthProvider extends ChangeNotifier {
   String? username;
-  String? name;
   String? email;
   String? password;
+  String? phone;
   File? profilePic;
 
   void clearData() {
     username = null;
-    name = null;
+    phone = null;
     email = null;
     password = null;
     profilePic = null;
   }
 
-  void setNameAndUserName(String name, String username) {
-    this.name = name;
+  void setPhoneAndUserName({required String phone, required String username}) {
+    this.phone = phone;
     this.username = username;
     notifyListeners();
   }
@@ -57,14 +57,32 @@ class AuthProvider extends ChangeNotifier {
     return result.docs.isEmpty;
   }
 
-  Future<bool> isPhoneUnique(String phone) async {
-    var result = await FirebaseFirestore.instance
-        .collection('users')
-        .where('phone', isEqualTo: phone)
-        .get();
+  Future<Map<String, dynamic>> isPhoneUnique(String phone) async {
+    try {
+      var result = await FirebaseFirestore.instance
+          .collection('users')
+          .where('phone', isEqualTo: phone)
+          .get(const GetOptions(source: Source.server));
 
-    // if the query returns any documents, it means the phone number already exists
-    return result.docs.isEmpty;
+      bool isEmpty = result.docs.isEmpty;
+
+      return {
+        'isEmpty': isEmpty,
+      };
+    } on FirebaseException catch (e) {
+      const message = 'Unable to check, device offline';
+
+      log('Error checking if phone number is unique, A Firebase Exception occurred ${e.toString()}');
+
+      return {
+        'message': message,
+      };
+    } catch (e) {
+      log('Error checking for unique phone number ${e.toString()}');
+    }
+    return {
+      'message': 'Oops, an unknown error occurred',
+    };
   }
 
   Future<void> createNewUser(String userId) async {
@@ -86,7 +104,7 @@ class AuthProvider extends ChangeNotifier {
 
       final person = Person(
         id: userId,
-        name: name!,
+        phone: phone,
         username: username!,
         email: email!,
         profilePicUrl: photoUrl,

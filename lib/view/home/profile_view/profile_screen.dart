@@ -168,9 +168,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: Column(
                           children: [
                             ProfileTile(
-                              titleText: 'Name',
+                              titleText: 'Phone',
                               icon: IconlyLight.profile,
-                              subtitle: data.userData!.name,
+                              subtitle: data.userData!.phone ?? 'No phone',
                             ),
                             ProfileTile(
                               titleText: 'Username',

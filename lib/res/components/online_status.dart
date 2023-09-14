@@ -74,7 +74,7 @@ class Status extends StatelessWidget {
         );
       case StreamType.name:
         return Text(
-          person.name,
+          person.phone ?? 'No phone number',
           style: const TextStyle(
             fontSize: 15,
             color: AppColors.blackColor,

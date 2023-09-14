@@ -126,11 +126,15 @@ class _SetNameScreenState extends State<SetNameScreen> {
         const Duration(milliseconds: 1000),
         () async {
           // Perform the phone number availability check here
-          bool unique = await authProvider.isPhoneUnique(text.addCountryCode());
+          final result =
+              await authProvider.isPhoneUnique(text.addCountryCode());
+
+          final unique = result['isEmpty'] ?? false;
+          final message =
+              result['message'] ?? 'Already registered with another account';
 
           setState(() {
-            existingPhoneNumber =
-                unique ? null : 'Already registered with another account';
+            existingPhoneNumber = unique ? null : message;
             isLoading = false;
           });
         },
@@ -203,7 +207,7 @@ class _SetNameScreenState extends State<SetNameScreen> {
     final phone = myPhoneController.text.trim();
     final userName = myUserNameController.text.trim();
 
-    authProvider.setNameAndUserName(phone, userName);
+    authProvider.setPhoneAndUserName(username: userName, phone: phone);
 
     navPush(context, const SetPhotoScreenRoute());
   }
@@ -234,7 +238,7 @@ class _SetNameScreenState extends State<SetNameScreen> {
                   Container(
                     alignment: Alignment.topLeft,
                     child: const Text(
-                      'We want to get to know you better',
+                      'Let\'s get to know you better',
                       textAlign: TextAlign.left,
                       style: AppTextStyles.headlineSmall,
                     ),

@@ -7,7 +7,6 @@ import 'package:intl/intl.dart';
 /// profile picture URL, bio, last seen timestamp, and online status.
 class Person {
   final String id;
-  final String name;
   final String username;
   final String email;
   final String? phone;
@@ -29,7 +28,6 @@ class Person {
   /// The [online] indicates whether the person is currently online.
   Person({
     required this.id,
-    required this.name,
     required this.username,
     required this.email,
     this.phone,
@@ -45,7 +43,6 @@ class Person {
   /// The [json] is a JSON object representing the person's data.
   Person.fromJson(Map<String, dynamic> json)
       : id = json['id'],
-        name = json['name'],
         username = json['username'],
         email = json['email'],
         profilePicUrl = json['profilePicUrl'],
@@ -58,7 +55,6 @@ class Person {
   /// Serialize the [Person] object into a JSON object for storage in Firestore.
   Map<String, dynamic> toJson() => {
         'id': id,
-        'name': name,
         'username': username,
         'email': email,
         'phone': phone,
@@ -71,7 +67,6 @@ class Person {
 
   Person.defaultPerson()
       : id = '',
-        name = '',
         username = '',
         email = '',
         phone = null,
@@ -115,7 +110,6 @@ class Person {
   String toString() {
     return 'Person(\n'
         '  id: $id,\n'
-        '  name: $name,\n'
         '  username: $username,\n'
         '  email: $email,\n'
         '  phone: $phone,\n'
@@ -142,7 +136,6 @@ class Person {
   }) {
     return Person(
       id: id ?? this.id,
-      name: name ?? this.name,
       username: username ?? this.username,
       email: email ?? this.email,
       phone: phone ?? this.phone,
