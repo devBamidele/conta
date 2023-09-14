@@ -144,6 +144,7 @@ class _SetNameScreenState extends State<SetNameScreen> {
 
   _onUserNameChanged() async {
     final text = myUserNameController.text.trim();
+
     if (text.validateUserNameInput()) {
       setState(() {
         isLoading = true;
@@ -155,10 +156,13 @@ class _SetNameScreenState extends State<SetNameScreen> {
         const Duration(milliseconds: 1000),
         () async {
           // Perform the username availability check here
-          bool unique = await authProvider.isUsernameUnique(text);
+          final result = await authProvider.isUsernameUnique(text);
+
+          final unique = result['isEmpty'] ?? false;
+          final message = result['message'] ?? 'Oops, that username is taken';
 
           setState(() {
-            existingUserName = unique ? null : 'Oops that username is taken';
+            existingUserName = unique ? null : message;
             isLoading = false;
           });
         },
@@ -204,7 +208,7 @@ class _SetNameScreenState extends State<SetNameScreen> {
 
   // Save the values to the authentication provider and proceed
   void setValues() {
-    final phone = myPhoneController.text.trim();
+    final phone = myPhoneController.text.trim().addCountryCode();
     final userName = myUserNameController.text.trim();
 
     authProvider.setPhoneAndUserName(username: userName, phone: phone);

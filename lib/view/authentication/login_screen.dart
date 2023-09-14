@@ -6,13 +6,13 @@ import 'package:conta/res/style/component_style.dart';
 import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:conta/utils/extensions.dart';
 import 'package:conta/view_model/auth_provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:provider/provider.dart';
 
-import '../../data/logins.dart';
 import '../../res/color.dart';
 import '../../res/components/custom/custom_text_field.dart';
 import '../../res/components/shake_error.dart';
@@ -137,7 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void onContinuePressed() {
-    AppLogins.useFourthLogin(myEmailController, myPasswordController);
+    // AppLogins.useFourthLogin(myEmailController, myPasswordController);
 
     final email = formKey1.currentState?.validate();
     final password = formKey2.currentState?.validate();
@@ -169,13 +169,36 @@ class _LoginScreenState extends State<LoginScreen> {
     final password = myPasswordController.text;
 
     await authProvider.loginWithEmailAndPassword(
-      context: context,
       email: email,
+      context: context,
       password: password,
       showSnackbar: showSnackbar,
       onAuthenticate: onAuthenticate,
+      showEmailSnackbar: showEmailSnackbar,
     );
   }
+
+  // Function to show the "Email not verified" Snackbar
+  void showEmailSnackbar(UserCredential credential) {
+    if (mounted) {
+      final user = credential.user!;
+
+      AppUtils.showSnackbar(
+        'Email not verified',
+        label: 'VERIFY',
+        delay: const Duration(seconds: 5),
+        onLabelTapped: () {
+          user.sendEmailVerification();
+          onVerifyTapped(credential);
+        },
+      );
+    }
+  }
+
+  void onVerifyTapped(UserCredential credential) => navReplaceAll(
+        context,
+        [VerifyAccountScreenRoute(userCredential: credential)],
+      );
 
   void onAuthenticate() {
     gotoHome();

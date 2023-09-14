@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:conta/utils/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
@@ -42,6 +43,8 @@ class _SplashScreenState extends State<SplashScreen>
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser != null && currentUser.emailVerified) {
       isAuth = true;
+    } else {
+      AuthService().signOutFromApp();
     }
   }
 

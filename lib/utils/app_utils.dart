@@ -20,7 +20,7 @@ class AppUtils {
     String? text, {
     Duration delay = const Duration(seconds: 2),
     String? label,
-    VoidCallback? onLabelTapped, // Add this parameter
+    VoidCallback? onLabelTapped,
     VoidCallback? onClosed,
   }) {
     if (text == null) return;

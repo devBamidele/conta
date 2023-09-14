@@ -130,7 +130,7 @@ class _EditBioScreenState extends State<EditBioScreen> {
                       focusNode: bioNode,
                       textController: bioController,
                       customFillColor: fillColor,
-                      maxLength: 50,
+                      maxLength: 70,
                       hintText: 'Edit bio',
                       focusedBorderColor: Colors.transparent,
                     )

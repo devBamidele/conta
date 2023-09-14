@@ -47,14 +47,33 @@ class AuthProvider extends ChangeNotifier {
   /*
    Todo: I need to come back to this and find a way to make it case insensitive
    */
-  Future<bool> isUsernameUnique(String username) async {
-    var result = await FirebaseFirestore.instance
-        .collection('users')
-        .where('username', isEqualTo: username)
-        .get();
+  Future<Map<String, dynamic>> isUsernameUnique(String username) async {
+    try {
+      var result = await FirebaseFirestore.instance
+          .collection('users')
+          .where('username', isEqualTo: username)
+          .get(const GetOptions(source: Source.server));
 
-    // if the query returns any documents, it means the username already exists
-    return result.docs.isEmpty;
+      bool isEmpty = result.docs.isEmpty;
+
+      return {
+        'isEmpty': isEmpty,
+      };
+    } on FirebaseException catch (e) {
+      const message = 'Unable to check, device offline';
+
+      log('Error checking if phone number is unique, '
+          'A Firebase Exception occurred ${e.toString()}');
+
+      return {
+        'message': message,
+      };
+    } catch (e) {
+      log('Error checking for unique username ${e.toString()}');
+    }
+    return {
+      'message': 'Oops, an unknown error occurred',
+    };
   }
 
   Future<Map<String, dynamic>> isPhoneUnique(String phone) async {
@@ -72,7 +91,8 @@ class AuthProvider extends ChangeNotifier {
     } on FirebaseException catch (e) {
       const message = 'Unable to check, device offline';
 
-      log('Error checking if phone number is unique, A Firebase Exception occurred ${e.toString()}');
+      log('Error checking if phone number is unique, '
+          'A Firebase Exception occurred ${e.toString()}');
 
       return {
         'message': message,
@@ -364,6 +384,7 @@ class AuthProvider extends ChangeNotifier {
     required String password,
     required void Function(String) showSnackbar,
     required VoidCallback onAuthenticate,
+    required void Function(UserCredential) showEmailSnackbar,
   }) async {
     AppUtils.showLoadingDialog1(context);
 
@@ -382,9 +403,12 @@ class AuthProvider extends ChangeNotifier {
         updateUserToken(user.uid);
 
         onAuthenticate();
+      } else if (user != null && user.emailVerified == false) {
+        // Email is not verified, show the Snackbar
+        showEmailSnackbar(userCredential);
       } else {
-        // Email is not verified
-        showSnackbar('Please verify your email before logging in');
+        // User is null
+        showSnackbar('An error occurred, please try again');
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'network-request-failed') {
