@@ -194,6 +194,36 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> updateUsername(
+    String newName, {
+    required BuildContext context,
+    required void Function(String) showSnackbar,
+  }) async {
+    AppUtils.showLoadingDialog1(context);
+
+    final auth = FirebaseAuth.instance;
+    final firestore = FirebaseFirestore.instance;
+
+    final user = auth.currentUser;
+    if (user != null) {
+      try {
+        // Update the user's name in the Firestore database
+        await firestore.collection('users').doc(user.uid).update({
+          'username': newName,
+        });
+
+        // Successfully updated bio
+        showSnackbar('Successfully updated name');
+      } catch (error) {
+        // Error updating bio
+        showSnackbar('Error updating username');
+      } finally {
+        // Close the loading dialog when login attempt is finished
+        if (context.mounted) Navigator.of(context).pop();
+      }
+    }
+  }
+
   Future<void> updateBio(
     String newBio, {
     required BuildContext context,

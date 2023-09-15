@@ -389,7 +389,7 @@ class AuthProvider extends ChangeNotifier {
     AppUtils.showLoadingDialog1(context);
 
     try {
-      UserCredential userCredential =
+      final userCredential =
           await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,

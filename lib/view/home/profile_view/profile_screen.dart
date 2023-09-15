@@ -168,14 +168,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: Column(
                           children: [
                             ProfileTile(
-                              titleText: 'Phone',
-                              icon: IconlyLight.profile,
-                              subtitle: data.userData!.phone ?? 'No phone',
-                            ),
-                            ProfileTile(
                               titleText: 'Username',
                               icon: Icons.alternate_email_rounded,
                               subtitle: data.userData!.username,
+                              onTap: () => navPush(
+                                  context, const EditUsernameScreenRoute()),
                             ),
                             ProfileTile(
                               titleText: 'Bio',
@@ -183,6 +180,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               subtitle: data.userData!.bio,
                               onTap: () =>
                                   navPush(context, const EditBioScreenRoute()),
+                            ),
+                            ProfileTile(
+                              titleText: 'Phone',
+                              icon: IconlyLight.call,
+                              subtitle: data.userData!.phone ?? 'No phone',
                             ),
                             ProfileTile(
                               titleText: 'Email',

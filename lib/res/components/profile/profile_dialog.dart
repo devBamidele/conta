@@ -28,19 +28,19 @@ class ProfileDialog extends StatelessWidget {
           clipBehavior: Clip.hardEdge,
           child: Container(
             color: Colors.white,
-            height: extraPadding ? 410 : 367,
+            height: extraPadding ? 360 : 317,
             child: Stack(
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    imageUrl != null
-                        ? SizedBox(
-                            height: 220,
-                            width: double.infinity,
-                            child: Stack(
-                              children: [
-                                CachedNetworkImage(
+                    SizedBox(
+                      height: 220,
+                      width: double.infinity,
+                      child: Stack(
+                        children: [
+                          imageUrl != null
+                              ? CachedNetworkImage(
                                   imageUrl: imageUrl,
                                   imageBuilder: (context, imageProvider) =>
                                       Container(
@@ -62,47 +62,47 @@ class ProfileDialog extends StatelessWidget {
                                     width: 46,
                                     height: 46,
                                   ),
-                                ),
-                                Align(
-                                  alignment: Alignment.bottomCenter,
-                                  child: Container(
-                                    height: 100,
-                                    decoration: profileDialogShade,
+                                )
+                              : const Center(
+                                  child: Icon(
+                                    IconlyBold.profile,
+                                    color: AppColors.hintTextColor,
+                                    size: 42,
                                   ),
                                 ),
-                                Align(
-                                  alignment: Alignment.bottomLeft,
-                                  child: Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(16, 0, 0, 12),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          data.currentChat!.username,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 24,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                        const Status(
-                                          isDialog: true,
-                                        ),
-                                      ],
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Container(
+                              height: 100,
+                              decoration: profileDialogShade,
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.bottomLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(16, 0, 0, 12),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    data.currentChat!.username,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
-                                ),
-                              ],
+                                  const Status(
+                                    isDialog: true,
+                                  ),
+                                ],
+                              ),
                             ),
-                          )
-                        : const Icon(
-                            IconlyBold.profile,
-                            color: AppColors.hintTextColor,
-                            size: 25,
                           ),
+                        ],
+                      ),
+                    ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 12, 10, 0),
                       child: Column(
@@ -113,14 +113,14 @@ class ProfileDialog extends StatelessWidget {
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: AppColors.primaryShadeColor,
-                              fontSize: 16,
+                              fontSize: 18,
                             ),
                           ),
                           addHeight(8),
                           Text(
                             'Bio',
                             style: TextStyle(
-                              fontSize: 13,
+                              fontSize: 14,
                               color: AppColors.blackShade,
                             ),
                           ),
@@ -128,38 +128,21 @@ class ProfileDialog extends StatelessWidget {
                               ? Text(
                                   data.currentChat!.bio!,
                                   style: const TextStyle(
-                                    fontSize: 15,
+                                    fontSize: 16,
                                     color: AppColors.blackColor,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 )
                               : const Status(type: StreamType.bio),
-                          addHeight(8),
-                          Text(
-                            'Name',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: AppColors.blackShade,
-                            ),
-                          ),
-                          data.currentChat!.name != null
-                              ? Text(
-                                  data.currentChat!.name!,
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    color: AppColors.blackColor,
-                                  ),
-                                )
-                              : const Status(type: StreamType.name),
-                          addHeight(4),
                           if (extraPadding)
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text(
+                                Text(
                                   'Notifications',
                                   style: TextStyle(
-                                    fontSize: 15,
-                                    color: AppColors.blackColor,
+                                    fontSize: 16,
+                                    color: AppColors.blackShade,
                                   ),
                                 ),
                                 NotificationSwitch(
@@ -175,8 +158,10 @@ class ProfileDialog extends StatelessWidget {
                 Align(
                   alignment: Alignment.centerRight,
                   child: Padding(
-                    padding:
-                        EdgeInsets.only(right: 12, top: extraPadding ? 30 : 68),
+                    padding: EdgeInsets.only(
+                      right: 12,
+                      top: extraPadding ? 80 : 118,
+                    ),
                     child: SizedBox.square(
                       dimension: 46,
                       child: FloatingActionButton(

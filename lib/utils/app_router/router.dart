@@ -6,18 +6,19 @@ import 'package:conta/view/authentication/recover_password_screen.dart';
 import 'package:conta/view/authentication/update_password_screen.dart';
 import 'package:conta/view/home/home_screen.dart';
 import 'package:conta/view/home/intermediary.dart';
+import 'package:conta/view/home/profile_view/edit_profile_info/edit_username_screen.dart';
 import 'package:conta/view/home/profile_view/file_image_preview.dart';
 import 'package:conta/view/home/profile_view/profile_image_preview.dart';
 import 'package:conta/view/home/profile_view/profile_screen.dart';
 import 'package:conta/view/home/tab_views/message_view/chat_screen.dart';
 import 'package:conta/view/home/tab_views/message_view/contacts_view.dart';
 import 'package:conta/view/home/tab_views/message_view/preview_screen.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 import '../../res/components/image_views/view_image_screen.dart';
 import '../../view/account_setup/set_name_screen.dart';
 import '../../view/account_setup/set_photo_page.dart';
-import '../../view/home/profile_view/edit_profile_info/blocked_contacts_screen.dart';
+import '../../view/home/profile_view/blocked_contacts_screen.dart';
 import '../../view/home/profile_view/edit_profile_info/edit_bio_screen.dart';
 import '../../view/home/profile_view/edit_profile_info/edit_password_screen.dart';
 import '../../view/onboard/splash_screen.dart';
@@ -52,25 +53,33 @@ import '../../view/onboard/splash_screen.dart';
       page: BlockedContactsScreen,
       transitionsBuilder: TransitionsBuilders.slideLeft,
       durationInMilliseconds: 150,
+      reverseDurationInMilliseconds: 150,
     ),
 
     CustomRoute(
       page: EditBioScreen,
       transitionsBuilder: TransitionsBuilders.slideLeft,
       durationInMilliseconds: 150,
+      reverseDurationInMilliseconds: 150,
     ),
 
     CustomRoute(
       page: EditPasswordScreen,
       transitionsBuilder: TransitionsBuilders.slideLeft,
       durationInMilliseconds: 150,
+      reverseDurationInMilliseconds: 150,
+    ),
+
+    CustomRoute(
+      page: EditUsernameScreen,
+      transitionsBuilder: TransitionsBuilders.slideLeft,
+      durationInMilliseconds: 150,
+      reverseDurationInMilliseconds: 150,
     ),
 
     AutoRoute(page: ProfileImagePreview),
 
-    AutoRoute<bool?>(
-      page: FileImagePreview,
-    ),
+    AutoRoute<bool?>(page: FileImagePreview),
   ],
 )
 class $AppRouter {}

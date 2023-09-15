@@ -67,7 +67,7 @@ class Status extends StatelessWidget {
         return Text(
           person.bio,
           style: const TextStyle(
-            fontSize: 15,
+            fontSize: 16,
             color: AppColors.blackColor,
             fontWeight: FontWeight.w500,
           ),

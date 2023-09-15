@@ -100,7 +100,7 @@ final profileDialogShade = BoxDecoration(
     end: const Alignment(0.00, -0.4),
     begin: const Alignment(0, 1),
     colors: [
-      AppColors.blackShade,
+      AppColors.blackShade.withOpacity(0.6),
       Colors.transparent,
     ],
   ),
