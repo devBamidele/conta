@@ -20,16 +20,31 @@ class UserProvider extends ChangeNotifier {
     profilePic = null;
   }
 
-  void updateNameData(String newBio) {
+  void updateUserData({
+    String? id,
+    String? name,
+    String? username,
+    String? email,
+    String? phone,
+    String? profilePicUrl,
+    String? bio,
+    Timestamp? lastSeen,
+    bool? online,
+    String? token,
+  }) {
     if (userData != null) {
-      userData = userData!.copy(bio: newBio);
-      notifyListeners();
-    }
-  }
-
-  void updatePicData(String? newUrl) {
-    if (userData != null) {
-      userData = userData!.copy(profilePicUrl: newUrl);
+      userData = userData!.copy(
+        id: id,
+        name: name,
+        username: username,
+        email: email,
+        phone: phone,
+        profilePicUrl: profilePicUrl,
+        bio: bio,
+        lastSeen: lastSeen,
+        online: online,
+        token: token,
+      );
       notifyListeners();
     }
   }
@@ -90,7 +105,7 @@ class UserProvider extends ChangeNotifier {
       // Call the cloud function to update all the chats
       updateUserProfilePicture(profilePic: photoUrl);
 
-      updatePicData(photoUrl);
+      updateUserData(profilePicUrl: photoUrl);
 
       onUpdate();
     } catch (e) {
@@ -123,7 +138,7 @@ class UserProvider extends ChangeNotifier {
       // Call the cloud function to update all the chats
       updateUserProfilePicture(profilePic: null);
 
-      updatePicData('null');
+      updateUserData(profilePicUrl: 'null');
     } catch (e) {
       log('Error removing profile pic $e');
       showSnackbar('An error occurred while removing the profile picture');
@@ -212,6 +227,8 @@ class UserProvider extends ChangeNotifier {
           'username': newName,
         });
 
+        updateUserData(username: newName);
+
         // Successfully updated bio
         showSnackbar('Successfully updated name');
       } catch (error) {
@@ -242,7 +259,7 @@ class UserProvider extends ChangeNotifier {
           'bio': newBio,
         });
 
-        updateNameData(newBio);
+        updateUserData(bio: newBio);
 
         // Successfully updated bio
         showSnackbar('Successfully updated bio');
@@ -253,17 +270,6 @@ class UserProvider extends ChangeNotifier {
         // Close the loading dialog when login attempt is finished
         if (context.mounted) Navigator.of(context).pop();
       }
-    }
-  }
-
-  Future<void> updateUserName(String uid, String newName) async {
-    try {
-      await FirebaseFirestore.instance.collection('users').doc(uid).update({
-        'name': newName,
-      });
-      log('User name updated successfully');
-    } catch (error) {
-      log('Error updating user name: $error');
     }
   }
 
