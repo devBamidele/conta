@@ -19,8 +19,9 @@ import '../../res/components/image_views/view_image_screen.dart';
 import '../../view/account_setup/set_name_screen.dart';
 import '../../view/account_setup/set_photo_page.dart';
 import '../../view/home/profile_view/blocked_contacts_screen.dart';
+import '../../view/home/profile_view/edit_profile_info/change_password/update_password.dart';
+import '../../view/home/profile_view/edit_profile_info/change_password/verify_password.dart';
 import '../../view/home/profile_view/edit_profile_info/edit_bio_screen.dart';
-import '../../view/home/profile_view/edit_profile_info/edit_password_screen.dart';
 import '../../view/onboard/splash_screen.dart';
 
 @AdaptiveAutoRouter(
@@ -64,7 +65,7 @@ import '../../view/onboard/splash_screen.dart';
     ),
 
     CustomRoute(
-      page: EditPasswordScreen,
+      page: VerifyPassword,
       transitionsBuilder: TransitionsBuilders.slideLeft,
       durationInMilliseconds: 150,
       reverseDurationInMilliseconds: 150,
@@ -72,6 +73,13 @@ import '../../view/onboard/splash_screen.dart';
 
     CustomRoute(
       page: EditUsernameScreen,
+      transitionsBuilder: TransitionsBuilders.slideLeft,
+      durationInMilliseconds: 150,
+      reverseDurationInMilliseconds: 150,
+    ),
+
+    CustomRoute(
+      page: UpdatePassword,
       transitionsBuilder: TransitionsBuilders.slideLeft,
       durationInMilliseconds: 150,
       reverseDurationInMilliseconds: 150,

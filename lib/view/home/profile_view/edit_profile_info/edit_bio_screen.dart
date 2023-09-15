@@ -4,9 +4,10 @@ import 'package:conta/view_model/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../res/color.dart';
 import '../../../../res/components/custom/custom_back_button.dart';
+import '../../../../res/style/app_text_style.dart';
 import '../../../../utils/app_utils.dart';
+import '../../../../utils/widget_functions.dart';
 
 class EditBioScreen extends StatefulWidget {
   const EditBioScreen({super.key});
@@ -105,23 +106,20 @@ class _EditBioScreenState extends State<EditBioScreen> {
                         ),
                       ],
                     ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'Bio',
-                            style: TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.blackColor,
-                            ),
+                            style: AppTextStyles.headlineLarge
+                                .copyWith(fontSize: 32),
                           ),
-                          Text(
+                          addHeight(4),
+                          const Text(
                             "Add a personal touch to your profile.",
-                            style: TextStyle(
-                                fontSize: 16, color: AppColors.blackColor),
+                            style: AppTextStyles.headlineSmall,
                           )
                         ],
                       ),

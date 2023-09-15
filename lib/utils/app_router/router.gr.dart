@@ -11,11 +11,11 @@
 // ignore_for_file: type=lint
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:io' as _i27;
+import 'dart:io' as _i28;
 
-import 'package:auto_route/auto_route.dart' as _i22;
-import 'package:cloud_firestore/cloud_firestore.dart' as _i26;
-import 'package:conta/models/response.dart' as _i25;
+import 'package:auto_route/auto_route.dart' as _i23;
+import 'package:cloud_firestore/cloud_firestore.dart' as _i27;
+import 'package:conta/models/response.dart' as _i26;
 import 'package:conta/res/components/image_views/view_image_screen.dart'
     as _i11;
 import 'package:conta/view/account_setup/set_name_screen.dart' as _i2;
@@ -29,15 +29,17 @@ import 'package:conta/view/home/home_screen.dart' as _i13;
 import 'package:conta/view/home/intermediary.dart' as _i9;
 import 'package:conta/view/home/profile_view/blocked_contacts_screen.dart'
     as _i16;
+import 'package:conta/view/home/profile_view/edit_profile_info/change_password/update_password.dart'
+    as _i20;
+import 'package:conta/view/home/profile_view/edit_profile_info/change_password/verify_password.dart'
+    as _i18;
 import 'package:conta/view/home/profile_view/edit_profile_info/edit_bio_screen.dart'
     as _i17;
-import 'package:conta/view/home/profile_view/edit_profile_info/edit_password_screen.dart'
-    as _i18;
 import 'package:conta/view/home/profile_view/edit_profile_info/edit_username_screen.dart'
     as _i19;
-import 'package:conta/view/home/profile_view/file_image_preview.dart' as _i21;
+import 'package:conta/view/home/profile_view/file_image_preview.dart' as _i22;
 import 'package:conta/view/home/profile_view/profile_image_preview.dart'
-    as _i20;
+    as _i21;
 import 'package:conta/view/home/profile_view/profile_screen.dart' as _i12;
 import 'package:conta/view/home/tab_views/message_view/chat_screen.dart'
     as _i14;
@@ -46,36 +48,36 @@ import 'package:conta/view/home/tab_views/message_view/contacts_view.dart'
 import 'package:conta/view/home/tab_views/message_view/preview_screen.dart'
     as _i10;
 import 'package:conta/view/onboard/splash_screen.dart' as _i1;
-import 'package:firebase_auth/firebase_auth.dart' as _i24;
-import 'package:flutter/material.dart' as _i23;
+import 'package:firebase_auth/firebase_auth.dart' as _i25;
+import 'package:flutter/material.dart' as _i24;
 
-class AppRouter extends _i22.RootStackRouter {
-  AppRouter([_i23.GlobalKey<_i23.NavigatorState>? navigatorKey])
+class AppRouter extends _i23.RootStackRouter {
+  AppRouter([_i24.GlobalKey<_i24.NavigatorState>? navigatorKey])
       : super(navigatorKey);
 
   @override
-  final Map<String, _i22.PageFactory> pagesMap = {
+  final Map<String, _i23.PageFactory> pagesMap = {
     SplashScreenRoute.name: (routeData) {
-      return _i22.AdaptivePage<dynamic>(
+      return _i23.AdaptivePage<dynamic>(
         routeData: routeData,
         child: const _i1.SplashScreen(),
       );
     },
     SetNameScreenRoute.name: (routeData) {
-      return _i22.AdaptivePage<dynamic>(
+      return _i23.AdaptivePage<dynamic>(
         routeData: routeData,
         child: const _i2.SetNameScreen(),
       );
     },
     SetPhotoScreenRoute.name: (routeData) {
-      return _i22.AdaptivePage<dynamic>(
+      return _i23.AdaptivePage<dynamic>(
         routeData: routeData,
         child: const _i3.SetPhotoScreen(),
       );
     },
     VerifyAccountScreenRoute.name: (routeData) {
       final args = routeData.argsAs<VerifyAccountScreenRouteArgs>();
-      return _i22.AdaptivePage<dynamic>(
+      return _i23.AdaptivePage<dynamic>(
         routeData: routeData,
         child: _i4.VerifyAccountScreen(
           key: args.key,
@@ -84,26 +86,26 @@ class AppRouter extends _i22.RootStackRouter {
       );
     },
     SignUpScreenRoute.name: (routeData) {
-      return _i22.AdaptivePage<dynamic>(
+      return _i23.AdaptivePage<dynamic>(
         routeData: routeData,
         child: const _i5.SignUpScreen(),
       );
     },
     RecoverPasswordScreenRoute.name: (routeData) {
-      return _i22.AdaptivePage<dynamic>(
+      return _i23.AdaptivePage<dynamic>(
         routeData: routeData,
         child: const _i6.RecoverPasswordScreen(),
       );
     },
     LoginScreenRoute.name: (routeData) {
-      return _i22.AdaptivePage<dynamic>(
+      return _i23.AdaptivePage<dynamic>(
         routeData: routeData,
         child: const _i7.LoginScreen(),
       );
     },
     UpdatePasswordScreenRoute.name: (routeData) {
       final args = routeData.argsAs<UpdatePasswordScreenRouteArgs>();
-      return _i22.AdaptivePage<dynamic>(
+      return _i23.AdaptivePage<dynamic>(
         routeData: routeData,
         child: _i8.UpdatePasswordScreen(
           key: args.key,
@@ -113,7 +115,7 @@ class AppRouter extends _i22.RootStackRouter {
     },
     IntermediaryRoute.name: (routeData) {
       final args = routeData.argsAs<IntermediaryRouteArgs>();
-      return _i22.AdaptivePage<dynamic>(
+      return _i23.AdaptivePage<dynamic>(
         routeData: routeData,
         child: _i9.Intermediary(
           key: args.key,
@@ -122,14 +124,14 @@ class AppRouter extends _i22.RootStackRouter {
       );
     },
     PreviewScreenRoute.name: (routeData) {
-      return _i22.AdaptivePage<dynamic>(
+      return _i23.AdaptivePage<dynamic>(
         routeData: routeData,
         child: const _i10.PreviewScreen(),
       );
     },
     ViewImageScreenRoute.name: (routeData) {
       final args = routeData.argsAs<ViewImageScreenRouteArgs>();
-      return _i22.AdaptivePage<dynamic>(
+      return _i23.AdaptivePage<dynamic>(
         routeData: routeData,
         child: _i11.ViewImageScreen(
           key: args.key,
@@ -140,34 +142,34 @@ class AppRouter extends _i22.RootStackRouter {
       );
     },
     ProfileScreenRoute.name: (routeData) {
-      return _i22.AdaptivePage<dynamic>(
+      return _i23.AdaptivePage<dynamic>(
         routeData: routeData,
         child: const _i12.ProfileScreen(),
       );
     },
     HomeScreenRoute.name: (routeData) {
-      return _i22.AdaptivePage<dynamic>(
+      return _i23.AdaptivePage<dynamic>(
         routeData: routeData,
         child: const _i13.HomeScreen(),
       );
     },
     ChatScreenRoute.name: (routeData) {
-      return _i22.AdaptivePage<dynamic>(
+      return _i23.AdaptivePage<dynamic>(
         routeData: routeData,
         child: const _i14.ChatScreen(),
       );
     },
     ContactsViewRoute.name: (routeData) {
-      return _i22.AdaptivePage<dynamic>(
+      return _i23.AdaptivePage<dynamic>(
         routeData: routeData,
         child: const _i15.ContactsView(),
       );
     },
     BlockedContactsScreenRoute.name: (routeData) {
-      return _i22.CustomPage<dynamic>(
+      return _i23.CustomPage<dynamic>(
         routeData: routeData,
         child: const _i16.BlockedContactsScreen(),
-        transitionsBuilder: _i22.TransitionsBuilders.slideLeft,
+        transitionsBuilder: _i23.TransitionsBuilders.slideLeft,
         durationInMilliseconds: 150,
         reverseDurationInMilliseconds: 150,
         opaque: true,
@@ -175,21 +177,21 @@ class AppRouter extends _i22.RootStackRouter {
       );
     },
     EditBioScreenRoute.name: (routeData) {
-      return _i22.CustomPage<dynamic>(
+      return _i23.CustomPage<dynamic>(
         routeData: routeData,
         child: const _i17.EditBioScreen(),
-        transitionsBuilder: _i22.TransitionsBuilders.slideLeft,
+        transitionsBuilder: _i23.TransitionsBuilders.slideLeft,
         durationInMilliseconds: 150,
         reverseDurationInMilliseconds: 150,
         opaque: true,
         barrierDismissible: false,
       );
     },
-    EditPasswordScreenRoute.name: (routeData) {
-      return _i22.CustomPage<dynamic>(
+    VerifyPasswordRoute.name: (routeData) {
+      return _i23.CustomPage<dynamic>(
         routeData: routeData,
-        child: const _i18.EditPasswordScreen(),
-        transitionsBuilder: _i22.TransitionsBuilders.slideLeft,
+        child: const _i18.VerifyPassword(),
+        transitionsBuilder: _i23.TransitionsBuilders.slideLeft,
         durationInMilliseconds: 150,
         reverseDurationInMilliseconds: 150,
         opaque: true,
@@ -197,10 +199,25 @@ class AppRouter extends _i22.RootStackRouter {
       );
     },
     EditUsernameScreenRoute.name: (routeData) {
-      return _i22.CustomPage<dynamic>(
+      return _i23.CustomPage<dynamic>(
         routeData: routeData,
         child: const _i19.EditUsernameScreen(),
-        transitionsBuilder: _i22.TransitionsBuilders.slideLeft,
+        transitionsBuilder: _i23.TransitionsBuilders.slideLeft,
+        durationInMilliseconds: 150,
+        reverseDurationInMilliseconds: 150,
+        opaque: true,
+        barrierDismissible: false,
+      );
+    },
+    UpdatePasswordRoute.name: (routeData) {
+      final args = routeData.argsAs<UpdatePasswordRouteArgs>();
+      return _i23.CustomPage<dynamic>(
+        routeData: routeData,
+        child: _i20.UpdatePassword(
+          key: args.key,
+          oldPassword: args.oldPassword,
+        ),
+        transitionsBuilder: _i23.TransitionsBuilders.slideLeft,
         durationInMilliseconds: 150,
         reverseDurationInMilliseconds: 150,
         opaque: true,
@@ -209,9 +226,9 @@ class AppRouter extends _i22.RootStackRouter {
     },
     ProfileImagePreviewRoute.name: (routeData) {
       final args = routeData.argsAs<ProfileImagePreviewRouteArgs>();
-      return _i22.AdaptivePage<dynamic>(
+      return _i23.AdaptivePage<dynamic>(
         routeData: routeData,
-        child: _i20.ProfileImagePreview(
+        child: _i21.ProfileImagePreview(
           key: args.key,
           path: args.path,
         ),
@@ -220,9 +237,9 @@ class AppRouter extends _i22.RootStackRouter {
     FileImagePreviewRoute.name: (routeData) {
       final args = routeData.argsAs<FileImagePreviewRouteArgs>(
           orElse: () => const FileImagePreviewRouteArgs());
-      return _i22.AdaptivePage<bool?>(
+      return _i23.AdaptivePage<bool?>(
         routeData: routeData,
-        child: _i21.FileImagePreview(
+        child: _i22.FileImagePreview(
           key: args.key,
           imageFile: args.imageFile,
           fromSignUp: args.fromSignUp,
@@ -232,88 +249,92 @@ class AppRouter extends _i22.RootStackRouter {
   };
 
   @override
-  List<_i22.RouteConfig> get routes => [
-        _i22.RouteConfig(
+  List<_i23.RouteConfig> get routes => [
+        _i23.RouteConfig(
           SplashScreenRoute.name,
           path: '/',
         ),
-        _i22.RouteConfig(
+        _i23.RouteConfig(
           SetNameScreenRoute.name,
           path: '/set-name-screen',
         ),
-        _i22.RouteConfig(
+        _i23.RouteConfig(
           SetPhotoScreenRoute.name,
           path: '/set-photo-screen',
         ),
-        _i22.RouteConfig(
+        _i23.RouteConfig(
           VerifyAccountScreenRoute.name,
           path: '/verify-account-screen',
         ),
-        _i22.RouteConfig(
+        _i23.RouteConfig(
           SignUpScreenRoute.name,
           path: '/sign-up-screen',
         ),
-        _i22.RouteConfig(
+        _i23.RouteConfig(
           RecoverPasswordScreenRoute.name,
           path: '/recover-password-screen',
         ),
-        _i22.RouteConfig(
+        _i23.RouteConfig(
           LoginScreenRoute.name,
           path: '/login-screen',
         ),
-        _i22.RouteConfig(
+        _i23.RouteConfig(
           UpdatePasswordScreenRoute.name,
           path: '/update-password-screen',
         ),
-        _i22.RouteConfig(
+        _i23.RouteConfig(
           IntermediaryRoute.name,
           path: '/Intermediary',
         ),
-        _i22.RouteConfig(
+        _i23.RouteConfig(
           PreviewScreenRoute.name,
           path: '/preview-screen',
         ),
-        _i22.RouteConfig(
+        _i23.RouteConfig(
           ViewImageScreenRoute.name,
           path: '/view-image-screen',
         ),
-        _i22.RouteConfig(
+        _i23.RouteConfig(
           ProfileScreenRoute.name,
           path: '/profile-screen',
         ),
-        _i22.RouteConfig(
+        _i23.RouteConfig(
           HomeScreenRoute.name,
           path: '/home-screen',
         ),
-        _i22.RouteConfig(
+        _i23.RouteConfig(
           ChatScreenRoute.name,
           path: '/chat-screen',
         ),
-        _i22.RouteConfig(
+        _i23.RouteConfig(
           ContactsViewRoute.name,
           path: '/contacts-view',
         ),
-        _i22.RouteConfig(
+        _i23.RouteConfig(
           BlockedContactsScreenRoute.name,
           path: '/blocked-contacts-screen',
         ),
-        _i22.RouteConfig(
+        _i23.RouteConfig(
           EditBioScreenRoute.name,
           path: '/edit-bio-screen',
         ),
-        _i22.RouteConfig(
-          EditPasswordScreenRoute.name,
-          path: '/edit-password-screen',
+        _i23.RouteConfig(
+          VerifyPasswordRoute.name,
+          path: '/verify-password',
         ),
-        _i22.RouteConfig(
+        _i23.RouteConfig(
           EditUsernameScreenRoute.name,
           path: '/edit-username-screen',
         ),
-        _i22.RouteConfig(
+        _i23.RouteConfig(
+          UpdatePasswordRoute.name,
+          path: '/update-password',
+        ),
+        _i23.RouteConfig(
           ProfileImagePreviewRoute.name,
           path: '/profile-image-preview',
         ),
-        _i22.RouteConfig(
+        _i23.RouteConfig(
           FileImagePreviewRoute.name,
           path: '/file-image-preview',
         ),
@@ -322,7 +343,7 @@ class AppRouter extends _i22.RootStackRouter {
 
 /// generated route for
 /// [_i1.SplashScreen]
-class SplashScreenRoute extends _i22.PageRouteInfo<void> {
+class SplashScreenRoute extends _i23.PageRouteInfo<void> {
   const SplashScreenRoute()
       : super(
           SplashScreenRoute.name,
@@ -334,7 +355,7 @@ class SplashScreenRoute extends _i22.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i2.SetNameScreen]
-class SetNameScreenRoute extends _i22.PageRouteInfo<void> {
+class SetNameScreenRoute extends _i23.PageRouteInfo<void> {
   const SetNameScreenRoute()
       : super(
           SetNameScreenRoute.name,
@@ -346,7 +367,7 @@ class SetNameScreenRoute extends _i22.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i3.SetPhotoScreen]
-class SetPhotoScreenRoute extends _i22.PageRouteInfo<void> {
+class SetPhotoScreenRoute extends _i23.PageRouteInfo<void> {
   const SetPhotoScreenRoute()
       : super(
           SetPhotoScreenRoute.name,
@@ -359,10 +380,10 @@ class SetPhotoScreenRoute extends _i22.PageRouteInfo<void> {
 /// generated route for
 /// [_i4.VerifyAccountScreen]
 class VerifyAccountScreenRoute
-    extends _i22.PageRouteInfo<VerifyAccountScreenRouteArgs> {
+    extends _i23.PageRouteInfo<VerifyAccountScreenRouteArgs> {
   VerifyAccountScreenRoute({
-    _i23.Key? key,
-    required _i24.UserCredential userCredential,
+    _i24.Key? key,
+    required _i25.UserCredential userCredential,
   }) : super(
           VerifyAccountScreenRoute.name,
           path: '/verify-account-screen',
@@ -381,9 +402,9 @@ class VerifyAccountScreenRouteArgs {
     required this.userCredential,
   });
 
-  final _i23.Key? key;
+  final _i24.Key? key;
 
-  final _i24.UserCredential userCredential;
+  final _i25.UserCredential userCredential;
 
   @override
   String toString() {
@@ -393,7 +414,7 @@ class VerifyAccountScreenRouteArgs {
 
 /// generated route for
 /// [_i5.SignUpScreen]
-class SignUpScreenRoute extends _i22.PageRouteInfo<void> {
+class SignUpScreenRoute extends _i23.PageRouteInfo<void> {
   const SignUpScreenRoute()
       : super(
           SignUpScreenRoute.name,
@@ -405,7 +426,7 @@ class SignUpScreenRoute extends _i22.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i6.RecoverPasswordScreen]
-class RecoverPasswordScreenRoute extends _i22.PageRouteInfo<void> {
+class RecoverPasswordScreenRoute extends _i23.PageRouteInfo<void> {
   const RecoverPasswordScreenRoute()
       : super(
           RecoverPasswordScreenRoute.name,
@@ -417,7 +438,7 @@ class RecoverPasswordScreenRoute extends _i22.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i7.LoginScreen]
-class LoginScreenRoute extends _i22.PageRouteInfo<void> {
+class LoginScreenRoute extends _i23.PageRouteInfo<void> {
   const LoginScreenRoute()
       : super(
           LoginScreenRoute.name,
@@ -430,9 +451,9 @@ class LoginScreenRoute extends _i22.PageRouteInfo<void> {
 /// generated route for
 /// [_i8.UpdatePasswordScreen]
 class UpdatePasswordScreenRoute
-    extends _i22.PageRouteInfo<UpdatePasswordScreenRouteArgs> {
+    extends _i23.PageRouteInfo<UpdatePasswordScreenRouteArgs> {
   UpdatePasswordScreenRoute({
-    _i23.Key? key,
+    _i24.Key? key,
     required String email,
   }) : super(
           UpdatePasswordScreenRoute.name,
@@ -452,7 +473,7 @@ class UpdatePasswordScreenRouteArgs {
     required this.email,
   });
 
-  final _i23.Key? key;
+  final _i24.Key? key;
 
   final String email;
 
@@ -464,10 +485,10 @@ class UpdatePasswordScreenRouteArgs {
 
 /// generated route for
 /// [_i9.Intermediary]
-class IntermediaryRoute extends _i22.PageRouteInfo<IntermediaryRouteArgs> {
+class IntermediaryRoute extends _i23.PageRouteInfo<IntermediaryRouteArgs> {
   IntermediaryRoute({
-    _i23.Key? key,
-    required _i25.Response data,
+    _i24.Key? key,
+    required _i26.Response data,
   }) : super(
           IntermediaryRoute.name,
           path: '/Intermediary',
@@ -486,9 +507,9 @@ class IntermediaryRouteArgs {
     required this.data,
   });
 
-  final _i23.Key? key;
+  final _i24.Key? key;
 
-  final _i25.Response data;
+  final _i26.Response data;
 
   @override
   String toString() {
@@ -498,7 +519,7 @@ class IntermediaryRouteArgs {
 
 /// generated route for
 /// [_i10.PreviewScreen]
-class PreviewScreenRoute extends _i22.PageRouteInfo<void> {
+class PreviewScreenRoute extends _i23.PageRouteInfo<void> {
   const PreviewScreenRoute()
       : super(
           PreviewScreenRoute.name,
@@ -511,12 +532,12 @@ class PreviewScreenRoute extends _i22.PageRouteInfo<void> {
 /// generated route for
 /// [_i11.ViewImageScreen]
 class ViewImageScreenRoute
-    extends _i22.PageRouteInfo<ViewImageScreenRouteArgs> {
+    extends _i23.PageRouteInfo<ViewImageScreenRouteArgs> {
   ViewImageScreenRoute({
-    _i23.Key? key,
+    _i24.Key? key,
     required List<String> media,
     required String sender,
-    required _i26.Timestamp timeSent,
+    required _i27.Timestamp timeSent,
   }) : super(
           ViewImageScreenRoute.name,
           path: '/view-image-screen',
@@ -539,13 +560,13 @@ class ViewImageScreenRouteArgs {
     required this.timeSent,
   });
 
-  final _i23.Key? key;
+  final _i24.Key? key;
 
   final List<String> media;
 
   final String sender;
 
-  final _i26.Timestamp timeSent;
+  final _i27.Timestamp timeSent;
 
   @override
   String toString() {
@@ -555,7 +576,7 @@ class ViewImageScreenRouteArgs {
 
 /// generated route for
 /// [_i12.ProfileScreen]
-class ProfileScreenRoute extends _i22.PageRouteInfo<void> {
+class ProfileScreenRoute extends _i23.PageRouteInfo<void> {
   const ProfileScreenRoute()
       : super(
           ProfileScreenRoute.name,
@@ -567,7 +588,7 @@ class ProfileScreenRoute extends _i22.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i13.HomeScreen]
-class HomeScreenRoute extends _i22.PageRouteInfo<void> {
+class HomeScreenRoute extends _i23.PageRouteInfo<void> {
   const HomeScreenRoute()
       : super(
           HomeScreenRoute.name,
@@ -579,7 +600,7 @@ class HomeScreenRoute extends _i22.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i14.ChatScreen]
-class ChatScreenRoute extends _i22.PageRouteInfo<void> {
+class ChatScreenRoute extends _i23.PageRouteInfo<void> {
   const ChatScreenRoute()
       : super(
           ChatScreenRoute.name,
@@ -591,7 +612,7 @@ class ChatScreenRoute extends _i22.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i15.ContactsView]
-class ContactsViewRoute extends _i22.PageRouteInfo<void> {
+class ContactsViewRoute extends _i23.PageRouteInfo<void> {
   const ContactsViewRoute()
       : super(
           ContactsViewRoute.name,
@@ -603,7 +624,7 @@ class ContactsViewRoute extends _i22.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i16.BlockedContactsScreen]
-class BlockedContactsScreenRoute extends _i22.PageRouteInfo<void> {
+class BlockedContactsScreenRoute extends _i23.PageRouteInfo<void> {
   const BlockedContactsScreenRoute()
       : super(
           BlockedContactsScreenRoute.name,
@@ -615,7 +636,7 @@ class BlockedContactsScreenRoute extends _i22.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i17.EditBioScreen]
-class EditBioScreenRoute extends _i22.PageRouteInfo<void> {
+class EditBioScreenRoute extends _i23.PageRouteInfo<void> {
   const EditBioScreenRoute()
       : super(
           EditBioScreenRoute.name,
@@ -626,20 +647,20 @@ class EditBioScreenRoute extends _i22.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i18.EditPasswordScreen]
-class EditPasswordScreenRoute extends _i22.PageRouteInfo<void> {
-  const EditPasswordScreenRoute()
+/// [_i18.VerifyPassword]
+class VerifyPasswordRoute extends _i23.PageRouteInfo<void> {
+  const VerifyPasswordRoute()
       : super(
-          EditPasswordScreenRoute.name,
-          path: '/edit-password-screen',
+          VerifyPasswordRoute.name,
+          path: '/verify-password',
         );
 
-  static const String name = 'EditPasswordScreenRoute';
+  static const String name = 'VerifyPasswordRoute';
 }
 
 /// generated route for
 /// [_i19.EditUsernameScreen]
-class EditUsernameScreenRoute extends _i22.PageRouteInfo<void> {
+class EditUsernameScreenRoute extends _i23.PageRouteInfo<void> {
   const EditUsernameScreenRoute()
       : super(
           EditUsernameScreenRoute.name,
@@ -650,11 +671,45 @@ class EditUsernameScreenRoute extends _i22.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i20.ProfileImagePreview]
+/// [_i20.UpdatePassword]
+class UpdatePasswordRoute extends _i23.PageRouteInfo<UpdatePasswordRouteArgs> {
+  UpdatePasswordRoute({
+    _i24.Key? key,
+    required String oldPassword,
+  }) : super(
+          UpdatePasswordRoute.name,
+          path: '/update-password',
+          args: UpdatePasswordRouteArgs(
+            key: key,
+            oldPassword: oldPassword,
+          ),
+        );
+
+  static const String name = 'UpdatePasswordRoute';
+}
+
+class UpdatePasswordRouteArgs {
+  const UpdatePasswordRouteArgs({
+    this.key,
+    required this.oldPassword,
+  });
+
+  final _i24.Key? key;
+
+  final String oldPassword;
+
+  @override
+  String toString() {
+    return 'UpdatePasswordRouteArgs{key: $key, oldPassword: $oldPassword}';
+  }
+}
+
+/// generated route for
+/// [_i21.ProfileImagePreview]
 class ProfileImagePreviewRoute
-    extends _i22.PageRouteInfo<ProfileImagePreviewRouteArgs> {
+    extends _i23.PageRouteInfo<ProfileImagePreviewRouteArgs> {
   ProfileImagePreviewRoute({
-    _i23.Key? key,
+    _i24.Key? key,
     required String path,
   }) : super(
           ProfileImagePreviewRoute.name,
@@ -674,7 +729,7 @@ class ProfileImagePreviewRouteArgs {
     required this.path,
   });
 
-  final _i23.Key? key;
+  final _i24.Key? key;
 
   final String path;
 
@@ -685,12 +740,12 @@ class ProfileImagePreviewRouteArgs {
 }
 
 /// generated route for
-/// [_i21.FileImagePreview]
+/// [_i22.FileImagePreview]
 class FileImagePreviewRoute
-    extends _i22.PageRouteInfo<FileImagePreviewRouteArgs> {
+    extends _i23.PageRouteInfo<FileImagePreviewRouteArgs> {
   FileImagePreviewRoute({
-    _i23.Key? key,
-    _i27.File? imageFile,
+    _i24.Key? key,
+    _i28.File? imageFile,
     bool fromSignUp = false,
   }) : super(
           FileImagePreviewRoute.name,
@@ -712,9 +767,9 @@ class FileImagePreviewRouteArgs {
     this.fromSignUp = false,
   });
 
-  final _i23.Key? key;
+  final _i24.Key? key;
 
-  final _i27.File? imageFile;
+  final _i28.File? imageFile;
 
   final bool fromSignUp;
 

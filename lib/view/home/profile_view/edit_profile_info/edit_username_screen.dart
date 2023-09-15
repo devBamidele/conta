@@ -3,14 +3,15 @@ import 'dart:async';
 import 'package:conta/res/components/custom/custom_back_button.dart';
 import 'package:conta/res/style/component_style.dart';
 import 'package:conta/utils/extensions.dart';
+import 'package:conta/utils/widget_functions.dart';
 import 'package:conta/view_model/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../res/color.dart';
 import '../../../../res/components/custom/custom_text_field.dart';
 import '../../../../res/components/shake_error.dart';
+import '../../../../res/style/app_text_style.dart';
 import '../../../../utils/app_utils.dart';
 import '../../../../view_model/auth_provider.dart';
 
@@ -170,25 +171,20 @@ class _EditUsernameScreenState extends State<EditUsernameScreen> {
                         ),
                       ],
                     ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Username',
-                            style: TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.blackColor,
-                            ),
+                            'Update Username',
+                            style: AppTextStyles.headlineLarge
+                                .copyWith(fontSize: 32),
                           ),
-                          Text(
-                            "Add a personal touch to your profile.",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: AppColors.blackColor,
-                            ),
+                          addHeight(4),
+                          const Text(
+                            "This is visible to anyone you chat with",
+                            style: AppTextStyles.headlineSmall,
                           )
                         ],
                       ),

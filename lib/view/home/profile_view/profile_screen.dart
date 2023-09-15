@@ -194,8 +194,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ProfileTile(
                               titleText: 'Password',
                               icon: IconlyLight.lock,
-                              onTap: () => navPush(
-                                  context, const EditPasswordScreenRoute()),
+                              onTap: () =>
+                                  navPush(context, const VerifyPasswordRoute()),
                             ),
                           ],
                         ),

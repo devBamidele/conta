@@ -81,4 +81,12 @@ class AppTextStyles {
     fontSize: 16,
     color: AppColors.primaryShadeColor,
   );
+
+  static const TextStyle passwordText = TextStyle(
+    fontSize: 16,
+    color: AppColors.blackColor,
+    fontWeight: FontWeight.w600,
+    height: 1.4,
+    letterSpacing: 0.3,
+  );
 }

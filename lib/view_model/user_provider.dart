@@ -49,6 +49,31 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> updateUserUsername({required String username}) async {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+
+    final baseUrl = Uri.parse(dotenv.env['UPDATE_USERNAME'] as String);
+
+    final queryParameters = {
+      'userId': userId,
+      'username': username,
+    };
+
+    final url = baseUrl.replace(queryParameters: queryParameters);
+
+    try {
+      final response = await http.post(url);
+
+      if (response.statusCode == 200) {
+        log('Username updated successfully.');
+      } else {
+        log('Failed to update username. Status code: ${response.statusCode}, ${response.body}');
+      }
+    } catch (error) {
+      log('Error updating username: $error');
+    }
+  }
+
   Future<void> updateUserProfilePicture({required String? profilePic}) async {
     final userId = FirebaseAuth.instance.currentUser!.uid;
 
@@ -174,6 +199,91 @@ class UserProvider extends ChangeNotifier {
     });
   }
 
+  Future<void> updatePassword({
+    required BuildContext context,
+    required String newPassword,
+    required String oldPassword,
+    required void Function(String) showSnackbar,
+    required VoidCallback onUpdate,
+  }) async {
+    AppUtils.showLoadingDialog1(context);
+
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      try {
+        // Create an EmailAuthCredential object
+        AuthCredential credential = EmailAuthProvider.credential(
+          email: user.email!,
+          password: oldPassword,
+        );
+
+        await user.reauthenticateWithCredential(credential).then((value) {
+          user.updatePassword(newPassword).then((value) {
+            showSnackbar('Password reset successfully');
+
+            onUpdate();
+          }).catchError((error) {
+            throw 'An error occurred while updating the password';
+          });
+        }).catchError((error) {
+          throw 'An error occurred while re-authenticating';
+        });
+
+        // Catch exceptions (if any)
+      } on FirebaseException catch (e) {
+        if (e.code == 'weak-password') {
+          showSnackbar('Weak password');
+        } else if (e.code == 'requires-recent-login') {
+          showSnackbar('Re-login to perform this action');
+        } else {
+          showSnackbar('An error occurred');
+        }
+      } catch (e) {
+        showSnackbar('An error occurred while updating the password');
+
+        log('An error occurred while updating the '
+            'user password ${e.toString()} ');
+      } finally {
+        // Close the loading dialog when login attempt is finished
+        if (context.mounted) Navigator.of(context).pop();
+      }
+    }
+  }
+
+  Future<void> verifyPassword({
+    required BuildContext context,
+    required String password,
+    required void Function(String) showSnackbar,
+    required VoidCallback onVerify,
+  }) async {
+    AppUtils.showLoadingDialog1(context);
+
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      // Create an EmailAuthCredential object
+      AuthCredential credential = EmailAuthProvider.credential(
+        email: user.email!,
+        password: password,
+      );
+
+      try {
+        await user
+            .reauthenticateWithCredential(credential)
+            .then((value) => onVerify());
+      } catch (e) {
+        // Password is incorrect failed
+        showSnackbar('Password is incorrect');
+
+        log('Error: $e');
+      } finally {
+        // Close the loading dialog when login attempt is finished
+        if (context.mounted) Navigator.of(context).pop();
+      }
+    }
+  }
+
   Future<void> deleteAccount({
     required BuildContext context,
     required String password,
@@ -229,8 +339,10 @@ class UserProvider extends ChangeNotifier {
 
         updateUserData(username: newName);
 
+        updateUserUsername(username: newName);
+
         // Successfully updated bio
-        showSnackbar('Successfully updated name');
+        showSnackbar('Successfully updated username');
       } catch (error) {
         // Error updating bio
         showSnackbar('Error updating username');
