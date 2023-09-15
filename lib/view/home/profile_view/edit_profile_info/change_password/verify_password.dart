@@ -1,6 +1,8 @@
 import 'package:conta/res/style/component_style.dart';
 import 'package:conta/utils/extensions.dart';
+import 'package:conta/view_model/auth_provider.dart';
 import 'package:conta/view_model/user_provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:provider/provider.dart';
@@ -24,6 +26,7 @@ class VerifyPassword extends StatefulWidget {
 
 class _VerifyPasswordState extends State<VerifyPassword> {
   late UserProvider userProvider;
+  late AuthProvider authProvider;
 
   final formKey1 = GlobalKey<FormState>();
   final shakeState1 = GlobalKey<ShakeWidgetState>();
@@ -98,7 +101,24 @@ class _VerifyPasswordState extends State<VerifyPassword> {
     navPush(context, UpdatePasswordRoute(oldPassword: oldPassword));
   }
 
-  void forgotPasswordTap() {}
+  // We stopped here
+  void forgotPasswordTap() {
+    final email = FirebaseAuth.instance.currentUser!.email!;
+
+    authProvider.sendPasswordResetEmail(
+      context: context,
+      email: email,
+      showSnackbar: showSnackbar,
+      onAuthenticate: onEmailSent,
+    );
+  }
+
+  void onEmailSent(String email) {
+    navPush(
+      context,
+      UpdatePasswordScreenRoute(email: email, pop: true),
+    );
+  }
 
   @override
   void initState() {
@@ -111,6 +131,8 @@ class _VerifyPasswordState extends State<VerifyPassword> {
     pass1FocusNode.addListener(_updatePassword1Color);
 
     userProvider = Provider.of<UserProvider>(context, listen: false);
+
+    authProvider = Provider.of<AuthProvider>(context, listen: false);
   }
 
   @override

@@ -50,6 +50,14 @@ class _VerifyAccountScreenState extends State<VerifyAccountScreen> {
     email = widget.userCredential.user!.email!;
   }
 
+  onFinished() {
+    setState(() {
+      activateResend = true;
+      buttonColor = AppColors.primaryColor;
+      tappedColor = AppColors.selectedBackgroundColor;
+    });
+  }
+
   resendEmail() async {
     if (_countdownTimerKey.currentState != null) {
       _countdownTimerKey.currentState!.restartTimer();
@@ -121,18 +129,14 @@ class _VerifyAccountScreenState extends State<VerifyAccountScreen> {
                           addWidth(3),
                           CountdownTimer(
                             key: _countdownTimerKey,
-                            textStyle: AppTextStyles.titleSmall,
+                            textStyle: AppTextStyles.titleSmall.copyWith(
+                              color: AppColors.primaryColor,
+                            ),
                             durationInSeconds: countDownDuration,
                             onTimerTick: (duration) {
                               setState(() {});
                             },
-                            onFinished: () {
-                              setState(() {
-                                activateResend = true;
-                                buttonColor = AppColors.primaryColor;
-                                tappedColor = AppColors.selectedBackgroundColor;
-                              });
-                            },
+                            onFinished: onFinished,
                           ),
                           addWidth(3),
                           const Text('s')
@@ -142,7 +146,7 @@ class _VerifyAccountScreenState extends State<VerifyAccountScreen> {
                   ],
                 ),
                 Positioned(
-                  bottom: 40,
+                  bottom: 30,
                   left: 0,
                   right: 0,
                   child: Column(
@@ -155,10 +159,8 @@ class _VerifyAccountScreenState extends State<VerifyAccountScreen> {
                         onPressed: () => activateResend ? resendEmail() : null,
                         child: Text(
                           'Resend',
-                          style: TextStyle(
-                            fontSize: 18,
+                          style: AppTextStyles.labelMedium.copyWith(
                             color: buttonColor,
-                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),

@@ -1,11 +1,11 @@
 import 'dart:developer';
 
-import 'package:conta/utils/extensions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../res/color.dart';
 import '../../res/components/countdown_timer.dart';
+import '../../res/components/custom/custom_back_button.dart';
 import '../../res/style/app_text_style.dart';
 import '../../res/style/component_style.dart';
 import '../../utils/app_router/router.dart';
@@ -16,9 +16,11 @@ class UpdatePasswordScreen extends StatefulWidget {
   const UpdatePasswordScreen({
     Key? key,
     required this.email,
+    this.pop = false,
   }) : super(key: key);
 
   final String email;
+  final bool pop;
 
   @override
   State<UpdatePasswordScreen> createState() => _UpdatePasswordScreenState();
@@ -28,6 +30,7 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
   final _countdownTimerKey = GlobalKey<CountdownTimerState>();
 
   late String email;
+  late bool pop;
 
   // Activates the resend button
   bool activateResend = false;
@@ -39,6 +42,9 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
   @override
   void initState() {
     super.initState();
+
+    pop = widget.pop;
+
     setMail();
   }
 
@@ -47,7 +53,7 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
         [const LoginScreenRoute()],
       );
 
-  setMail() => email = widget.email.shortenEmail();
+  setMail() => email = widget.email;
 
   onFinished() {
     setState(() {
@@ -79,7 +85,7 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: pop ? null : Colors.white,
       body: SafeArea(
         child: Padding(
           padding: pagePadding,
@@ -88,7 +94,16 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  addHeight(70),
+                  if (pop)
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        CustomBackButton(
+                          padding: EdgeInsets.only(top: 20),
+                        ),
+                      ],
+                    ),
+                  addHeight(pop ? 16 : 70),
                   const Text(
                     'Update password',
                     style: AppTextStyles.headlineLarge,
@@ -97,9 +112,11 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
                   Container(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      'A password reset link has been sent to $email',
+                      'A password reset link has been sent to ${widget.email}',
                       textAlign: TextAlign.left,
-                      style: AppTextStyles.headlineSmall,
+                      style: AppTextStyles.headlineSmall.copyWith(
+                        color: pop ? AppColors.blackShade : null,
+                      ),
                     ),
                   ),
                   addHeight(40),
@@ -110,7 +127,7 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
                       children: [
                         const Text(
                           'Resend code in',
-                          style: TextStyle(height: 1.4, fontSize: 18),
+                          style: AppTextStyles.titleSmall,
                         ),
                         addWidth(3),
                         CountdownTimer(
@@ -125,45 +142,68 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
                           onFinished: onFinished,
                         ),
                         addWidth(3),
-                        const Text('s')
+                        const Text('s', style: AppTextStyles.titleSmall)
                       ],
                     ),
                   ),
                 ],
               ),
               Positioned(
-                bottom: 40,
+                bottom: 30,
                 left: 0,
                 right: 0,
                 child: Column(
                   children: [
-                    OutlinedButton(
-                      style: resendButtonStyle(
-                        foregroundColor: tappedColor,
-                        sideColor: buttonColor,
-                      ),
-                      onPressed: () => activateResend ? resendEmail() : null,
-                      child: Text(
-                        'Resend',
-                        style: AppTextStyles.labelMedium.copyWith(
-                          color: buttonColor,
+                    if (activateResend)
+                      Visibility(
+                        visible: pop,
+                        replacement: OutlinedButton(
+                          style: resendButtonStyle(
+                            foregroundColor: tappedColor,
+                            sideColor: buttonColor,
+                          ),
+                          onPressed: () => resendEmail(),
+                          child: Text(
+                            'Resend',
+                            style: AppTextStyles.labelMedium.copyWith(
+                              color: buttonColor,
+                            ),
+                          ),
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            boxShadow: [shadow],
+                          ),
+                          child: ElevatedButton(
+                            style: elevatedButton,
+                            onPressed: () => resendEmail(),
+                            child: const Text(
+                              'Resend',
+                              style: AppTextStyles.labelMedium,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                    addHeight(20),
-                    Container(
-                      decoration: BoxDecoration(
-                        boxShadow: [shadow],
+                    if (!pop)
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          addHeight(20),
+                          Container(
+                            decoration: BoxDecoration(
+                              boxShadow: [shadow],
+                            ),
+                            child: ElevatedButton(
+                              style: elevatedButton,
+                              onPressed: navigateToLogin,
+                              child: const Text(
+                                'Proceed to Login',
+                                style: AppTextStyles.labelMedium,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      child: ElevatedButton(
-                        style: elevatedButton,
-                        onPressed: () => navigateToLogin(),
-                        child: const Text(
-                          'Proceed to Login',
-                          style: AppTextStyles.labelMedium,
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),

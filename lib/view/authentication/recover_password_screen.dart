@@ -169,7 +169,7 @@ class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
                         style: elevatedButton,
                         onPressed: onContinuePressed,
                         child: const Text(
-                          'Send Recovery OTP',
+                          'Send Recovery Mail',
                           style: AppTextStyles.labelMedium,
                         ),
                       ),

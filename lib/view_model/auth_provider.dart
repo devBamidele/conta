@@ -240,8 +240,9 @@ class AuthProvider extends ChangeNotifier {
 
       if (methods.isNotEmpty) {
         // Send password reset email
+
         await auth.sendPasswordResetEmail(email: email).then(
-              (value) => showSnackbar('Sent verification email'),
+              (value) => showSnackbar('Verification email sent'),
             );
 
         // Navigate to the password reset page

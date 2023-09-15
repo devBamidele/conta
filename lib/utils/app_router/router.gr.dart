@@ -110,6 +110,7 @@ class AppRouter extends _i23.RootStackRouter {
         child: _i8.UpdatePasswordScreen(
           key: args.key,
           email: args.email,
+          pop: args.pop,
         ),
       );
     },
@@ -455,12 +456,14 @@ class UpdatePasswordScreenRoute
   UpdatePasswordScreenRoute({
     _i24.Key? key,
     required String email,
+    bool pop = false,
   }) : super(
           UpdatePasswordScreenRoute.name,
           path: '/update-password-screen',
           args: UpdatePasswordScreenRouteArgs(
             key: key,
             email: email,
+            pop: pop,
           ),
         );
 
@@ -471,15 +474,18 @@ class UpdatePasswordScreenRouteArgs {
   const UpdatePasswordScreenRouteArgs({
     this.key,
     required this.email,
+    this.pop = false,
   });
 
   final _i24.Key? key;
 
   final String email;
 
+  final bool pop;
+
   @override
   String toString() {
-    return 'UpdatePasswordScreenRouteArgs{key: $key, email: $email}';
+    return 'UpdatePasswordScreenRouteArgs{key: $key, email: $email, pop: $pop}';
   }
 }
 
