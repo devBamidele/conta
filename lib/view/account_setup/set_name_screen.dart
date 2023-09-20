@@ -241,7 +241,7 @@ class _SetNameScreenState extends State<SetNameScreen> {
                   addHeight(10),
                   Container(
                     alignment: Alignment.topLeft,
-                    child: const Text(
+                    child: Text(
                       'Let\'s get to know you better',
                       textAlign: TextAlign.left,
                       style: AppTextStyles.headlineSmall,

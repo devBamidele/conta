@@ -131,16 +131,6 @@ extension StringExtentions on String? {
     }
   }
 
-  String shortenEmail() {
-    if (this == null) {
-      return '';
-    }
-    final start = this!.substring(0, 3);
-    final end = this!.substring(this!.indexOf('@') - 2);
-    const middle = '****';
-    return '$start$middle$end';
-  }
-
   String formatPhoneNumber() {
     final cleanedNumber = this?.replaceAll(RegExp(r'\s+'), '');
 

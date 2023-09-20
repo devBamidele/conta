@@ -19,7 +19,6 @@ class Person {
   /// Constructs a [Person] object.
   ///
   /// The [id] is the unique identifier of the person.
-  /// The [name] is the name of the person.
   /// The [username] is the username of the person.
   /// The [email] is the email address of the person.
   /// The [profilePicUrl] is the URL of the person's profile picture (optional).

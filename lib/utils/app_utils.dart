@@ -38,7 +38,7 @@ class AppUtils {
           Flexible(
             child: Text(
               text,
-              textAlign: TextAlign.center,
+              textAlign: label == null ? TextAlign.center : TextAlign.left,
               overflow: TextOverflow.ellipsis,
               maxLines: 2,
               style: const TextStyle(

@@ -66,7 +66,6 @@ class _PreviewScreenState extends State<PreviewScreen> {
             appBar: AppBar(
               leading: const CustomBackButton(
                 padding: EdgeInsets.only(left: 15),
-                color: AppColors.extraTextColor,
               ),
               actions: [
                 Padding(

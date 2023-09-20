@@ -89,12 +89,12 @@ Icon errorIcon({double size = 27}) {
 Icon sentIcon(Color color) {
   return Icon(
     Icons.done,
-    size: 14,
+    size: 13,
     color: color,
   );
 }
 
-Icon offlineIcon(Color color, {double size = 14}) {
+Icon offlineIcon(Color color, {double size = 13}) {
   return Icon(
     Icons.wifi_off_rounded,
     size: size,
@@ -115,7 +115,7 @@ Widget messageStatus(MessageStatus status) {
 Icon seenIcon(Color color) {
   return Icon(
     Icons.done_all,
-    size: 15,
+    size: 13,
     color: color,
   );
 }
@@ -160,10 +160,10 @@ Widget clearIcon() {
   );
 }
 
-Widget searchIcon() {
-  return const Icon(
+Widget searchIcon({Color? color}) {
+  return Icon(
     IconlyLight.search,
-    color: AppColors.hintTextColor,
+    color: color ?? AppColors.hintTextColor,
     size: 20,
   );
 }

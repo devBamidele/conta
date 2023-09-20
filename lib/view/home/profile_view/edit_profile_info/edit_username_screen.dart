@@ -177,12 +177,12 @@ class _EditUsernameScreenState extends State<EditUsernameScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Update Username',
+                            'Update username',
                             style: AppTextStyles.headlineLarge
                                 .copyWith(fontSize: 32),
                           ),
                           addHeight(4),
-                          const Text(
+                          Text(
                             "This is visible to anyone you chat with",
                             style: AppTextStyles.headlineSmall,
                           )

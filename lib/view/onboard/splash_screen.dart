@@ -41,9 +41,10 @@ class _SplashScreenState extends State<SplashScreen>
 
   Future<void> checkCurrentUser() async {
     final currentUser = FirebaseAuth.instance.currentUser;
+
     if (currentUser != null && currentUser.emailVerified) {
       isAuth = true;
-    } else {
+    } else if (currentUser != null && currentUser.emailVerified != true) {
       AuthService().signOutFromApp();
     }
   }

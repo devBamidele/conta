@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
-import '../../../res/color.dart';
 import '../../../res/components/app_bar_icon.dart';
 import '../../../res/components/custom/custom_back_button.dart';
 import '../../../res/style/component_style.dart';
@@ -28,7 +27,6 @@ class ProfileImagePreview extends StatelessWidget {
           appBar: AppBar(
             leading: const CustomBackButton(
               padding: EdgeInsets.only(left: 15),
-              color: AppColors.extraTextColor,
             ),
             actions: [
               Padding(

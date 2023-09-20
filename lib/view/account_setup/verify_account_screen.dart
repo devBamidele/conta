@@ -131,11 +131,10 @@ class _VerifyAccountScreenState extends State<VerifyAccountScreen> {
                             key: _countdownTimerKey,
                             textStyle: AppTextStyles.titleSmall.copyWith(
                               color: AppColors.primaryColor,
+                              fontWeight: FontWeight.bold,
                             ),
                             durationInSeconds: countDownDuration,
-                            onTimerTick: (duration) {
-                              setState(() {});
-                            },
+                            onTimerTick: (duration) => setState(() {}),
                             onFinished: onFinished,
                           ),
                           addWidth(3),
@@ -151,19 +150,22 @@ class _VerifyAccountScreenState extends State<VerifyAccountScreen> {
                   right: 0,
                   child: Column(
                     children: [
-                      OutlinedButton(
-                        style: resendButtonStyle(
-                          foregroundColor: tappedColor,
-                          sideColor: buttonColor,
-                        ),
-                        onPressed: () => activateResend ? resendEmail() : null,
-                        child: Text(
-                          'Resend',
-                          style: AppTextStyles.labelMedium.copyWith(
-                            color: buttonColor,
+                      if (activateResend)
+                        OutlinedButton(
+                          style: resendButtonStyle(
+                            foregroundColor: tappedColor,
+                            sideColor: buttonColor,
                           ),
-                        ),
-                      ),
+                          onPressed: resendEmail,
+                          child: Text(
+                            'Resend',
+                            style: AppTextStyles.labelMedium.copyWith(
+                              color: buttonColor,
+                            ),
+                          ),
+                        )
+                      else
+                        const SizedBox.shrink(),
                       addHeight(20),
                       Container(
                         decoration: BoxDecoration(

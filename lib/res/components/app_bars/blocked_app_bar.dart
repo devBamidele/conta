@@ -91,7 +91,6 @@ class _BlockedAccountsAppBarState extends State<BlockedAccountsAppBar> {
                     titleSpacing: 0,
                     key: const ValueKey<bool>(true),
                     leading: CustomBackButton(
-                      color: AppColors.hintTextColor,
                       size: 24,
                       padding: const EdgeInsets.only(left: 20),
                       action: _chooseAction,
@@ -130,6 +129,7 @@ class _BlockedAccountsAppBarState extends State<BlockedAccountsAppBar> {
                                 child: const AppBarIcon(
                                   icon: Icons.close,
                                   size: 28,
+                                  color: AppColors.blackColor,
                                 ),
                               ),
                       ),
@@ -139,19 +139,17 @@ class _BlockedAccountsAppBarState extends State<BlockedAccountsAppBar> {
                     toolbarHeight: _myToolBarHeight,
                     key: const ValueKey<bool>(false),
                     leading: const CustomBackButton(
-                      color: AppColors.hintTextColor,
                       size: 24,
                       padding: EdgeInsets.only(left: 20),
                     ),
                     title: const Column(
                       children: [
-                        SizedBox.square(
-                          dimension: 2,
-                        ),
                         Text(
                           'Blocked chats',
                           style: TextStyle(
                             color: AppColors.blackColor,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
                           ),
                         ),
                       ],
@@ -161,7 +159,7 @@ class _BlockedAccountsAppBarState extends State<BlockedAccountsAppBar> {
                         padding: const EdgeInsets.only(right: 20),
                         child: GestureDetector(
                           onTap: _toggleSearchMode,
-                          child: searchIcon(),
+                          child: searchIcon(color: AppColors.blackColor),
                         ),
                       ),
                     ],

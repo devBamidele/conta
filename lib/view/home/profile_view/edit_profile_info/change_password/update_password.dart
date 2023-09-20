@@ -221,7 +221,7 @@ class _UpdatePasswordState extends State<UpdatePassword> {
                                     .copyWith(fontSize: 32),
                               ),
                               addHeight(4),
-                              const Text(
+                              Text(
                                 "You'll be required to resign in",
                                 style: AppTextStyles.headlineSmall,
                               )

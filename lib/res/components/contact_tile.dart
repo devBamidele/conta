@@ -42,7 +42,7 @@ class ContactTile extends StatelessWidget {
       isSamePerson ? 'Message yourself' : person.bio,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
-      style: const TextStyle(color: AppColors.extraTextColor),
+      style: TextStyle(color: AppColors.blackShade),
     );
   }
 
@@ -54,7 +54,7 @@ class ContactTile extends StatelessWidget {
           style: const TextStyle(
             fontSize: 18,
             height: 1.2,
-            color: AppColors.blackColor,
+            color: Colors.black,
           ),
         ),
         addWidth(2),

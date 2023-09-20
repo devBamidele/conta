@@ -133,11 +133,7 @@ class _DeleteAccountSheetState extends State<DeleteAccountSheet> {
                 children: [
                   const Text(
                     'Delete account',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.primaryShadeColor,
-                    ),
+                    style: AppTextStyles.sheetTitleText,
                   ), //
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
@@ -179,7 +175,7 @@ class _DeleteAccountSheetState extends State<DeleteAccountSheet> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    padding: const EdgeInsets.only(top: 20, bottom: 10),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -197,7 +193,7 @@ class _DeleteAccountSheetState extends State<DeleteAccountSheet> {
                             ),
                           ),
                         ),
-                        addWidth(12),
+                        addWidth(20),
                         Expanded(
                           child: ElevatedButton(
                             style: elevatedButton,

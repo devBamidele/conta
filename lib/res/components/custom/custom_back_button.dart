@@ -9,7 +9,6 @@ class CustomBackButton extends StatelessWidget {
     Key? key,
     this.padding,
     this.size = 26,
-    this.color = AppColors.blackColor,
     this.icon = IconlyLight.arrow_left,
     this.align = Alignment.centerLeft,
     this.action,
@@ -17,7 +16,6 @@ class CustomBackButton extends StatelessWidget {
 
   final EdgeInsetsGeometry? padding;
   final double size;
-  final Color color;
   final IconData icon;
   final AlignmentGeometry align;
   final Function()? action;
@@ -29,7 +27,7 @@ class CustomBackButton extends StatelessWidget {
       alignment: align,
       iconSize: size,
       onPressed: () => action != null ? action!() : context.router.pop(),
-      icon: Icon(icon, color: color),
+      icon: Icon(icon, color: AppColors.blackColor),
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
       focusColor: Colors.transparent,

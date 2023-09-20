@@ -3,17 +3,10 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conta/models/chat.dart';
-import 'package:conta/utils/extensions.dart';
-import 'package:conta/utils/services/algolia_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../models/Person.dart';
-import '../utils/services/contacts_service.dart';
-
 class ChatProvider extends ChangeNotifier {
-  List<String?> phoneNumbers = [];
-
   bool emptyContacts = false;
 
   void updateEmptyContacts(bool isEmpty) {
@@ -42,18 +35,6 @@ class ChatProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  String? _contactFilter;
-
-  String? get contactFilter {
-    return _contactFilter;
-  }
-
-  set contactFilter(String? value) {
-    _contactFilter = value;
-
-    notifyListeners();
-  }
-
   String? _blockedFilter;
 
   String? get blockedFilter => _blockedFilter;
@@ -68,92 +49,6 @@ class ChatProvider extends ChangeNotifier {
     _blockedFilter = '';
 
     notifyListeners();
-  }
-
-  clearContactsFilter() {
-    _contactFilter = '';
-
-    notifyListeners();
-  }
-
-  Future<void> getContacts() async {
-    ContactService contacts = ContactService();
-
-    await contacts.fetchContacts();
-
-    phoneNumbers = contacts.userContacts
-        .where(
-            (contact) => contact.phones != null && contact.phones!.isNotEmpty)
-        .map((contact) {
-      final phoneNumber = contact.phones!.first.value;
-
-      return phoneNumber.formatPhoneNumber();
-    }).toList();
-  }
-
-  Stream<List<Person>> findAppUsersFromContact() async* {
-    await getContacts();
-
-    final CollectionReference<Map<String, dynamic>> userRef =
-        FirebaseFirestore.instance.collection('users');
-
-    // Split phoneNumbers into chunks of 30
-    const chunkSize = 30;
-
-    final totalChunks = (phoneNumbers.length / chunkSize).ceil();
-
-    // Iterate through the chunks and yield the filtered results
-    for (var i = 0; i < totalChunks; i++) {
-      final start = i * chunkSize;
-      final end = (i + 1) * chunkSize;
-
-      final chunkNumbers = phoneNumbers.sublist(
-        start,
-        end < phoneNumbers.length ? end : phoneNumbers.length,
-      );
-
-      // Fetch data from Firestore for each chunk
-      final querySnapshot =
-          await userRef.where('phone', whereIn: chunkNumbers).get();
-
-      // Apply local filtering and yields filtered results
-      final personList = querySnapshot.docs
-          .map((doc) => Person.fromJson(doc.data()))
-          .where((person) => filterContactSearchQuery(person))
-          .toList();
-
-      updateEmptyContacts(personList.isEmpty);
-
-      yield personList;
-    }
-  }
-
-  Stream<List<Person>> findAppUsersNotInContacts() async* {
-    const algolia = AlgoliaService.algolia;
-
-    final query =
-        algolia.instance.index('dev_conta').query(contactFilter ?? '');
-
-    final snapshot = await query.getObjects();
-
-    yield snapshot.hits
-        .map((doc) => Person.fromJson(doc.data))
-        .where((person) => !phoneNumbers.contains(person.phone))
-        .toList();
-
-    // updateEmptySearch(uniquePersons.isEmpty);
-
-    // yield uniquePersons;
-  }
-
-  bool filterContactSearchQuery(
-    Person person,
-  ) {
-    if (contactFilter == null || contactFilter!.isEmpty) {
-      return true;
-    }
-    final username = person.username.toLowerCase();
-    return username.contains(contactFilter!.toLowerCase());
   }
 
   Stream<List<Chat>> getBlockedChatStream() {

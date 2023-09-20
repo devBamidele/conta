@@ -46,6 +46,7 @@ dependencies:
   firebase_crashlytics: ^3.3.5
   cloud_firestore: ^4.8.3
   google_sign_in: ^6.0.2
+  google_fonts: ^4.0.4
 
   flutter_local_notifications: ^15.1.0+1
   flutter_svg: ^2.0.7
@@ -79,6 +80,7 @@ dependencies:
   permission_handler: ^10.4.3
 
   image_downloader: ^0.31.0
+  shared_preferences: ^2.2.1
   algolia: ^1.1.2
 
 dev_dependencies:

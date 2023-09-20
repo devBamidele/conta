@@ -236,13 +236,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   addHeight(20),
                   const Text(
-                    'Login to your Account',
+                    'Login to your account',
                     style: AppTextStyles.headlineLarge,
                   ),
                   addHeight(10),
                   Container(
                     alignment: Alignment.topLeft,
-                    child: const Text(
+                    child: Text(
                       'Enter your email and password below',
                       textAlign: TextAlign.left,
                       style: AppTextStyles.headlineSmall,
@@ -302,7 +302,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           'Forgot password ?',
                           textAlign: TextAlign.center,
                           style: AppTextStyles.labelSmall.copyWith(
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.bold,
                             fontSize: 15,
                           ),
                         ),
@@ -328,14 +328,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     textAlign: TextAlign.center,
                     text: TextSpan(
                       children: [
-                        const TextSpan(
+                        TextSpan(
                           text: 'Don\'t have an account? ',
-                          style: AppTextStyles.headlineSmall,
+                          style: AppTextStyles.headlineSmall.copyWith(
+                            fontSize: 16,
+                          ),
                         ),
                         TextSpan(
                           text: ' Sign up',
                           style: AppTextStyles.labelSmall.copyWith(
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.bold,
                             fontSize: 17,
                           ),
                           recognizer: TapGestureRecognizer()
@@ -359,9 +361,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         color: Colors.white,
-                        child: const Text(
+                        child: Text(
                           'or continue with',
-                          style: AppTextStyles.titleSmall,
+                          style: AppTextStyles.titleSmall.copyWith(
+                            fontSize: 16,
+                          ),
                         ),
                       ),
                     ],

@@ -1,12 +1,15 @@
 import 'package:conta/res/color.dart';
 import 'package:conta/res/style/component_style.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   ThemeData appTheme() {
     return ThemeData(
       // Set the background color of the scaffold (app screen).
       scaffoldBackgroundColor: AppColors.backGroundColor,
+
+      textTheme: GoogleFonts.urbanistTextTheme(),
 
       // Enable the use of Material3, the latest Material Design system.
       useMaterial3: true,

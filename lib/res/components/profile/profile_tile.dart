@@ -1,6 +1,9 @@
+import 'package:conta/res/style/app_text_style.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../color.dart';
+import '../shimmer/shimmer_widget.dart';
 
 class ProfileTile extends StatelessWidget {
   const ProfileTile({
@@ -10,6 +13,7 @@ class ProfileTile extends StatelessWidget {
     this.icon,
     this.leadingColor,
     this.showTrailing = true,
+    this.showSubtitle = false,
     this.subtitle,
   });
 
@@ -19,6 +23,7 @@ class ProfileTile extends StatelessWidget {
   final Color? leadingColor;
   final bool showTrailing;
   final String? subtitle;
+  final bool showSubtitle;
 
   @override
   Widget build(BuildContext context) {
@@ -28,18 +33,19 @@ class ProfileTile extends StatelessWidget {
         icon,
         color: leadingColor ?? AppColors.blackColor,
       ),
-      titleTextStyle: TextStyle(
-        fontSize: subtitle != null ? 13 : 16,
-        color: subtitle != null ? AppColors.blackShade : AppColors.blackColor,
-      ),
-      subtitleTextStyle: const TextStyle(
-        fontSize: 16,
-        color: AppColors.blackColor,
-      ),
+      titleTextStyle: subtitle != null
+          ? TextStyle(
+              fontSize: 13,
+              color: AppColors.blackShade,
+              fontWeight: FontWeight.normal,
+            )
+          : AppTextStyles.profileTileSubtitle,
+      subtitleTextStyle: AppTextStyles.profileTileSubtitle,
       title: Text(
         titleText,
+        style: GoogleFonts.urbanist(letterSpacing: 0.4),
       ),
-      subtitle: subtitle != null ? Text(subtitle!) : null,
+      subtitle: showSubtitle == true ? _showSubtitleText() : null,
       trailing: showTrailing
           ? const Icon(
               Icons.chevron_right_rounded,
@@ -47,5 +53,16 @@ class ProfileTile extends StatelessWidget {
             )
           : const SizedBox.shrink(),
     );
+  }
+
+  Widget _showSubtitleText() {
+    return subtitle != null
+        ? Text(subtitle!)
+        : ShimmerWidget.rectangular(
+            height: 12,
+            border: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4),
+            ),
+          );
   }
 }

@@ -136,7 +136,7 @@ class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
                   addHeight(10),
                   Container(
                     alignment: Alignment.topLeft,
-                    child: const Text(
+                    child: Text(
                       'Enter your email address',
                       textAlign: TextAlign.left,
                       style: AppTextStyles.headlineSmall,

@@ -212,7 +212,6 @@ class MessagesProvider extends ChangeNotifier {
     required bool notifications,
     String? profilePicUrl,
     String? bio,
-    String? name,
     int? oppIndex,
     bool? isDeleted,
   }) {
@@ -225,7 +224,6 @@ class MessagesProvider extends ChangeNotifier {
       uidUser2: uidUser2,
       profilePicUrl: profilePicUrl,
       bio: bio,
-      name: name,
       notifications: notifications,
       oppIndex: oppIndex,
       isDeleted: isDeleted,
@@ -257,7 +255,7 @@ class MessagesProvider extends ChangeNotifier {
         profilePicUrl: profilePicUrl,
         chatId: chatId,
         bio: bio,
-        name: name,
+        phone: name,
         oppIndex: oppIndex,
         isDeleted: isDeleted,
       );

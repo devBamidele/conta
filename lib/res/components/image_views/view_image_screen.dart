@@ -1,12 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:conta/res/components/app_bar_icon.dart';
+import 'package:conta/res/style/app_text_style.dart';
 import 'package:conta/utils/extensions.dart';
 import 'package:conta/utils/widget_functions.dart';
-import 'package:conta/view_model/messages_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:iconly/iconly.dart';
-import 'package:provider/provider.dart';
 
 import '../../color.dart';
 import '../custom/custom_back_button.dart';
@@ -30,35 +27,26 @@ class ViewImageScreen extends StatelessWidget {
       appBar: AppBar(
         leading: const CustomBackButton(
           padding: EdgeInsets.only(left: 15),
-          color: AppColors.extraTextColor,
         ),
-        title: DefaultTextStyle(
-          style: const TextStyle(
-            color: AppColors.blackColor,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                sender,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 19,
-                ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(sender, style: AppTextStyles.titleMedium),
+            addHeight(2),
+            Text(
+              media.length > 1
+                  ? timeSent.toStringForMultiplePics()
+                  : timeSent.toStringForSinglePic(),
+              style: TextStyle(
+                color: AppColors.blackShade,
+                fontSize: 13,
               ),
-              addHeight(2),
-              Text(
-                media.length > 1
-                    ? timeSent.toStringForMultiplePics()
-                    : timeSent.toStringForSinglePic(),
-                style: const TextStyle(
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
-        actions: [
+        // Todo ( Extra Feature ) Add download image functionality
+        /*
+         actions: [
           Consumer<MessagesProvider>(
             builder: (_, data, __) {
               return Padding(
@@ -72,6 +60,7 @@ class ViewImageScreen extends StatelessWidget {
             },
           )
         ],
+         */
       ),
       body: SafeArea(
         child: media.length == 1

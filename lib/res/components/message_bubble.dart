@@ -41,14 +41,8 @@ class MessageBubble extends StatefulWidget {
     required this.message,
     required this.color,
     this.tail = true,
-    this.textStyle = const TextStyle(
-      color: Colors.black,
-      fontSize: 16,
-    ),
-    this.timeStyle = const TextStyle(
-      fontSize: 10,
-      color: Colors.black45,
-    ),
+    this.textStyle = const TextStyle(color: Colors.black, fontSize: 16),
+    this.timeStyle = const TextStyle(fontSize: 9, color: Colors.black45),
   }) : super(key: key);
 
   @override
@@ -56,8 +50,7 @@ class MessageBubble extends StatefulWidget {
 }
 
 class _MessageBubbleState extends State<MessageBubble> {
-  late final chatProvider =
-      Provider.of<MessagesProvider>(context, listen: false);
+  late MessagesProvider messageProvider;
   final currentUser = FirebaseAuth.instance.currentUser;
 
   late String? replyMessage;
@@ -79,10 +72,13 @@ class _MessageBubbleState extends State<MessageBubble> {
   late bool hasReply;
   late bool hasMedia;
   late bool hasContent;
+  late double extraWidth;
 
   @override
   void initState() {
     super.initState();
+
+    messageProvider = Provider.of<MessagesProvider>(context, listen: false);
 
     //chatProvider.setResetOverlayColorCallback(resetOverlayColor);
 
@@ -92,6 +88,8 @@ class _MessageBubbleState extends State<MessageBubble> {
     hasReply = widget.message.reply &&
         widget.message.replyMessage != null &&
         widget.message.replySenderId != null;
+
+    extraWidth = widget.isSender ? 35 : 25;
 
     hasMedia = widget.message.media != null;
 
@@ -125,7 +123,7 @@ class _MessageBubbleState extends State<MessageBubble> {
           !widget.isSender;
       setState(() {
         if (visible) {
-          chatProvider.updateMessageSeen(widget.message.id);
+          messageProvider.updateMessageSeen(widget.message.id);
         }
       });
     }
@@ -154,19 +152,19 @@ void resetOverlayColor() {
   void onLongTapMessage() {
     Vibrate.feedback(FeedbackType.medium);
     update();
-    chatProvider.onLongTapMessage(widget.message);
-    chatProvider.updateMLPValue();
+    messageProvider.onLongTapMessage(widget.message);
+    messageProvider.updateMLPValue();
   }
 
   void onTapMessage() {
-    if (chatProvider.isMessageLongPressed) {
+    if (messageProvider.isMessageLongPressed) {
       update();
-      chatProvider.onLongTapMessage(widget.message);
+      messageProvider.onLongTapMessage(widget.message);
     }
-    chatProvider.updateMLPValue();
+    messageProvider.updateMLPValue();
   }
 
-  void updateReply() => chatProvider.updateReplyBySwipe(widget.message);
+  void updateReply() => messageProvider.updateReplyBySwipe(widget.message);
 
   ///chat bubble builder method
   @override
@@ -199,141 +197,150 @@ void resetOverlayColor() {
         child: VisibilityDetector(
           key: widget.key!,
           onVisibilityChanged: onVisibilityChanged,
-          child: Container(
-            color: overlayColor,
-            child: Align(
-              alignment:
-                  widget.isSender ? Alignment.topRight : Alignment.topLeft,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
-                child: CustomPaint(
-                  painter: BubblePainter(
-                    color: widget.color,
-                    alignment: widget.isSender
-                        ? Alignment.topRight
-                        : Alignment.topLeft,
-                    tail: widget.tail,
-                  ),
-                  child: ClipRect(
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        lines = painter.width ~/ prefWidth;
+          child: Stack(
+            children: [
+              Align(
+                alignment:
+                    widget.isSender ? Alignment.topRight : Alignment.topLeft,
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
+                  child: CustomPaint(
+                    painter: BubblePainter(
+                      color: widget.color,
+                      alignment: widget.isSender
+                          ? Alignment.topRight
+                          : Alignment.topLeft,
+                      tail: widget.tail,
+                    ), //
+                    child: ClipRect(
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          lines = painter.width ~/ prefWidth;
 
-                        addedWidth = timePainter.width + 40;
+                          addedWidth = timePainter.width + extraWidth;
 
-                        addedHeight =
-                            prefWidth < (painter.width % prefWidth) + addedWidth
-                                ? 42
-                                : 0;
+                          addedHeight = prefWidth <
+                                  (painter.width % prefWidth) + addedWidth
+                              ? 42
+                              : 0;
 
-                        // If lines == 0, then the text can by default (without the timestamp)
-                        // fit within a single line of text.
-                        width = lines == 0 &&
-                                painter.width < (prefWidth - addedWidth)
-                            ? painter.width + addedWidth
-                            : 0;
+                          // If lines == 0, then the text can by default (without the timestamp)
+                          // fit within a single line of text.
+                          width = lines == 0 &&
+                                  painter.width < (prefWidth - addedWidth)
+                              ? painter.width + addedWidth
+                              : 0;
 
-                        height = width == 0
-                            ? lines == 0
-                                ? 2 * painter.height
-                                : (lines * painter.height) + addedHeight
-                            : 0;
+                          height = width == 0
+                              ? lines == 0
+                                  ? 2 * painter.height
+                                  : (lines * painter.height) + addedHeight
+                              : 0;
 
-                        width = height != 0 && lines == 0
-                            ? painter.width +
-                                (prefWidth - painter.width).clamp(0, 30)
-                            : width;
+                          width = height != 0 && lines == 0
+                              ? painter.width +
+                                  (prefWidth - painter.width).clamp(0, 30)
+                              : width;
 
-                        return Container(
-                          constraints: BoxConstraints(
-                            minWidth: width,
-                            minHeight: height,
-                            maxWidth: prefWidth,
-                          ),
-                          margin: getBubblePadding(
-                            widget.isSender,
-                            stateTick,
-                            hasMedia,
-                            replyMessage != null,
-                            hasContent,
-                          ),
-                          child: Stack(
-                            children: <Widget>[
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  left: stateTick
-                                      ? (replyMessage != null ? 0 : 4)
-                                      : 4,
+                          return Container(
+                            constraints: BoxConstraints(
+                              minWidth: width,
+                              minHeight: height,
+                              maxWidth: prefWidth,
+                            ),
+                            margin: getBubblePadding(
+                              widget.isSender,
+                              stateTick,
+                              hasMedia,
+                              replyMessage != null,
+                              hasContent,
+                            ),
+                            child: Stack(
+                              children: <Widget>[
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                    left: stateTick
+                                        ? (replyMessage != null ? 0 : 4)
+                                        : 4,
+                                  ),
+                                  child: Consumer<MessagesProvider>(
+                                      builder: (_, data, child) {
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        if (hasReply)
+                                          ReplyBubble(
+                                            replyMessage:
+                                                widget.message.replyMessage!,
+                                            messageSender: widget.message
+                                                        .replySenderId! ==
+                                                    currentUser!.uid
+                                                ? 'You'
+                                                : data.currentChat!.username,
+                                          ),
+                                        if (hasMedia)
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                bottom: 3),
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  const BorderRadius.all(
+                                                Radius.circular(11.5),
+                                              ),
+                                              child: ImageTile(
+                                                chatId:
+                                                    data.currentChat!.chatId!,
+                                                sender: widget.isSender
+                                                    ? 'You'
+                                                    : data
+                                                        .currentChat!.username,
+                                                timeSent:
+                                                    widget.message.timestamp,
+                                                media: widget.message.media!,
+                                              ),
+                                            ),
+                                          ),
+                                        if (hasContent)
+                                          Padding(
+                                            padding: getContentPadding(
+                                                replyMessage != null, hasMedia),
+                                            child: Text(
+                                              widget.message.content,
+                                              style: widget.textStyle,
+                                              textAlign: TextAlign.left,
+                                            ),
+                                          ),
+                                      ],
+                                    );
+                                  }),
                                 ),
-                                child: Consumer<MessagesProvider>(
-                                    builder: (_, data, child) {
-                                  return Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      if (hasReply)
-                                        ReplyBubble(
-                                          replyMessage:
-                                              widget.message.replyMessage!,
-                                          messageSender:
-                                              widget.message.replySenderId! ==
-                                                      currentUser!.uid
-                                                  ? 'You'
-                                                  : data.currentChat!.username,
-                                        ),
-                                      if (hasMedia)
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(bottom: 3),
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                const BorderRadius.all(
-                                              Radius.circular(11.5),
-                                            ),
-                                            child: ImageTile(
-                                              chatId: data.currentChat!.chatId!,
-                                              sender: widget.isSender
-                                                  ? 'You'
-                                                  : data.currentChat!.username,
-                                              timeSent:
-                                                  widget.message.timestamp,
-                                              media: widget.message.media!,
-                                            ),
-                                          ),
-                                        ),
-                                      if (hasContent)
-                                        Padding(
-                                          padding: getContentPadding(
-                                              replyMessage != null, hasMedia),
-                                          child: Text(
-                                            widget.message.content,
-                                            style: widget.textStyle,
-                                            textAlign: TextAlign.left,
-                                          ),
-                                        ),
-                                    ],
-                                  );
-                                }),
-                              ),
-                              if (stateIcon != null)
-                                Positioned(
-                                  bottom: hasContent ? 0 : 7,
-                                  right: hasContent ? 5 : 4,
-                                  child: hasMedia && !hasContent
-                                      ? _getFrostedWidget(
-                                          isSender: widget.isSender,
-                                        )
-                                      : _getRowWidget(),
-                                )
-                            ],
-                          ),
-                        );
-                      },
+                                if (stateIcon != null)
+                                  Positioned(
+                                    bottom: hasContent ? 0 : 7,
+                                    right: hasContent ? 5 : 4,
+                                    child: hasMedia && !hasContent
+                                        ? _getFrostedWidget(
+                                            isSender: widget.isSender,
+                                          )
+                                        : _getRowWidget(),
+                                  )
+                              ],
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
+              Positioned.fill(
+                child: Container(
+                  color: overlayColor,
+                ),
+              ),
+            ],
           ),
         ),
       ),

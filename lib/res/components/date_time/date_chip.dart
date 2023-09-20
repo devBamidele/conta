@@ -27,13 +27,19 @@ class DateChip extends StatelessWidget {
       ),
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(6)),
+          borderRadius: const BorderRadius.all(Radius.circular(8)),
           color: color,
         ),
         child: Padding(
           padding: const EdgeInsets.all(5.0),
           child: Text(
             Algo.dateChipText(date),
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: AppColors.blackColor,
+              letterSpacing: 0.8,
+            ),
           ),
         ),
       ),

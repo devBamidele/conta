@@ -47,11 +47,7 @@ class LogoutSheet extends StatelessWidget {
                 children: [
                   const Text(
                     'Logout',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.primaryShadeColor,
-                    ),
+                    style: AppTextStyles.sheetTitleText,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
@@ -68,7 +64,7 @@ class LogoutSheet extends StatelessWidget {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    padding: const EdgeInsets.only(top: 20, bottom: 10),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -86,7 +82,7 @@ class LogoutSheet extends StatelessWidget {
                             ),
                           ),
                         ),
-                        addWidth(12),
+                        addWidth(20),
                         Expanded(
                           child: ElevatedButton(
                             style: elevatedButton,

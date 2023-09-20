@@ -1,16 +1,17 @@
 import 'package:conta/res/components/custom/custom_fab.dart';
 import 'package:conta/res/components/custom/custom_text_field.dart';
 import 'package:conta/res/components/profile/profile_pic.dart';
-import 'package:conta/res/style/app_text_style.dart';
 import 'package:conta/res/style/component_style.dart';
 import 'package:conta/utils/app_router/router.dart';
 import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:conta/utils/enums.dart';
 import 'package:conta/view/home/tab_views/message_view/chat_list_view.dart';
+import 'package:conta/view_model/contacts_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../res/color.dart';
+import '../../res/style/app_text_style.dart';
 import '../../utils/widget_functions.dart';
 import '../../view_model/chat_provider.dart';
 import '../../view_model/user_provider.dart';
@@ -25,8 +26,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+
   late UserProvider _userProvider;
   late ChatProvider _chatProvider;
+  late ContactsProvider _contactsProvider;
 
   final searchFocusNode = FocusNode();
   final _searchController = TextEditingController();
@@ -42,7 +45,11 @@ class _HomeScreenState extends State<HomeScreen>
 
     _chatProvider = Provider.of<ChatProvider>(context, listen: false);
 
+    _contactsProvider = Provider.of<ContactsProvider>(context, listen: false);
+
     _userProvider.getUserInfo();
+
+    _contactsProvider.getContactsInfo();
 
     _searchController.addListener(_updateFilter);
   }
@@ -95,8 +102,13 @@ class _HomeScreenState extends State<HomeScreen>
                       vertical: 10,
                     ),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
+                        Text(
+                          'Duo Talk',
+                          style: AppTextStyles.titleText,
+                        ),
                         GestureDetector(
                           onTap: () =>
                               navPush(context, const ProfileScreenRoute()),
@@ -129,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen>
                           dividerColor: Colors.transparent,
                           labelColor: Colors.white,
                           unselectedLabelColor: AppColors.extraTextColor,
-                          labelStyle: AppTextStyles.textFieldLabel,
+                          labelStyle: AppTextStyles.tabLabelText,
                           tabs: _tabs,
                         ),
                       ),

@@ -1,3 +1,4 @@
+import 'package:conta/res/style/app_text_style.dart';
 import 'package:flutter/material.dart';
 
 import '../color.dart';
@@ -27,7 +28,10 @@ class ConfirmationDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(title),
+      title: Text(
+        title,
+        style: AppTextStyles.alertTitleText,
+      ),
       titlePadding: const EdgeInsets.only(left: 18, top: 20),
       content: contentWidget ?? Text(contentText!),
       actions: [

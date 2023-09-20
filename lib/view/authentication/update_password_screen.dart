@@ -134,11 +134,10 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
                           key: _countdownTimerKey,
                           textStyle: AppTextStyles.titleSmall.copyWith(
                             color: AppColors.primaryColor,
+                            fontWeight: FontWeight.bold,
                           ),
                           durationInSeconds: countDownDuration,
-                          onTimerTick: (duration) {
-                            setState(() {});
-                          },
+                          onTimerTick: (duration) => setState(() {}),
                           onFinished: onFinished,
                         ),
                         addWidth(3),

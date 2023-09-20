@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:conta/res/components/confirmation_dialog.dart';
 import 'package:conta/res/components/shimmer/shimmer_widget.dart';
 import 'package:conta/res/components/unread_identifier.dart';
+import 'package:conta/res/style/app_text_style.dart';
 import 'package:conta/res/style/component_style.dart';
 import 'package:conta/utils/extensions.dart';
 import 'package:flutter/material.dart';
@@ -219,23 +220,22 @@ class _ChatListTileState extends State<ChatListTile> {
           children: [
             Text(
               widget.tileData.userNames[widget.oppIndex],
-              style: const TextStyle(
-                  fontSize: 18, height: 1.2, color: AppColors.blackColor),
+              style: AppTextStyles.listTileTitleText,
             ),
             addWidth(2),
             Text(
               widget.samePerson ? '(You)' : '',
-              style: const TextStyle(fontSize: 16, color: AppColors.blackColor),
+              style: AppTextStyles.listTileTitleText,
             ),
           ],
         ),
         Visibility(
           visible: widget.tileData.userMuted[widget.oppIndex],
           child: const Padding(
-            padding: EdgeInsets.only(left: 4),
+            padding: EdgeInsets.only(left: 4, top: 2),
             child: Icon(
               IconlyLight.volume_off,
-              size: 14,
+              size: 15,
               color: AppColors.blackColor,
             ),
           ),
@@ -249,7 +249,7 @@ class _ChatListTileState extends State<ChatListTile> {
       widget.tileData.lastMessage,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
-      style: const TextStyle(color: AppColors.extraTextColor),
+      style: TextStyle(color: AppColors.blackShade),
     );
   }
 }

@@ -13,7 +13,6 @@ class CurrentChat {
   final String? profilePicUrl;
   final String? chatId;
   final String? bio;
-  final String? name;
   final int? oppIndex;
   final bool? isDeleted;
 
@@ -32,7 +31,6 @@ class CurrentChat {
     this.profilePicUrl,
     this.chatId,
     this.bio,
-    this.name,
     this.oppIndex,
     this.isDeleted = false,
   });
@@ -46,7 +44,7 @@ class CurrentChat {
     String? profilePicUrl,
     String? chatId,
     String? bio,
-    String? name,
+    String? phone,
     int? oppIndex,
     bool? isDeleted,
   }) {
@@ -58,7 +56,6 @@ class CurrentChat {
       profilePicUrl: profilePicUrl ?? this.profilePicUrl,
       chatId: chatId ?? this.chatId,
       bio: bio ?? this.bio,
-      name: name ?? this.name,
       oppIndex: oppIndex ?? this.oppIndex,
       isDeleted: isDeleted ?? this.isDeleted,
     );

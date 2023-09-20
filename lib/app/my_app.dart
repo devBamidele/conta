@@ -56,7 +56,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final appRouter = getIt<AppRouter>();
-
     return MaterialApp.router(
       // Set the scaffold messenger key to the AppUtils messenger key.
       scaffoldMessengerKey: AppUtils.messengerKey,

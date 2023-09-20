@@ -133,8 +133,8 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
                           addHeight(10),
                           Container(
                             alignment: Alignment.topLeft,
-                            child: const Text(
-                              'Add a photo to boost profile engagement',
+                            child: Text(
+                              'Personalize Your Presence',
                               textAlign: TextAlign.left,
                               style: AppTextStyles.headlineSmall,
                             ),
@@ -165,14 +165,15 @@ class _SetPhotoScreenState extends State<SetPhotoScreen> {
                               ),
                             ],
                           ),
-                          addHeight(36),
+                          addHeight(32),
                           Text(
                             data.username ?? 'No name set',
                             textAlign: TextAlign.center,
                             style: const TextStyle(
-                              fontSize: 26,
-                              fontWeight: FontWeight.w600,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
                               color: AppColors.blackColor,
+                              letterSpacing: 0.6,
                             ),
                           ),
                         ],

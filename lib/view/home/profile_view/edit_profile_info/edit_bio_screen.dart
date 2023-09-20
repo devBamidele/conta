@@ -117,7 +117,7 @@ class _EditBioScreenState extends State<EditBioScreen> {
                                 .copyWith(fontSize: 32),
                           ),
                           addHeight(4),
-                          const Text(
+                          Text(
                             "Add a personal touch to your profile.",
                             style: AppTextStyles.headlineSmall,
                           )

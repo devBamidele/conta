@@ -9,6 +9,7 @@ import 'package:conta/view_model/auth_provider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../res/components/custom/custom_text_field.dart';
@@ -194,7 +195,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     addHeight(10),
                     Container(
                       alignment: Alignment.topLeft,
-                      child: const Text(
+                      child: Text(
                         'Enter your email and password below',
                         textAlign: TextAlign.left,
                         style: AppTextStyles.headlineSmall,
@@ -264,21 +265,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       textAlign: TextAlign.center,
                       text: TextSpan(
                         children: [
-                          const TextSpan(
+                          TextSpan(
                             text: 'Already have an account? ',
-                            style: AppTextStyles.headlineSmall,
+                            style: AppTextStyles.headlineSmall
+                                .copyWith(fontSize: 16),
                           ),
                           TextSpan(
                             text: ' Login',
                             style: AppTextStyles.labelSmall.copyWith(
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.bold,
                               fontSize: 17,
                             ),
                             recognizer: TapGestureRecognizer()
-                              // handle click event for the Login link
-                              ..onTap = () => navReplace(
-                                      context, const LoginScreenRoute())
-                                  .then((value) => authProvider.clearData()),
+                              ..onTap = () =>
+                                  navReplace(context, const LoginScreenRoute())
+                                      .then((_) => authProvider.clearData()),
                           ),
                         ],
                       ),
@@ -292,9 +293,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       child: RichText(
                         textAlign: TextAlign.center,
                         text: TextSpan(
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: AppColors.opaqueTextColor,
+                          style: GoogleFonts.urbanist(
+                            textStyle: const TextStyle(
+                              fontSize: 14,
+                              color: AppColors.opaqueTextColor,
+                              letterSpacing: 0.5,
+                            ),
                           ),
                           children: [
                             const TextSpan(
@@ -304,7 +308,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               text: 'Terms',
                               style: const TextStyle(
                                 fontWeight: FontWeight.w600,
-                                color: Colors.black,
+                                color: AppColors.blackColor,
                               ),
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () {
@@ -318,7 +322,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               text: 'Privacy policy',
                               style: const TextStyle(
                                 fontWeight: FontWeight.w600,
-                                color: Colors.black,
+                                color: AppColors.blackColor,
                               ),
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () {

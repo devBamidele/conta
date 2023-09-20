@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:conta/res/style/app_text_style.dart';
 import 'package:conta/utils/app_router/router.dart';
 import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:conta/utils/widget_functions.dart';
@@ -17,6 +18,7 @@ import '../../../res/components/profile/file_profile_pic.dart';
 import '../../../res/components/profile/logout_sheet.dart';
 import '../../../res/components/profile/profile_pic.dart';
 import '../../../res/components/profile/profile_tile.dart';
+import '../../../res/components/shimmer/shimmer_widget.dart';
 import '../../../res/style/component_style.dart';
 import '../../../utils/app_utils.dart';
 
@@ -100,7 +102,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: [
                         const CustomBackButton(
                           padding: EdgeInsets.only(top: 20),
-                          color: AppColors.extraTextColor,
                         ),
                         Visibility(
                           visible: _showSave,
@@ -143,18 +144,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       padding: const EdgeInsets.only(top: 20),
                       child: Column(
                         children: [
-                          Text(
-                            data.userData!.username,
-                            style: const TextStyle(
-                                fontSize: 20, color: AppColors.blackColor),
-                          ),
-                          Text(
-                            data.userData!.bio,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: AppColors.blackColor.withOpacity(0.9),
+                          if (data.userData?.username != null)
+                            Text(
+                              data.userData!.username,
+                              style: AppTextStyles.profileTitleText,
+                            )
+                          else
+                            ShimmerWidget.rectangular(
+                              width: 72,
+                              height: 20,
+                              border: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4),
+                              ),
                             ),
-                          ),
+                          if (data.userData?.bio != null)
+                            Text(data.userData!.bio,
+                                style: AppTextStyles.profileSubTitleText)
+                          else
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8),
+                              child: ShimmerWidget.rectangular(
+                                width: 250,
+                                height: 16,
+                                border: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -170,26 +186,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ProfileTile(
                               titleText: 'Username',
                               icon: Icons.alternate_email_rounded,
-                              subtitle: data.userData!.username,
+                              subtitle: data.userData?.username,
+                              showSubtitle: true,
                               onTap: () => navPush(
                                   context, const EditUsernameScreenRoute()),
                             ),
                             ProfileTile(
                               titleText: 'Bio',
                               icon: IconlyLight.chat,
-                              subtitle: data.userData!.bio,
+                              subtitle: data.userData?.bio,
+                              showSubtitle: true,
                               onTap: () =>
                                   navPush(context, const EditBioScreenRoute()),
                             ),
                             ProfileTile(
                               titleText: 'Phone',
                               icon: IconlyLight.call,
-                              subtitle: data.userData!.phone ?? 'No phone',
+                              subtitle: data.userData?.phone,
+                              showSubtitle: true,
+                              showTrailing: false,
                             ),
                             ProfileTile(
                               titleText: 'Email',
                               icon: IconlyLight.message,
-                              subtitle: data.userData!.email,
+                              subtitle: data.userData?.email,
+                              showSubtitle: true,
+                              showTrailing: false,
                             ),
                             ProfileTile(
                               titleText: 'Password',

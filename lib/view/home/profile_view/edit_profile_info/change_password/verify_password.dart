@@ -177,12 +177,12 @@ class _VerifyPasswordState extends State<VerifyPassword> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Verify Password',
+                            'Verify password',
                             style: AppTextStyles.headlineLarge
                                 .copyWith(fontSize: 32),
                           ),
                           addHeight(4),
-                          const Text(
+                          Text(
                             "Just making sure it's you",
                             style: AppTextStyles.headlineSmall,
                           ),

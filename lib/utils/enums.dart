@@ -1,24 +1,8 @@
 /// Enum representing the types of message content.
-enum MessageType {
-  /// Text message.
-  text,
+enum MessageType { text, audio, media, file }
 
-  /// Audio message.
-  audio,
-
-  /// Video and Picture message.
-  media,
-
-  /// File message.
-  file,
-}
-
-enum MessageStatus {
-  sent,
-  seen,
-  undelivered,
-}
+enum MessageStatus { sent, seen, undelivered }
 
 enum MessageCategory { all, unread, muted }
 
-enum StreamType { bio, name, onlineStatus }
+enum StreamType { bio, onlineStatus }

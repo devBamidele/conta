@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../../res/color.dart';
 import '../../../utils/widget_functions.dart';
 import '../../../view_model/messages_provider.dart';
 import '../message_counter.dart';
@@ -28,7 +27,7 @@ class ChatAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _ChatAppBarState extends State<ChatAppBar> {
-  final double customSize = 27;
+  final double customSize = 24;
 
   userDialog(BuildContext context, String? imageUrl) {
     showDialog(
@@ -65,7 +64,6 @@ class _ChatAppBarState extends State<ChatAppBar> {
                   key: const Key('not-longPressed'),
                   leading: const CustomBackButton(
                     padding: EdgeInsets.only(left: 15),
-                    color: AppColors.extraTextColor,
                   ),
                   title: GestureDetector(
                     onTap: () => chooseDisplay(currentChat),
@@ -81,7 +79,7 @@ class _ChatAppBarState extends State<ChatAppBar> {
                                 currentChat.username,
                                 overflow: TextOverflow.fade,
                                 style: AppTextStyles.titleMedium,
-                              ), //
+                              ),
                               addHeight(2),
                               Status(isDeleted: currentChat.isDeleted),
                             ],
@@ -97,7 +95,7 @@ class _ChatAppBarState extends State<ChatAppBar> {
                     padding: const EdgeInsets.only(left: 20),
                     child: AppBarIcon(
                       icon: Icons.close,
-                      size: customSize + 2,
+                      size: customSize,
                       onTap: () => setState(
                         () => data.resetSelectedMessages(),
                       ),
@@ -105,7 +103,7 @@ class _ChatAppBarState extends State<ChatAppBar> {
                   ),
                   actions: [
                     Padding(
-                      padding: const EdgeInsets.only(right: 20),
+                      padding: const EdgeInsets.only(right: 24),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         mainAxisSize: MainAxisSize.min,
@@ -116,15 +114,15 @@ class _ChatAppBarState extends State<ChatAppBar> {
                               size: customSize,
                               onTap: () => data.updateReplyByAppBar(),
                             ),
-                          addWidth(20),
+                          addWidth(24),
                           AppBarIcon(
                             icon: Icons.content_copy_outlined,
                             size: customSize - 2,
-                            onTap: () => data.copyMessageContent().whenComplete(
-                                  () => AppUtils.showToast("Message Copied"),
+                            onTap: () => data.copyMessageContent().then(
+                                  (_) => AppUtils.showToast("Message Copied"),
                                 ),
                           ),
-                          addWidth(20),
+                          addWidth(24),
                           AppBarIcon(
                             icon: IconlyLight.delete,
                             size: customSize,

@@ -72,15 +72,6 @@ class Status extends StatelessWidget {
             fontWeight: FontWeight.w500,
           ),
         );
-      case StreamType.name:
-        return Text(
-          person.phone ?? 'No phone number',
-          style: const TextStyle(
-            fontSize: 15,
-            color: AppColors.blackColor,
-            fontWeight: FontWeight.w500,
-          ),
-        );
       case StreamType.onlineStatus:
         bool isOnline = person.online;
         String lastSeen = person.formatLastSeen(Timestamp.now());
@@ -91,7 +82,7 @@ class Status extends StatelessWidget {
                 ? Colors.white
                 : isOnline
                     ? AppColors.primaryColor
-                    : AppColors.extraTextColor,
+                    : AppColors.blackShade,
             fontSize: 13,
           ),
         );

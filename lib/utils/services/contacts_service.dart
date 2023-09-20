@@ -1,4 +1,3 @@
-import 'package:contacts_service/contacts_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class ContactService {
@@ -8,18 +7,13 @@ class ContactService {
 
   ContactService._();
 
-  List<Contact> userContacts = [];
-
   Future<void> initContactService() async {
+    // Check for necessary permissions
     final permission = await Permission.contacts.status;
 
     if (permission.isGranted == false &&
         permission.isPermanentlyDenied == false) {
       await Permission.contacts.request();
     }
-  }
-
-  Future<void> fetchContacts() async {
-    userContacts = await ContactsService.getContacts(withThumbnails: false);
   }
 }

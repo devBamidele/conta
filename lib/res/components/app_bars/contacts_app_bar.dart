@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-import '../../../view_model/chat_provider.dart';
+import '../../../view_model/contacts_provider.dart';
 import '../../color.dart';
 import '../../style/component_style.dart';
 import '../app_bar_icon.dart';
@@ -39,13 +39,13 @@ class _ContactsAppBarState extends State<ContactsAppBar>
     });
   }
 
-  void clearSearch(ChatProvider data) {
+  void clearSearch(ContactsProvider data) {
     data.clearContactsFilter();
 
     _searchController.clear();
   }
 
-  Future<bool> onWillPop(ChatProvider data) async {
+  Future<bool> onWillPop(ContactsProvider data) async {
     clearSearch(data);
 
     return true;
@@ -60,7 +60,7 @@ class _ContactsAppBarState extends State<ContactsAppBar>
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ChatProvider>(
+    return Consumer<ContactsProvider>(
       builder: (_, data, __) {
         return WillPopScope(
           onWillPop: () => onWillPop(data),
@@ -69,7 +69,6 @@ class _ContactsAppBarState extends State<ContactsAppBar>
             titleSpacing: 0,
             key: const ValueKey<bool>(true),
             leading: const CustomBackButton(
-              color: AppColors.hintTextColor,
               size: 24,
               padding: EdgeInsets.only(left: 20),
             ),

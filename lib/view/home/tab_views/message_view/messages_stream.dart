@@ -53,7 +53,7 @@ class _MessagesStreamState extends State<MessagesStream> {
         scroll.position.userScrollDirection == ScrollDirection.reverse) {
       // Load the next batch of messages
       setState(() {
-        messageLimit += 10;
+        messageLimit += 20;
       });
     }
   }
@@ -123,7 +123,7 @@ class _MessagesStreamState extends State<MessagesStream> {
                           timeSent: message.timestamp.customBubbleFormat(),
                           textStyle: const TextStyle(
                             color: Colors.black87,
-                            fontSize: 15.5,
+                            fontSize: 14,
                           ),
                         ),
                       ),

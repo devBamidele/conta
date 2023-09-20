@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:conta/view_model/messages_provider.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -29,7 +30,8 @@ class NotificationService {
   final _localNotifications = FlutterLocalNotificationsPlugin();
 
   Future<void> initNotifications() async {
-    await FirebaseMessaging.instance.requestPermission();
+    await FirebaseMessaging.instance.requestPermission().then((value) =>
+        log('Notification authorization status: ${value.authorizationStatus}'));
 
     initPushNotifications();
     initLocalNotifications();
