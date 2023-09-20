@@ -185,7 +185,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       AppUtils.showSnackbar(
         'Email not verified',
-        label: 'VERIFY',
+        label: 'Verify',
         delay: const Duration(seconds: 5),
         onLabelTapped: () {
           user.sendEmailVerification();

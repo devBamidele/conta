@@ -9,6 +9,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../models/Person.dart';
+import '../utils/app_utils.dart';
 
 class ContactsProvider extends ChangeNotifier {
   Set<Person> initialContactData = <Person>{};
@@ -53,11 +54,8 @@ class ContactsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<Set<Person>> getFuture(VoidCallback message) async {
-    return await contactsOnDuoTalk(
-      showLabel: true,
-      message: message,
-    );
+  Future<Set<Person>> fetchContacts() async {
+    return await contactsOnDuoTalk(showLabel: true);
   }
 
   Future<List<String?>> getPhoneNumbers() async {
@@ -117,7 +115,6 @@ class ContactsProvider extends ChangeNotifier {
 
   Future<Set<Person>> contactsOnDuoTalk({
     bool showLabel = false,
-    VoidCallback? message,
   }) async {
     final permission = await Permission.contacts.status;
     final prefs = await SharedPreferences.getInstance();
@@ -140,9 +137,14 @@ class ContactsProvider extends ChangeNotifier {
     }
 
     // Issues with displaying the snackbar
-    if (showLabel && !isSnackbarShown) {
-      isSnackbarShown = true;
-      message?.call();
+    if (showLabel) {
+      // Display Snackbar
+      AppUtils.showSnackbar(
+        'Allow access to contacts',
+        label: 'Open Settings',
+        onLabelTapped: openAppSettings,
+        delay: const Duration(seconds: 5),
+      );
     }
 
     return {};

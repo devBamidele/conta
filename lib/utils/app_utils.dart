@@ -141,7 +141,7 @@ void _showSnackbar(MessagesProvider data, BuildContext context) {
     'Message Deleted',
     delay: const Duration(seconds: 3),
     onLabelTapped: () => data.undoDelete(),
-    label: 'UNDO',
+    label: 'Undo',
     onClosed: () => data.clearDeletedMessages(),
   );
 }

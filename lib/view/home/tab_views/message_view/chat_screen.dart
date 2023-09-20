@@ -345,7 +345,7 @@ void _showSnackbar(
   AppUtils.showSnackbar(
     'Chat with $name deleted',
     delay: const Duration(seconds: 5),
-    label: 'UNDO',
+    label: 'Undo',
     onLabelTapped: () => chat.toggleChatDeletionStatus(chatId, false),
     onClosed: () => chat.confirmDeleteChat(chatId),
   );

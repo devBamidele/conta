@@ -7,7 +7,6 @@ import 'package:conta/view_model/messages_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../models/Person.dart';
@@ -16,7 +15,6 @@ import '../../../../res/components/app_bars/contacts_app_bar.dart';
 import '../../../../res/components/contact_tile.dart';
 import '../../../../utils/app_router/router.dart';
 import '../../../../utils/app_router/router.gr.dart';
-import '../../../../utils/app_utils.dart';
 
 class ContactsView extends StatefulWidget {
   const ContactsView({super.key});
@@ -27,17 +25,24 @@ class ContactsView extends StatefulWidget {
 
 class _ContactsViewState extends State<ContactsView> {
   final currentUser = FirebaseAuth.instance.currentUser!.uid;
+
+  late ContactsProvider _contactsProvider;
+
   bool isNavigating = false;
 
-  void displaySnackbar() {
-    if (mounted) {
-      AppUtils.showSnackbar(
-        'Grant permission to access contacts',
-        label: 'Settings',
-        onLabelTapped: openAppSettings,
-        delay: const Duration(seconds: 5),
-      );
-    }
+  Future<Set<Person>>? contacts;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _contactsProvider = Provider.of<ContactsProvider>(context, listen: false);
+
+    contacts = fetchContacts();
+  }
+
+  Future<Set<Person>> fetchContacts() async {
+    return _contactsProvider.fetchContacts();
   }
 
   @override
@@ -54,13 +59,18 @@ class _ContactsViewState extends State<ContactsView> {
                 initialData: info.initialContactData.isNotEmpty
                     ? info.initialContactData
                     : null,
-                future: info.getFuture(displaySnackbar),
+                future: contacts,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     final personList = snapshot.data!;
 
                     if (personList.isEmpty) {
-                      return const Empty();
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 20),
+                          child: Empty(),
+                        ),
+                      );
                     }
 
                     return Column(
