@@ -80,7 +80,11 @@ class _HomeScreenState extends State<HomeScreen>
     const ChatListView(category: MessageCategory.muted),
   ];
 
-  void onPressed() => navPush(context, const ContactsViewRoute());
+  void onPressed() {
+    _contactsProvider.updateTrigger(true);
+
+    navPush(context, const ContactsViewRoute());
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -26,24 +26,7 @@ class ContactsView extends StatefulWidget {
 class _ContactsViewState extends State<ContactsView> {
   final currentUser = FirebaseAuth.instance.currentUser!.uid;
 
-  late ContactsProvider _contactsProvider;
-
   bool isNavigating = false;
-
-  Future<Set<Person>>? contacts;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _contactsProvider = Provider.of<ContactsProvider>(context, listen: false);
-
-    contacts = fetchContacts();
-  }
-
-  Future<Set<Person>> fetchContacts() async {
-    return _contactsProvider.fetchContacts();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,11 +38,11 @@ class _ContactsViewState extends State<ContactsView> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              FutureBuilder<Set<Person>>(
+              StreamBuilder<Set<Person>>(
                 initialData: info.initialContactData.isNotEmpty
                     ? info.initialContactData
                     : null,
-                future: contacts,
+                stream: info.fetchContacts(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     final personList = snapshot.data!;

@@ -42,6 +42,8 @@ class _ContactsAppBarState extends State<ContactsAppBar>
   void clearSearch(ContactsProvider data) {
     data.clearContactsFilter();
 
+    data.updateTrigger(false);
+
     _searchController.clear();
   }
 
@@ -102,6 +104,7 @@ class _ContactsAppBarState extends State<ContactsAppBar>
                         child: const AppBarIcon(
                           icon: Icons.close,
                           size: 28,
+                          color: AppColors.blackColor,
                         ),
                       ),
               ),

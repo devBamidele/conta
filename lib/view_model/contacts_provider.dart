@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conta/utils/extensions.dart';
 import 'package:conta/utils/services/algolia_service.dart';
@@ -20,11 +18,13 @@ class ContactsProvider extends ChangeNotifier {
 
   String? _contactFilter;
 
-  bool isSnackbarShown = false;
+  bool triggerFunction = true;
 
-  String? get contactFilter {
-    return _contactFilter;
+  void updateTrigger(bool trigger) {
+    triggerFunction = trigger;
   }
+
+  String? get contactFilter => _contactFilter;
 
   set contactFilter(String? value) {
     _contactFilter = value;
@@ -54,11 +54,17 @@ class ContactsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<Set<Person>> fetchContacts() async {
-    return await contactsOnDuoTalk(showLabel: true);
+  Stream<Set<Person>> fetchContacts() async* {
+    if (triggerFunction) {
+      final allContacts = await contactsOnDuoTalk(showLabel: true);
+
+      yield allContacts
+          .where((person) => filterContactSearchQuery(person))
+          .toSet();
+    }
   }
 
-  Future<List<String?>> getPhoneNumbers() async {
+  Future<List<String?>> getAndFilterNumbers() async {
     final userContacts =
         await ContactsService.getContacts(withThumbnails: false);
 
@@ -73,7 +79,7 @@ class ContactsProvider extends ChangeNotifier {
   }
 
   Future<Set<Person>> findAppUsersFromContact() async {
-    final phoneNumbers = await getPhoneNumbers();
+    final phoneNumbers = await getAndFilterNumbers();
 
     final userRef = FirebaseFirestore.instance.collection('users');
 
@@ -103,11 +109,6 @@ class ContactsProvider extends ChangeNotifier {
 
       // Add the filtered contacts to the uniqueContacts set
       uniqueContacts.addAll(personList);
-    }
-
-    // Log the uniqueContacts before returning
-    for (var person in uniqueContacts) {
-      log('Name: ${person.username}, Phone: ${person.phone}');
     }
 
     return uniqueContacts;
