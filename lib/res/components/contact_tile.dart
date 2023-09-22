@@ -1,8 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:conta/models/search_results.dart';
 import 'package:conta/res/components/shimmer/shimmer_widget.dart';
+import 'package:conta/res/style/app_text_style.dart';
 import 'package:flutter/material.dart';
 
-import '../../models/Person.dart';
 import '../../utils/widget_functions.dart';
 import '../color.dart';
 import '../style/component_style.dart';
@@ -15,7 +16,7 @@ class ContactTile extends StatelessWidget {
     required this.isSamePerson,
   });
 
-  final Person person;
+  final SearchResults person;
   final VoidCallback? onTap;
   final bool isSamePerson;
 
@@ -51,19 +52,12 @@ class ContactTile extends StatelessWidget {
       children: [
         Text(
           person.username,
-          style: const TextStyle(
-            fontSize: 18,
-            height: 1.2,
-            color: Colors.black,
-          ),
+          style: AppTextStyles.listTileTitleText,
         ),
         addWidth(2),
         Text(
           isSamePerson ? '(You)' : '',
-          style: const TextStyle(
-            fontSize: 16,
-            color: AppColors.blackColor,
-          ),
+          style: AppTextStyles.listTileTitleText,
         ),
       ],
     );

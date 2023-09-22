@@ -1,24 +1,31 @@
+import 'dart:developer';
+
+import 'package:algolia_helper_flutter/algolia_helper_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:conta/models/search_results.dart';
 import 'package:conta/utils/extensions.dart';
-import 'package:conta/utils/services/algolia_service.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../models/Person.dart';
 import '../utils/app_utils.dart';
 
 class ContactsProvider extends ChangeNotifier {
-  Set<Person> initialContactData = <Person>{};
+  Set<SearchResults> initialContactData = <SearchResults>{};
 
-  List<String?> phoneNumbers = [];
+  List<String?> sharedContacts = [];
 
   DateTime? lastCacheTime;
 
   String? _contactFilter;
 
   bool triggerFunction = true;
+
+  final appId = dotenv.env['APP_ID'] as String;
+  final apiKey = dotenv.env['API_KEY'] as String;
+  final indexName = dotenv.env['INDEX_NAME'] as String;
 
   void updateTrigger(bool trigger) {
     triggerFunction = trigger;
@@ -38,23 +45,13 @@ class ContactsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool filterContactSearchQuery(
-    Person person,
-  ) {
-    if (contactFilter == null || contactFilter!.isEmpty) {
-      return true;
-    }
-    final username = person.username.toLowerCase();
-    return username.contains(contactFilter!.toLowerCase());
-  }
-
   Future<void> getContactsInfo() async {
     initialContactData = await contactsOnDuoTalk(showLabel: false);
 
     notifyListeners();
   }
 
-  Stream<Set<Person>> fetchContacts() async* {
+  Stream<Set<SearchResults>> fetchContacts() async* {
     if (triggerFunction) {
       final allContacts = await contactsOnDuoTalk(showLabel: true);
 
@@ -62,6 +59,16 @@ class ContactsProvider extends ChangeNotifier {
           .where((person) => filterContactSearchQuery(person))
           .toSet();
     }
+  }
+
+  bool filterContactSearchQuery(
+    SearchResults person,
+  ) {
+    if (contactFilter == null || contactFilter!.isEmpty) {
+      return true;
+    }
+    final username = person.username.toLowerCase();
+    return username.contains(contactFilter!.toLowerCase());
   }
 
   Future<List<String?>> getAndFilterNumbers() async {
@@ -78,25 +85,25 @@ class ContactsProvider extends ChangeNotifier {
     }).toList();
   }
 
-  Future<Set<Person>> findAppUsersFromContact() async {
-    final phoneNumbers = await getAndFilterNumbers();
+  Future<Set<SearchResults>> findAppUsersFromContact() async {
+    var filteredNumbers = await getAndFilterNumbers();
 
     final userRef = FirebaseFirestore.instance.collection('users');
 
     // Split phoneNumbers into chunks of 30
     const chunkSize = 30;
-    final totalChunks = (phoneNumbers.length / chunkSize).ceil();
+    final totalChunks = (filteredNumbers.length / chunkSize).ceil();
 
-    final uniqueContacts = <Person>{};
+    final uniqueContacts = <SearchResults>{};
 
     // Iterate through the chunks
     for (var i = 0; i < totalChunks; i++) {
       final start = i * chunkSize;
       final end = (i + 1) * chunkSize;
 
-      final chunkNumbers = phoneNumbers.sublist(
+      final chunkNumbers = filteredNumbers.sublist(
         start,
-        end < phoneNumbers.length ? end : phoneNumbers.length,
+        end < filteredNumbers.length ? end : filteredNumbers.length,
       );
 
       // Fetch data from Firestore for each chunk
@@ -104,17 +111,20 @@ class ContactsProvider extends ChangeNotifier {
           await userRef.where('phone', whereIn: chunkNumbers).get();
 
       // Apply local filtering
-      final personList =
-          querySnapshot.docs.map((doc) => Person.fromJson(doc.data())).toList();
+      final personList = querySnapshot.docs
+          .map((doc) => SearchResults.fromJson(doc.data()))
+          .toList();
 
       // Add the filtered contacts to the uniqueContacts set
       uniqueContacts.addAll(personList);
     }
 
+    sharedContacts = uniqueContacts.map((info) => info.id).toList();
+
     return uniqueContacts;
   }
 
-  Future<Set<Person>> contactsOnDuoTalk({
+  Future<Set<SearchResults>> contactsOnDuoTalk({
     bool showLabel = false,
   }) async {
     final permission = await Permission.contacts.status;
@@ -151,21 +161,36 @@ class ContactsProvider extends ChangeNotifier {
     return {};
   }
 
-  Stream<List<Person>> findAppUsersNotInContacts() async* {
-    const algolia = AlgoliaService.algolia;
+  Stream<List<SearchResults>> searchMetadata() {
+    final usernameSearcher = HitsSearcher(
+      applicationID: appId,
+      apiKey: apiKey,
+      indexName: indexName,
+    );
 
-    final query =
-        algolia.instance.index('dev_conta').query(contactFilter ?? '');
+    usernameSearcher.applyState(
+      (state) => state.copyWith(
+        page: 0,
+        hitsPerPage: 3,
+        query: contactFilter,
+      ),
+    );
 
-    final snapshot = await query.getObjects();
+    return usernameSearcher.responses.map(
+      (response) {
+        return response.hits
+            .map((data) => SearchResults.fromJson(data))
+            .where((result) => filterSharedContacts(result))
+            .toList();
+      },
+    );
+  }
 
-    yield snapshot.hits
-        .map((doc) => Person.fromJson(doc.data))
-        .where((person) => !phoneNumbers.contains(person.phone))
-        .toList();
+  bool filterSharedContacts(SearchResults result) {
+    final similar = !sharedContacts.contains(result.id);
 
-    // updateEmptySearch(uniquePersons.isEmpty);
+    log('The id is ${result.id} and the value of similar is ${!similar}');
 
-    // yield uniquePersons;
+    return similar;
   }
 }

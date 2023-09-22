@@ -77,6 +77,13 @@ class AppTextStyles {
     ),
   );
 
+  static const listTileTitleText = TextStyle(
+    fontSize: 16,
+    letterSpacing: 0.6,
+    fontWeight: FontWeight.bold,
+    color: AppColors.blackColor,
+  );
+
   static const contactText = TextStyle(
     fontSize: 16,
     height: 1.25,
@@ -96,12 +103,6 @@ class AppTextStyles {
     fontWeight: FontWeight.w600,
     height: 1.4,
     letterSpacing: 0.3,
-  );
-
-  static const listTileTitleText = TextStyle(
-    fontSize: 16,
-    letterSpacing: 0.6,
-    color: Colors.black,
   );
 
   static TextStyle titleText = GoogleFonts.josefinSans(

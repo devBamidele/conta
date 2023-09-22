@@ -123,7 +123,7 @@ class _SetNameScreenState extends State<SetNameScreen> {
 
       if (_debounce?.isActive ?? false) _debounce?.cancel();
       _debounce = Timer(
-        const Duration(milliseconds: 1000),
+        const Duration(milliseconds: 1500),
         () async {
           // Perform the phone number availability check here
           final result =

@@ -17,14 +17,54 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.5"
-  algolia:
-    dependency: "direct main"
+  algolia_client_core:
+    dependency: transitive
     description:
-      name: algolia
-      sha256: "0ba325344f85ac8f8351d158f0be0643e169ac0c91a43a496f8b1f3b54390066"
+      name: algolia_client_core
+      sha256: "8521f5a293a276f3294a063da40943dee0cddab0852a6aa589168c979445461f"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.2"
+    version: "0.2.3"
+  algolia_client_insights:
+    dependency: transitive
+    description:
+      name: algolia_client_insights
+      sha256: "0fd3bb7d6d5089e972920d21e13ea7cc3dc52783383b97a5e68e8120600f8b27"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.3"
+  algolia_client_search:
+    dependency: transitive
+    description:
+      name: algolia_client_search
+      sha256: "9e82685deae77c6a6ee261c80b290730e2a6e721ef93549f3332bec36180ba92"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.3"
+  algolia_helper_flutter:
+    dependency: "direct main"
+    description:
+      name: algolia_helper_flutter
+      sha256: f87d13113641a1cae20508553ae90cd55f5d748b839c76f6a021ceb65d6ffab4
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.1"
+  algolia_insights:
+    dependency: transitive
+    description:
+      name: algolia_insights
+      sha256: "0fb4b07a8c9125d28b1b5066bad992f2af6edec5f4382f8229288183a56d09ea"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.1"
+  algoliasearch:
+    dependency: transitive
+    description:
+      name: algoliasearch
+      sha256: "4a6cdca4294ad24b4e4014d8763c5a016bfc6c9b3ab01877a2c924156fbfc56f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.3"
   analyzer:
     dependency: transitive
     description:
@@ -313,6 +353,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.8"
+  dio:
+    dependency: transitive
+    description:
+      name: dio
+      sha256: ce75a1b40947fea0a0e16ce73337122a86762e38b982e1ccb909daa3b9bc4197
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.3.2"
   email_validator:
     dependency: "direct main"
     description:
@@ -728,6 +776,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.1"
+  hive:
+    dependency: transitive
+    description:
+      name: hive
+      sha256: "8dcf6db979d7933da8217edcec84e9df1bdb4e4edc7fc77dbd5aa74356d6d941"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.3"
   http:
     dependency: "direct main"
     description:
@@ -1357,14 +1413,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.2"
-  universal_io:
-    dependency: transitive
-    description:
-      name: universal_io
-      sha256: "1722b2dcc462b4b2f3ee7d188dad008b6eb4c40bbd03a3de451d82c78bba9aad"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.2"
   uuid:
     dependency: "direct main"
     description:

@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../models/Person.dart';
+import '../../../../models/search_results.dart';
 import '../../../../res/color.dart';
 import '../../../../res/components/app_bars/contacts_app_bar.dart';
 import '../../../../res/components/contact_tile.dart';
@@ -38,7 +38,7 @@ class _ContactsViewState extends State<ContactsView> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              StreamBuilder<Set<Person>>(
+              StreamBuilder<Set<SearchResults>>(
                 initialData: info.initialContactData.isNotEmpty
                     ? info.initialContactData
                     : null,
@@ -70,7 +70,7 @@ class _ContactsViewState extends State<ContactsView> {
                           shrinkWrap: true,
                           itemCount: personList.length,
                           itemBuilder: (context, index) {
-                            Person person = personList.elementAt(index);
+                            final person = personList.elementAt(index);
                             return ContactTile(
                               person: person,
                               onTap: () => onTileTap(data, person),
@@ -93,6 +93,54 @@ class _ContactsViewState extends State<ContactsView> {
                   }
                 },
               ),
+              StreamBuilder<List<SearchResults>>(
+                stream: info.searchMetadata(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const SizedBox.shrink();
+                  }
+                  final personList = snapshot.data!;
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(left: 20, top: 16),
+                        child: Text(
+                          'Global search',
+                          style: AppTextStyles.contactText,
+                        ),
+                      ),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: personList.length,
+                        itemBuilder: (context, index) {
+                          final person = personList[index];
+                          return ContactTile(
+                            person: person,
+                            onTap: () => onTileTap(data, person),
+                            isSamePerson: person.id == currentUser,
+                          );
+                        },
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              'Show more',
+                              style: AppTextStyles.contactText.copyWith(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
             ],
           );
         },
@@ -109,7 +157,7 @@ class _ContactsViewState extends State<ContactsView> {
     }
   }
 
-  void onTileTap(MessagesProvider data, Person person) {
+  void onTileTap(MessagesProvider data, SearchResults person) {
     data.setCurrentChat(
       username: person.username,
       uidUser1: currentUser,

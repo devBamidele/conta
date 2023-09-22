@@ -203,7 +203,7 @@ class _ChatListTileState extends State<ChatListTile> {
   Widget _buildLastMessageTimestamp() {
     return Text(
       widget.tileData.lastMessageTimestamp.customTileFormat(),
-      style: const TextStyle(color: AppColors.extraTextColor),
+      style: TextStyle(color: AppColors.blackShade),
     );
   }
 
