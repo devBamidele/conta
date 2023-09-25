@@ -259,38 +259,3 @@ EdgeInsets getContentPadding(
     top: replyMessage || hasMedia ? 3 : 0,
   );
 }
-
-Widget buildSlideTransition({
-  required Animation<double> animation,
-  required Widget child,
-}) {
-  return SlideTransition(
-    position: Tween<Offset>(
-      begin: const Offset(1, 0),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: animation,
-        curve: Curves.easeInOut,
-      ),
-    ),
-    child: FadeTransition(
-      opacity: Tween<double>(begin: 0, end: 1).animate(
-        CurvedAnimation(
-          parent: animation,
-          curve: Curves.easeInOut,
-        ),
-      ),
-      child: child,
-    ),
-  );
-}
-
-Widget loadRotatingDots({double size = 50}) {
-  return Center(
-    child: LoadingAnimationWidget.fourRotatingDots(
-      color: AppColors.primaryShadeColor,
-      size: size,
-    ),
-  );
-}

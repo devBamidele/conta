@@ -21,6 +21,8 @@ class AppColors {
   static const Color blackColor = Color(0xff424242);
   static Color blackShade = blackColor.withOpacity(0.8);
 
+  static const Color algoliaColor = Color(0xFF0943FF);
+
   // For the text fields
   static const Color selectedFieldColor = Color(0xFFFD9787);
   static const Color selectedBackgroundColor = Color(0xFFFFEEEB);

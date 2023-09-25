@@ -13,6 +13,12 @@ class AppTextStyles {
     letterSpacing: 0.6,
   );
 
+  static const contactsAppBarText = TextStyle(
+    fontSize: 18,
+    height: 1.2,
+    color: AppColors.blackColor,
+  );
+
   // Header text for authentication pages
   static const headlineLarge = TextStyle(
     height: 1.1,

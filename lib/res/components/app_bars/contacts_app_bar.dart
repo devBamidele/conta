@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:conta/res/style/app_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -26,6 +29,8 @@ class _ContactsAppBarState extends State<ContactsAppBar>
 
   final double _myToolBarHeight = 50;
 
+  Timer? _debounce;
+
   @override
   void initState() {
     _searchController.addListener(_updateCloseIcon);
@@ -39,16 +44,31 @@ class _ContactsAppBarState extends State<ContactsAppBar>
     });
   }
 
-  void clearSearch(ContactsProvider data) {
+  void clearSearch({required ContactsProvider data, bool update = false}) {
     data.clearContactsFilter();
 
-    data.updateTrigger(false);
+    if (update) {
+      data.updateTrigger(false);
+    }
 
     _searchController.clear();
   }
 
+  void onFilterChanged({
+    required ContactsProvider data,
+    required String text,
+  }) async {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(
+      const Duration(milliseconds: 1000),
+      () async {
+        data.contactFilter = text;
+      },
+    );
+  }
+
   Future<bool> onWillPop(ContactsProvider data) async {
-    clearSearch(data);
+    clearSearch(data: data, update: true);
 
     return true;
   }
@@ -56,6 +76,8 @@ class _ContactsAppBarState extends State<ContactsAppBar>
   @override
   void dispose() {
     _searchController.dispose();
+
+    _debounce?.cancel();
 
     super.dispose();
   }
@@ -83,12 +105,9 @@ class _ContactsAppBarState extends State<ContactsAppBar>
                     controller: _searchController,
                     inputFormatters: [LengthLimitingTextInputFormatter(15)],
                     cursorColor: AppColors.blackColor,
-                    onChanged: (text) => data.contactFilter = text,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      height: 1.2,
-                      color: AppColors.blackColor,
-                    ),
+                    onChanged: (text) =>
+                        onFilterChanged(data: data, text: text),
+                    style: AppTextStyles.contactsAppBarText,
                     decoration: textFieldDecoration,
                   ),
                 ),
@@ -100,7 +119,7 @@ class _ContactsAppBarState extends State<ContactsAppBar>
                 child: _isTextFieldEmpty
                     ? const SizedBox.shrink()
                     : GestureDetector(
-                        onTap: () => clearSearch(data),
+                        onTap: () => clearSearch(data: data),
                         child: const AppBarIcon(
                           icon: Icons.close,
                           size: 24,

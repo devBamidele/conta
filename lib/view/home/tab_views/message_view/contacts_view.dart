@@ -1,8 +1,10 @@
 import 'package:conta/res/style/app_text_style.dart';
+import 'package:conta/utils/widget_functions.dart';
 import 'package:conta/view_model/contacts_provider.dart';
 import 'package:conta/view_model/messages_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -118,7 +120,10 @@ class _ContactsViewState extends State<ContactsView> {
                   }
                 },
               ),
-              if (showGlobalSearch && info.contactFilter!.length < 10)
+              if (showGlobalSearch &&
+                  info.contactFilter!.length < 10 &&
+                  info.contactFilter != null &&
+                  info.contactFilter!.isNotEmpty)
                 StreamBuilder<List<SearchResults>>(
                   stream: info.searchMetadata(),
                   builder: (context, snapshot) {
@@ -126,31 +131,61 @@ class _ContactsViewState extends State<ContactsView> {
                       return const SizedBox.shrink();
                     }
                     final personList = snapshot.data!;
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.only(left: 20, top: 16),
-                          child: Text(
-                            'Global search',
-                            style: AppTextStyles.contactText,
-                          ),
-                        ),
-                        ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: personList.length,
-                          itemBuilder: (context, index) {
-                            final person = personList[index];
-                            return ContactTile(
-                              person: person,
-                              onTap: () => onTileTap(
-                                  data: data, info: info, person: person),
-                              isSamePerson: person.id == currentUser,
-                            );
-                          },
-                        ),
-                      ],
-                    );
+                    return personList.isNotEmpty
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  left: 20,
+                                  top: 12,
+                                  right: 20,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text(
+                                      'Global search',
+                                      style: AppTextStyles.contactText,
+                                    ),
+                                    Row(
+                                      children: [
+                                        const Text(
+                                          'Search with',
+                                          style: AppTextStyles.contactText,
+                                        ),
+                                        addWidth(6),
+                                        SvgPicture.asset(
+                                          'assets/images/logo.svg',
+                                          fit: BoxFit.scaleDown,
+                                          height: 17,
+                                          colorFilter: const ColorFilter.mode(
+                                            AppColors.algoliaColor,
+                                            BlendMode.srcIn,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: personList.length,
+                                itemBuilder: (context, index) {
+                                  final person = personList[index];
+                                  return ContactTile(
+                                    person: person,
+                                    onTap: () => onTileTap(
+                                        data: data, info: info, person: person),
+                                    isSamePerson: person.id == currentUser,
+                                  );
+                                },
+                              ),
+                            ],
+                          )
+                        : const SizedBox.shrink();
                   },
                 ),
             ],

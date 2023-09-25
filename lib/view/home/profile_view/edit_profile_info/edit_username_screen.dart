@@ -61,6 +61,7 @@ class _EditUsernameScreenState extends State<EditUsernameScreen> {
     nameController.dispose();
 
     nameNode.dispose();
+    _debounce?.cancel();
 
     formKey1.currentState?.dispose();
     shakeState.currentState?.dispose();
@@ -117,15 +118,18 @@ class _EditUsernameScreenState extends State<EditUsernameScreen> {
     _updateUsernameAvailability('Checking ... ', false);
 
     if (_debounce?.isActive ?? false) _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 1500), () async {
-      // Perform the username availability check here
-      final result = await authProvider.isUsernameUnique(newName);
+    _debounce = Timer(
+      const Duration(milliseconds: 1500),
+      () async {
+        // Perform the username availability check here
+        final result = await authProvider.isUsernameUnique(newName);
 
-      final unique = result['isEmpty'] ?? false;
-      final message = result['message'] ?? 'Oops, that username is taken';
+        final unique = result['isEmpty'] ?? false;
+        final message = result['message'] ?? 'Oops, that username is taken';
 
-      _updateUsernameAvailability(unique ? null : message, unique);
-    });
+        _updateUsernameAvailability(unique ? null : message, unique);
+      },
+    );
   }
 
   void _updateUsernameAvailability(String? message, bool isUnique) {
