@@ -216,14 +216,15 @@ class _UpdatePasswordState extends State<UpdatePassword> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Update Password',
+                                'Update password',
                                 style: AppTextStyles.headlineLarge
                                     .copyWith(fontSize: 32),
                               ),
                               addHeight(4),
                               Text(
                                 "You'll be required to resign in",
-                                style: AppTextStyles.headlineSmall,
+                                style: AppTextStyles.headlineSmall
+                                    .copyWith(fontSize: 16),
                               )
                             ],
                           ),

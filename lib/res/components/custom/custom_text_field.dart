@@ -21,6 +21,7 @@ class CustomTextField extends StatelessWidget {
     this.maxLength,
     this.lengthLimit,
     this.isPhone = false,
+    this.isUsername = false,
   }) : super(key: key);
 
   final FocusNode focusNode;
@@ -38,6 +39,7 @@ class CustomTextField extends StatelessWidget {
   final int? maxLength;
   final int? lengthLimit;
   final bool isPhone;
+  final bool isUsername;
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +60,7 @@ class CustomTextField extends StatelessWidget {
             ? _PhoneNumberFormatter()
             : FilteringTextInputFormatter(RegExp('.'), allow: true),
         LengthLimitingTextInputFormatter(maxLength ?? lengthLimit),
+        if (isUsername) LowercaseTextFormatter()
       ],
       decoration: InputDecoration(
         focusedBorder: inputBorder.copyWith(
@@ -115,6 +118,19 @@ class _PhoneNumberFormatter extends TextInputFormatter {
     return TextEditingValue(
       text: buffer.toString(),
       selection: TextSelection.collapsed(offset: buffer.length),
+    );
+  }
+}
+
+class LowercaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    return TextEditingValue(
+      text: newValue.text.toLowerCase(),
+      selection: newValue.selection,
     );
   }
 }

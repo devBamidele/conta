@@ -260,6 +260,7 @@ class _SetNameScreenState extends State<SetNameScreen> {
                         shakeCount: 3,
                         shakeOffset: 6,
                         child: CustomTextField(
+                          isUsername: true,
                           lengthLimit: 25,
                           focusNode: usernameFocusNode,
                           textController: myUserNameController,

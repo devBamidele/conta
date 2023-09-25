@@ -1,6 +1,3 @@
-import 'dart:developer';
-
-import 'package:conta/res/components/empty/empty.dart';
 import 'package:conta/res/style/app_text_style.dart';
 import 'package:conta/view_model/contacts_provider.dart';
 import 'package:conta/view_model/messages_provider.dart';
@@ -27,6 +24,20 @@ class _ContactsViewState extends State<ContactsView> {
   final currentUser = FirebaseAuth.instance.currentUser!.uid;
 
   bool isNavigating = false;
+  bool showMore = true;
+  bool showGlobalSearch = false;
+
+  show(bool value) {
+    if (showGlobalSearch == value) {
+      return;
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        showGlobalSearch = value;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,11 +58,13 @@ class _ContactsViewState extends State<ContactsView> {
                   if (snapshot.hasData) {
                     final personList = snapshot.data!;
 
+                    show(personList.length < 3);
+
                     if (personList.isEmpty) {
                       return const Center(
                         child: Padding(
                           padding: EdgeInsets.only(top: 20),
-                          child: Empty(),
+                          child: Text('No matching contacts found'),
                         ),
                       );
                     }
@@ -73,7 +86,8 @@ class _ContactsViewState extends State<ContactsView> {
                             final person = personList.elementAt(index);
                             return ContactTile(
                               person: person,
-                              onTap: () => onTileTap(data, person),
+                              onTap: () => onTileTap(
+                                  data: data, info: info, person: person),
                               isSamePerson: person.id == currentUser,
                             );
                           },
@@ -81,66 +95,64 @@ class _ContactsViewState extends State<ContactsView> {
                       ],
                     );
                   } else if (snapshot.hasError) {
-                    log('Error fetching chat tiles: ${snapshot.error}');
-                    return const Text('Sorry, try again later');
+                    show(true);
+
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 20),
+                        child: Text('Sorry, try again later'),
+                      ),
+                    );
                   } else {
-                    return Center(
-                      child: LoadingAnimationWidget.threeArchedCircle(
-                        color: AppColors.primaryShadeColor,
-                        size: 32,
+                    show(false);
+
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 40),
+                      child: Center(
+                        child: LoadingAnimationWidget.threeArchedCircle(
+                          color: AppColors.primaryShadeColor,
+                          size: 32,
+                        ),
                       ),
                     );
                   }
                 },
               ),
-              StreamBuilder<List<SearchResults>>(
-                stream: info.searchMetadata(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return const SizedBox.shrink();
-                  }
-                  final personList = snapshot.data!;
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.only(left: 20, top: 16),
-                        child: Text(
-                          'Global search',
-                          style: AppTextStyles.contactText,
+              if (showGlobalSearch && info.contactFilter!.length < 10)
+                StreamBuilder<List<SearchResults>>(
+                  stream: info.searchMetadata(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const SizedBox.shrink();
+                    }
+                    final personList = snapshot.data!;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.only(left: 20, top: 16),
+                          child: Text(
+                            'Global search',
+                            style: AppTextStyles.contactText,
+                          ),
                         ),
-                      ),
-                      ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: personList.length,
-                        itemBuilder: (context, index) {
-                          final person = personList[index];
-                          return ContactTile(
-                            person: person,
-                            onTap: () => onTileTap(data, person),
-                            isSamePerson: person.id == currentUser,
-                          );
-                        },
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 20),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Text(
-                              'Show more',
-                              style: AppTextStyles.contactText.copyWith(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
+                        ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: personList.length,
+                          itemBuilder: (context, index) {
+                            final person = personList[index];
+                            return ContactTile(
+                              person: person,
+                              onTap: () => onTileTap(
+                                  data: data, info: info, person: person),
+                              isSamePerson: person.id == currentUser,
+                            );
+                          },
                         ),
-                      ),
-                    ],
-                  );
-                },
-              ),
+                      ],
+                    );
+                  },
+                ),
             ],
           );
         },
@@ -157,7 +169,11 @@ class _ContactsViewState extends State<ContactsView> {
     }
   }
 
-  void onTileTap(MessagesProvider data, SearchResults person) {
+  void onTileTap({
+    required MessagesProvider data,
+    required ContactsProvider info,
+    required SearchResults person,
+  }) {
     data.setCurrentChat(
       username: person.username,
       uidUser1: currentUser,
@@ -169,7 +185,10 @@ class _ContactsViewState extends State<ContactsView> {
 
     data.updateOppIndex();
 
+    info.clearContactsFilter();
+
     data.cancelReplyAndClearCache();
+
     navigateToNextScreen(context);
   }
 }

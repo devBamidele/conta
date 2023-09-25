@@ -145,6 +145,6 @@ class AppTextStyles {
     color: AppColors.primaryShadeColor,
     fontWeight: FontWeight.w600,
     height: 1.4,
-    letterSpacing: 0.5,
+    letterSpacing: 0.8,
   );
 }

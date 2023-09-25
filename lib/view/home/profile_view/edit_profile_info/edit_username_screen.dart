@@ -117,7 +117,7 @@ class _EditUsernameScreenState extends State<EditUsernameScreen> {
     _updateUsernameAvailability('Checking ... ', false);
 
     if (_debounce?.isActive ?? false) _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 1000), () async {
+    _debounce = Timer(const Duration(milliseconds: 1500), () async {
       // Perform the username availability check here
       final result = await authProvider.isUsernameUnique(newName);
 
@@ -184,7 +184,8 @@ class _EditUsernameScreenState extends State<EditUsernameScreen> {
                           addHeight(4),
                           Text(
                             "This is visible to anyone you chat with",
-                            style: AppTextStyles.headlineSmall,
+                            style: AppTextStyles.headlineSmall
+                                .copyWith(fontSize: 16),
                           )
                         ],
                       ),
@@ -198,8 +199,9 @@ class _EditUsernameScreenState extends State<EditUsernameScreen> {
                           textController: nameController,
                           customFillColor: fillColor,
                           lengthLimit: 20,
-                          hintText: 'Edit Name',
+                          hintText: 'Edit username',
                           focusedBorderColor: Colors.transparent,
+                          isUsername: true,
                           validation: (username) =>
                               username.validateUsername(existingUserName),
                         ),

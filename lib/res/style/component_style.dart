@@ -140,7 +140,7 @@ const textFieldDecoration = InputDecoration(
     fontWeight: FontWeight.normal,
     fontSize: 18,
   ),
-  hintText: 'Search ...',
+  hintText: 'Who do you want to talk to ?',
   focusedBorder: OutlineInputBorder(
     borderSide: BorderSide(color: Colors.transparent),
     borderRadius: BorderRadius.zero,

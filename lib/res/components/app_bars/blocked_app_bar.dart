@@ -128,7 +128,7 @@ class _BlockedAccountsAppBarState extends State<BlockedAccountsAppBar> {
                                 onTap: () => clearSearch(data),
                                 child: const AppBarIcon(
                                   icon: Icons.close,
-                                  size: 28,
+                                  size: 24,
                                   color: AppColors.blackColor,
                                 ),
                               ),
@@ -148,8 +148,8 @@ class _BlockedAccountsAppBarState extends State<BlockedAccountsAppBar> {
                           'Blocked chats',
                           style: TextStyle(
                             color: AppColors.blackColor,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 0.5,
+                            letterSpacing: 1,
+                            fontSize: 20,
                           ),
                         ),
                       ],

@@ -119,7 +119,8 @@ class _EditBioScreenState extends State<EditBioScreen> {
                           addHeight(4),
                           Text(
                             "Add a personal touch to your profile.",
-                            style: AppTextStyles.headlineSmall,
+                            style: AppTextStyles.headlineSmall
+                                .copyWith(fontSize: 16),
                           )
                         ],
                       ),

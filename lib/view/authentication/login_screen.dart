@@ -338,7 +338,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           text: ' Sign up',
                           style: AppTextStyles.labelSmall.copyWith(
                             fontWeight: FontWeight.bold,
-                            fontSize: 17,
+                            fontSize: 15,
                           ),
                           recognizer: TapGestureRecognizer()
                             // handle click event for the Signup link

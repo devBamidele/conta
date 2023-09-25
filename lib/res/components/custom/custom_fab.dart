@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconly/iconly.dart';
 
 import '../../color.dart';
 
@@ -13,9 +14,9 @@ class CustomFAB extends StatelessWidget {
       onPressed: onPressed,
       backgroundColor: AppColors.primaryShadeColor,
       child: const Icon(
-        Icons.add,
+        IconlyLight.edit,
         color: AppColors.backGroundColor,
-        size: 30,
+        size: 28,
       ),
     );
   }

@@ -184,7 +184,8 @@ class _VerifyPasswordState extends State<VerifyPassword> {
                           addHeight(4),
                           Text(
                             "Just making sure it's you",
-                            style: AppTextStyles.headlineSmall,
+                            style: AppTextStyles.headlineSmall
+                                .copyWith(fontSize: 16),
                           ),
                         ],
                       ),

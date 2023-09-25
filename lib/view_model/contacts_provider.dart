@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:algolia_helper_flutter/algolia_helper_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conta/models/search_results.dart';
@@ -24,7 +22,9 @@ class ContactsProvider extends ChangeNotifier {
   bool triggerFunction = true;
 
   final appId = dotenv.env['APP_ID'] as String;
+
   final apiKey = dotenv.env['API_KEY'] as String;
+
   final indexName = dotenv.env['INDEX_NAME'] as String;
 
   void updateTrigger(bool trigger) {
@@ -61,9 +61,7 @@ class ContactsProvider extends ChangeNotifier {
     }
   }
 
-  bool filterContactSearchQuery(
-    SearchResults person,
-  ) {
+  bool filterContactSearchQuery(SearchResults person) {
     if (contactFilter == null || contactFilter!.isEmpty) {
       return true;
     }
@@ -162,7 +160,7 @@ class ContactsProvider extends ChangeNotifier {
   }
 
   Stream<List<SearchResults>> searchMetadata() {
-    final usernameSearcher = HitsSearcher(
+    var usernameSearcher = HitsSearcher(
       applicationID: appId,
       apiKey: apiKey,
       indexName: indexName,
@@ -171,7 +169,7 @@ class ContactsProvider extends ChangeNotifier {
     usernameSearcher.applyState(
       (state) => state.copyWith(
         page: 0,
-        hitsPerPage: 3,
+        hitsPerPage: 6,
         query: contactFilter,
       ),
     );
@@ -187,10 +185,6 @@ class ContactsProvider extends ChangeNotifier {
   }
 
   bool filterSharedContacts(SearchResults result) {
-    final similar = !sharedContacts.contains(result.id);
-
-    log('The id is ${result.id} and the value of similar is ${!similar}');
-
-    return similar;
+    return !sharedContacts.contains(result.id);
   }
 }

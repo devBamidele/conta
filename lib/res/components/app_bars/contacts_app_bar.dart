@@ -103,7 +103,7 @@ class _ContactsAppBarState extends State<ContactsAppBar>
                         onTap: () => clearSearch(data),
                         child: const AppBarIcon(
                           icon: Icons.close,
-                          size: 28,
+                          size: 24,
                           color: AppColors.blackColor,
                         ),
                       ),
