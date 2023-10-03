@@ -14,6 +14,7 @@ import 'package:conta/view_model/photo_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../res/color.dart';
@@ -50,7 +51,7 @@ class _ChatScreenState extends State<ChatScreen>
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 50),
     );
 
     chatProvider = Provider.of<MessagesProvider>(context, listen: false);
@@ -244,7 +245,6 @@ class _ChatScreenState extends State<ChatScreen>
                                               controller: messagesController,
                                               onPrefixIconTap: _onPrefixIconTap,
                                               isReplying: isReplying,
-                                              onFieldSubmitted: sendMessage,
                                             ),
                                           ),
                                         ), //
@@ -296,10 +296,12 @@ void confirmChatDelete(
 
   final contentWidget = RichText(
     text: TextSpan(
-      style: TextStyle(
-        fontSize: 16,
-        color: Colors.black.withOpacity(0.8),
-        letterSpacing: 0.2,
+      style: GoogleFonts.urbanist(
+        textStyle: TextStyle(
+          fontSize: 16,
+          color: Colors.black.withOpacity(0.8),
+          letterSpacing: 0.2,
+        ),
       ),
       children: [
         const TextSpan(
@@ -309,7 +311,7 @@ void confirmChatDelete(
         TextSpan(
           text: name,
           style: const TextStyle(
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ],

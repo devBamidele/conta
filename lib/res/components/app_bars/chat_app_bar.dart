@@ -29,7 +29,7 @@ class ChatAppBar extends StatefulWidget implements PreferredSizeWidget {
 class _ChatAppBarState extends State<ChatAppBar> {
   final double customSize = 24;
 
-  userDialog(BuildContext context, String? imageUrl) {
+  userDialog(String? imageUrl) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -44,7 +44,7 @@ class _ChatAppBarState extends State<ChatAppBar> {
     if (delete != null && delete == true) {
       AppUtils.showToast('Account Deleted');
     } else {
-      userDialog(context, currentChat.profilePicUrl);
+      userDialog(currentChat.profilePicUrl);
     }
   }
 

@@ -1,14 +1,18 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:conta/res/components/shimmer/shimmer_widget.dart';
 import 'package:conta/utils/enums.dart';
 import 'package:conta/view_model/messages_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/person.dart';
 import '../color.dart';
 
-class Status extends StatelessWidget {
+class Status extends StatefulWidget {
   final bool isDialog;
   final StreamType type;
   final bool? isDeleted;
@@ -21,19 +25,50 @@ class Status extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<Status> createState() => _StatusState();
+}
+
+class _StatusState extends State<Status> {
+  late StreamSubscription subscription;
+  late MessagesProvider data;
+
+  @override
+  void initState() {
+    super.initState();
+
+    data = Provider.of<MessagesProvider>(context, listen: false);
+
+    getConnectivity();
+  }
+
+  @override
+  void dispose() {
+    subscription.cancel();
+    super.dispose();
+  }
+
+  Future<void> getConnectivity() async {
+    subscription = Connectivity().onConnectivityChanged.listen(
+      (result) async {
+        data.isConnected = await InternetConnectionChecker().hasConnection;
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Consumer<MessagesProvider>(
       builder: (_, data, __) {
         return StreamBuilder<Person>(
           stream: data.getStatusStream(),
           builder: (context, snapshot) {
-            if (isDeleted != null && isDeleted!) {
+            if (widget.isDeleted != null && widget.isDeleted!) {
               return buildDeletedText();
             }
             if (!snapshot.hasData) {
               return buildShimmer(context);
             }
-            return buildStatusText(snapshot.data!);
+            return buildStatusText(snapshot.data!, data.isConnected);
           },
         );
       },
@@ -61,8 +96,8 @@ class Status extends StatelessWidget {
     );
   }
 
-  Widget buildStatusText(Person person) {
-    switch (type) {
+  Widget buildStatusText(Person person, bool isConnected) {
+    switch (widget.type) {
       case StreamType.bio:
         return Text(
           person.bio,
@@ -76,12 +111,18 @@ class Status extends StatelessWidget {
         bool isOnline = person.online;
         String lastSeen = person.formatLastSeen(Timestamp.now());
         return Text(
-          isOnline ? 'Online' : lastSeen,
+          isConnected
+              ? isOnline
+                  ? 'Online'
+                  : lastSeen
+              : 'Waiting for network',
           style: TextStyle(
-            color: isDialog
+            color: widget.isDialog
                 ? Colors.white
                 : isOnline
-                    ? AppColors.primaryColor
+                    ? isConnected
+                        ? AppColors.primaryColor
+                        : AppColors.blackShade
                     : AppColors.blackShade,
             fontSize: 13,
           ),

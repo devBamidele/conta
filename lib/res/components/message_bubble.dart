@@ -281,26 +281,13 @@ void resetOverlayColor() {
                                                 : data.currentChat!.username,
                                           ),
                                         if (hasMedia)
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                bottom: 3),
-                                            child: ClipRRect(
-                                              borderRadius:
-                                                  const BorderRadius.all(
-                                                Radius.circular(11.5),
-                                              ),
-                                              child: ImageTile(
-                                                chatId:
-                                                    data.currentChat!.chatId!,
-                                                sender: widget.isSender
-                                                    ? 'You'
-                                                    : data
-                                                        .currentChat!.username,
-                                                timeSent:
-                                                    widget.message.timestamp,
-                                                media: widget.message.media!,
-                                              ),
-                                            ),
+                                          ImageTile(
+                                            chatId: data.currentChat!.chatId!,
+                                            sender: widget.isSender
+                                                ? 'You'
+                                                : data.currentChat!.username,
+                                            timeSent: widget.message.timestamp,
+                                            media: widget.message.media!,
                                           ),
                                         if (hasContent)
                                           Padding(
@@ -335,11 +322,12 @@ void resetOverlayColor() {
                   ),
                 ),
               ),
-              Positioned.fill(
-                child: Container(
-                  color: overlayColor,
+              if (longPressed)
+                Positioned.fill(
+                  child: Container(
+                    color: overlayColor,
+                  ),
                 ),
-              ),
             ],
           ),
         ),

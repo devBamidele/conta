@@ -34,59 +34,66 @@ class ImageTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (media.length >= 4) {
-      return GestureDetector(
-        onTap: () => goToMediaPreview(context),
-        child: GridView.builder(
-          gridDelegate: customGridDelegate,
-          itemCount: 4,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemBuilder: (context, index) {
-            if (index == 3 && media.length > 4) {
-              final remainingCount = media.length - 4;
-              return Stack(
-                fit: StackFit.expand,
-                children: [
-                  GridImageTile(
-                    mediaUrl: media[index],
-                  ),
-                  Positioned.fill(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 0.5, sigmaY: 0.5),
-                        child: Container(
-                          color: Colors.black54.withOpacity(0.7),
-                          child: Center(
-                            child: Text(
-                              '+ $remainingCount',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 26,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 3),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.all(Radius.circular(11.5)),
+        child: SizedBox(
+          child: (media.length >= 4)
+              ? GestureDetector(
+                  onTap: () => goToMediaPreview(context),
+                  child: GridView.builder(
+                    gridDelegate: customGridDelegate,
+                    itemCount: 4,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      if (index == 3 && media.length > 4) {
+                        final remainingCount = media.length - 4;
+                        return Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            GridImageTile(
+                              mediaUrl: media[index],
+                            ),
+                            Positioned.fill(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8.0),
+                                child: BackdropFilter(
+                                  filter: ImageFilter.blur(
+                                      sigmaX: 0.5, sigmaY: 0.5),
+                                  child: Container(
+                                    color: Colors.black54.withOpacity(0.7),
+                                    child: Center(
+                                      child: Text(
+                                        '+ $remainingCount',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 26,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                      ),
-                    ),
+                          ],
+                        );
+                      } else {
+                        return GridImageTile(
+                          mediaUrl: media[index],
+                        );
+                      }
+                    },
                   ),
-                ],
-              );
-            } else {
-              return GridImageTile(
-                mediaUrl: media[index],
-              );
-            }
-          },
+                )
+              : SingleImageTile(
+                  sender: sender,
+                  timeSent: timeSent,
+                  mediaUrl: media.first,
+                ),
         ),
-      );
-    } else {
-      return SingleImageTile(
-        sender: sender,
-        timeSent: timeSent,
-        mediaUrl: media.first,
-      );
-    }
+      ),
+    );
   }
 }

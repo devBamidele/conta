@@ -34,7 +34,7 @@ class ChatTextFormField extends StatelessWidget {
       maxLines: null,
       cursorColor: AppColors.blackColor,
       focusNode: node,
-      textInputAction: TextInputAction.send,
+      textInputAction: TextInputAction.newline,
       controller: controller,
       onFieldSubmitted: onFieldSubmitted,
       decoration: InputDecoration(

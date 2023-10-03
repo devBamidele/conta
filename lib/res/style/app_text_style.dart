@@ -114,7 +114,7 @@ class AppTextStyles {
   static TextStyle titleText = GoogleFonts.josefinSans(
     textStyle: const TextStyle(
       fontWeight: FontWeight.bold,
-      fontSize: 26,
+      fontSize: 28,
       color: AppColors.blackColor,
     ),
   );

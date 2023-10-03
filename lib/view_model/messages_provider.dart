@@ -609,6 +609,22 @@ class MessagesProvider extends ChangeNotifier {
     );
   }
 
+  bool _isConnected = false;
+
+  bool get isConnected => _isConnected;
+
+  set isConnected(bool value) {
+    _isConnected = value;
+
+    notifyListeners();
+  }
+
+  clearStatus() {
+    _isConnected = false;
+
+    notifyListeners();
+  }
+
   Stream<Chat> getUnreadCountStream() async* {
     final chatDocRef =
         FirebaseFirestore.instance.doc('chats/${currentChat!.chatId}');

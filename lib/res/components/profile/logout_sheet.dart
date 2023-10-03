@@ -23,7 +23,7 @@ class LogoutSheet extends StatelessWidget {
       [const LoginScreenRoute()],
     );
 
-    AppUtils.showSnackbar('Logged out Successfully');
+    AppUtils.showSnackbar('Logged out successfully');
   }
 
   @override

@@ -121,8 +121,8 @@ class _ContactsViewState extends State<ContactsView> {
                 },
               ),
               if (showGlobalSearch &&
-                  info.contactFilter!.length < 10 &&
                   info.contactFilter != null &&
+                  info.contactFilter!.length < 10 &&
                   info.contactFilter!.isNotEmpty)
                 StreamBuilder<List<SearchResults>>(
                   stream: info.searchMetadata(),

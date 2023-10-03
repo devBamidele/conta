@@ -93,9 +93,7 @@ class ProfileDialog extends StatelessWidget {
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
-                                  const Status(
-                                    isDialog: true,
-                                  ),
+                                  const Status(isDialog: true),
                                 ],
                               ),
                             ),

@@ -189,7 +189,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   children: [
                     addHeight(70),
                     const Text(
-                      'Create your Account',
+                      'Create your account',
                       style: AppTextStyles.headlineLarge,
                     ),
                     addHeight(10),
@@ -274,7 +274,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             text: ' Login',
                             style: AppTextStyles.labelSmall.copyWith(
                               fontWeight: FontWeight.bold,
-                              fontSize: 17,
+                              fontSize: 15,
                             ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () =>

@@ -306,7 +306,7 @@ class UserProvider extends ChangeNotifier {
 
         await user.delete().then((value) => onDelete());
 
-        showSnackbar('Successfully Deleted Account');
+        showSnackbar('Successfully deleted account');
       } catch (e) {
         // Password is incorrect failed
         showSnackbar('Password is incorrect');

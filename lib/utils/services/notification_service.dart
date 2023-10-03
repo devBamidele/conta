@@ -17,7 +17,7 @@ class NotificationService {
 
   NotificationService._internal();
 
-  final icon = '@drawable/ic_launcher';
+  final icon = 'notification';
   final androidPriority = Priority.high;
 
   final _androidChannel = const AndroidNotificationChannel(
@@ -72,6 +72,7 @@ class NotificationService {
             priority: androidPriority,
             channelDescription: _androidChannel.description,
             icon: icon,
+            // groupKey:
           ),
         ),
 

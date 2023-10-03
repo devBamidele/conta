@@ -29,10 +29,10 @@ class SingleImageTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-      builder: (BuildContext context, BoxConstraints constraints) {
+      builder: (cxt, cnt) {
         return ConstrainedBox(
           constraints: BoxConstraints(
-            maxWidth: constraints.maxWidth * 0.8,
+            maxWidth: cnt.maxWidth * 0.8,
             maxHeight: 350,
           ),
           child: ClipRRect(
@@ -43,8 +43,7 @@ class SingleImageTile extends StatelessWidget {
                 tag: mediaUrl,
                 child: CachedNetworkImage(
                   imageUrl: mediaUrl,
-                  progressIndicatorBuilder: (context, url, downloadProgress) =>
-                      Center(
+                  progressIndicatorBuilder: (_, __, downloadProgress) => Center(
                     child: CircularProgressIndicator(
                       valueColor: customValueColorAnim(),
                       value: downloadProgress.progress,
