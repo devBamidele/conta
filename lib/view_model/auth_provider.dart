@@ -44,9 +44,6 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /*
-   Todo: I need to come back to this and find a way to make it case insensitive
-   */
   Future<Map<String, dynamic>> isUsernameUnique(String username) async {
     try {
       var result = await FirebaseFirestore.instance

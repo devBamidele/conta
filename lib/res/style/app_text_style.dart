@@ -146,11 +146,24 @@ class AppTextStyles {
     ),
   );
 
+  static const linkStyle = TextStyle(
+    color: AppColors.replyMessageColor,
+    decorationThickness: 2.5,
+    decorationColor: AppColors.replyMessageColor,
+  );
+
   static const sheetTitleText = TextStyle(
     fontSize: 24,
     color: AppColors.primaryShadeColor,
     fontWeight: FontWeight.w600,
     height: 1.4,
+    letterSpacing: 0.8,
+  );
+
+  static TextStyle dateTimeText = TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.bold,
+    color: AppColors.blackShade,
     letterSpacing: 0.8,
   );
 }

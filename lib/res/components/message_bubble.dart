@@ -1,11 +1,16 @@
+import 'dart:developer';
+
 import 'package:blur/blur.dart';
 import 'package:conta/res/components/reply_bubble.dart';
+import 'package:conta/res/style/app_text_style.dart';
 import 'package:conta/utils/widget_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:provider/provider.dart';
 import 'package:swipe_to/swipe_to.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 import '../../models/message.dart';
@@ -42,7 +47,7 @@ class MessageBubble extends StatefulWidget {
     required this.color,
     this.tail = true,
     this.textStyle = const TextStyle(color: Colors.black, fontSize: 16),
-    this.timeStyle = const TextStyle(fontSize: 9, color: Colors.black45),
+    this.timeStyle = const TextStyle(fontSize: 9.5),
   }) : super(key: key);
 
   @override
@@ -149,6 +154,12 @@ void resetOverlayColor() {
 
  */
 
+  void onOpenLink(link) async {
+    if (!await launchUrl(Uri.parse(link.url))) {
+      log('Could not launch ${link.url}');
+    }
+  }
+
   void onLongTapMessage() {
     Vibrate.feedback(FeedbackType.medium);
     update();
@@ -170,8 +181,7 @@ void resetOverlayColor() {
   @override
   Widget build(BuildContext context) {
     stateTick = true;
-    stateIconColor =
-        hasMedia && !hasContent ? Colors.white : AppColors.stateIconColor;
+    stateIconColor = hasMedia && !hasContent ? Colors.white : AppColors.black70;
 
     // Update the state icon depending on the state of 'seen' and 'sent'
     if (widget.message.sent) {
@@ -292,11 +302,16 @@ void resetOverlayColor() {
                                         if (hasContent)
                                           Padding(
                                             padding: getContentPadding(
-                                                replyMessage != null, hasMedia),
-                                            child: Text(
-                                              widget.message.content,
+                                              replyMessage != null,
+                                              hasMedia,
+                                            ),
+                                            child: SelectableLinkify(
+                                              onOpen: onOpenLink,
+                                              text: widget.message.content,
                                               style: widget.textStyle,
                                               textAlign: TextAlign.left,
+                                              linkStyle:
+                                                  AppTextStyles.linkStyle,
                                             ),
                                           ),
                                       ],
@@ -305,7 +320,7 @@ void resetOverlayColor() {
                                 ),
                                 if (stateIcon != null)
                                   Positioned(
-                                    bottom: hasContent ? 0 : 7,
+                                    bottom: hasContent ? -2 : 7,
                                     right: hasContent ? 5 : 4,
                                     child: hasMedia && !hasContent
                                         ? _getFrostedWidget(
@@ -346,13 +361,17 @@ void resetOverlayColor() {
           child: Text(
             widget.timeSent,
             style: widget.timeStyle.copyWith(
-              color: hasMedia && !hasContent
-                  ? Colors.white
-                  : widget.timeStyle.color,
+              color: hasMedia && !hasContent ? Colors.white : AppColors.black70,
             ),
           ),
         ),
-        if (widget.isSender) SizedBox(child: stateIcon),
+        if (widget.isSender)
+          SizedBox(
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 2),
+              child: stateIcon,
+            ),
+          ),
       ],
     );
   }
@@ -363,7 +382,7 @@ void resetOverlayColor() {
     ).frosted(
         blur: 0,
         frostColor: Colors.transparent,
-        width: isSender ? 75 : 55,
+        width: isSender ? 70 : 50,
         height: 18,
         borderRadius: const BorderRadius.all(Radius.circular(12)));
   }

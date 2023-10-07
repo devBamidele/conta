@@ -51,7 +51,7 @@ class _ChatScreenState extends State<ChatScreen>
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 50),
+      duration: const Duration(milliseconds: 100),
     );
 
     chatProvider = Provider.of<MessagesProvider>(context, listen: false);
@@ -142,7 +142,7 @@ class _ChatScreenState extends State<ChatScreen>
     return WillPopScope(
       onWillPop: onWillPop,
       child: Consumer2<MessagesProvider, ChatProvider>(
-        builder: (_, data, chat, Widget? child) {
+        builder: (_, data, chat, __) {
           bool isReplying = data.replyChat;
 
           final currentChat = data.currentChat!;

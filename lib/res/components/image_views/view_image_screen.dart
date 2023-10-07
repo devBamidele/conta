@@ -4,6 +4,7 @@ import 'package:conta/res/style/app_text_style.dart';
 import 'package:conta/utils/extensions.dart';
 import 'package:conta/utils/widget_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:photo_view/photo_view.dart';
 
 import '../../color.dart';
 import '../custom/custom_back_button.dart';
@@ -93,21 +94,52 @@ class ImagePreview extends StatelessWidget {
   Widget build(BuildContext context) {
     return Hero(
       tag: tag ?? url,
-      child: Image(
-        image: CachedNetworkImageProvider(url),
-        loadingBuilder: (context, child, progress) {
-          return progress == null
-              ? child
-              : Center(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final imageProvider = CachedNetworkImageProvider(url);
+
+          double imageWidth = 1;
+          double imageHeight = 1;
+
+          imageProvider.resolve(const ImageConfiguration()).addListener(
+            ImageStreamListener(
+              (info, __) {
+                imageWidth = info.image.width.toDouble();
+                imageHeight = info.image.height.toDouble();
+              },
+            ),
+          );
+
+          return ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: constraints.maxWidth,
+              maxHeight: constraints.maxWidth * (imageHeight / imageWidth),
+            ),
+            child: PhotoView(
+              imageProvider: imageProvider,
+              backgroundDecoration: const BoxDecoration(
+                color: AppColors.backGroundColor,
+              ),
+              loadingBuilder: (context, event) {
+                if (event == null) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                final progress =
+                    event.cumulativeBytesLoaded / event.expectedTotalBytes!;
+
+                return Center(
                   child: CircularProgressIndicator(
                     valueColor: customValueColorAnim(),
-                    value: progress.cumulativeBytesLoaded /
-                        progress.expectedTotalBytes!,
+                    value: progress,
                   ),
                 );
-        },
-        errorBuilder: (context, object, trace) {
-          return const Center(child: Text('Error fetching data'));
+              },
+              errorBuilder: (context, object, trace) {
+                return const Center(child: Text('Error fetching data'));
+              },
+            ),
+          );
         },
       ),
     );

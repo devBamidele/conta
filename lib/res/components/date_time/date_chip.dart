@@ -1,6 +1,8 @@
+import 'package:blur/blur.dart';
 import 'package:flutter/material.dart';
 
 import '../../color.dart';
+import '../../style/app_text_style.dart';
 import 'algo.dart';
 
 ///[DateChip] use to show the date breakers on the chat view
@@ -10,12 +12,10 @@ import 'algo.dart';
 ///
 class DateChip extends StatelessWidget {
   final DateTime date;
-  final Color color;
 
   const DateChip({
     Key? key,
     required this.date,
-    this.color = AppColors.dateChipColor,
   }) : super(key: key);
 
   @override
@@ -25,23 +25,16 @@ class DateChip extends StatelessWidget {
         top: 7,
         bottom: 7,
       ),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(8)),
-          color: color,
+      child: Padding(
+        padding: const EdgeInsets.all(5),
+        child: Text(
+          Algo.dateChipText(date),
+          style: AppTextStyles.dateTimeText,
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(5.0),
-          child: Text(
-            Algo.dateChipText(date),
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: AppColors.blackColor,
-              letterSpacing: 0.8,
-            ),
-          ),
-        ),
+      ).frosted(
+        blur: 0,
+        frostColor: AppColors.inactiveColor,
+        borderRadius: const BorderRadius.all(Radius.circular(8)),
       ),
     );
   }

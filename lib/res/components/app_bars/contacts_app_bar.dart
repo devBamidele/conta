@@ -60,7 +60,7 @@ class _ContactsAppBarState extends State<ContactsAppBar>
   }) async {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(
-      const Duration(milliseconds: 1000),
+      const Duration(milliseconds: 200),
       () async {
         data.contactFilter = text;
       },
