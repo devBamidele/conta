@@ -22,7 +22,7 @@ class AppBarIcon extends StatelessWidget {
       onTap: onTap,
       child: Icon(
         icon,
-        color: color ?? AppColors.extraTextColor,
+        color: color ?? AppColors.black70,
         size: size,
       ),
     );

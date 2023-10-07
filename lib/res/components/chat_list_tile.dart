@@ -6,6 +6,8 @@ import 'package:conta/res/components/shimmer/shimmer_widget.dart';
 import 'package:conta/res/components/unread_identifier.dart';
 import 'package:conta/res/style/app_text_style.dart';
 import 'package:conta/res/style/component_style.dart';
+import 'package:conta/utils/app_router/router.dart';
+import 'package:conta/utils/app_router/router.gr.dart';
 import 'package:conta/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -97,8 +99,6 @@ class _ChatListTileState extends State<ChatListTile> {
     );
 
     if (confirmed != null && !confirmed) {
-      log('I am here ');
-
       closeSlidable();
     }
 
@@ -181,21 +181,39 @@ class _ChatListTileState extends State<ChatListTile> {
     final imageUrl =
         widget.tileData.profilePicUrls[widget.samePerson ? 0 : widget.oppIndex];
 
+    final username = widget.tileData.userNames[widget.oppIndex];
+
+    final samePerson = widget.samePerson;
+
     return imageUrl != null
-        ? CachedNetworkImage(
-            imageUrl: imageUrl,
-            imageBuilder: (context, imageProvider) => Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                image: DecorationImage(
-                  image: imageProvider,
-                  fit: BoxFit.cover,
-                ),
+        ? GestureDetector(
+            onTap: () => navPush(
+              context,
+              UserPicViewRoute(
+                path: imageUrl,
+                username: username,
+                samePerson: samePerson,
+                tag: '$imageUrl from chat',
               ),
             ),
-            placeholder: (context, url) =>
-                const ShimmerWidget.circular(width: 54, height: 54),
-            errorWidget: (context, url, error) => const Icon(Icons.error),
+            child: Hero(
+              tag: '$imageUrl from chat',
+              child: CachedNetworkImage(
+                imageUrl: imageUrl,
+                imageBuilder: (context, imageProvider) => Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                      image: imageProvider,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                placeholder: (context, url) =>
+                    const ShimmerWidget.circular(width: 54, height: 54),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
+              ),
+            ),
           )
         : noProfilePic();
   }

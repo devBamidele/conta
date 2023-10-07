@@ -112,6 +112,7 @@ class _BlockedContactsScreenState extends State<BlockedContactsScreen> {
       notifications: !tile.userMuted[oppIndex],
       oppIndex: oppIndex,
       isDeleted: tile.deletedAccount[oppIndex],
+      isBlocked: true,
     );
 
     data.cancelReplyAndClearCache();

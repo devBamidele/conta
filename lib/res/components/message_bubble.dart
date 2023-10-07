@@ -275,7 +275,7 @@ void resetOverlayColor() {
                                         : 4,
                                   ),
                                   child: Consumer<MessagesProvider>(
-                                      builder: (_, data, child) {
+                                      builder: (_, data, __) {
                                     return Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
@@ -305,7 +305,7 @@ void resetOverlayColor() {
                                               replyMessage != null,
                                               hasMedia,
                                             ),
-                                            child: SelectableLinkify(
+                                            child: Linkify(
                                               onOpen: onOpenLink,
                                               text: widget.message.content,
                                               style: widget.textStyle,

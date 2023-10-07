@@ -1,4 +1,3 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:conta/res/components/online_status.dart';
 import 'package:conta/res/style/component_style.dart';
@@ -21,9 +20,12 @@ class ProfileDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<MessagesProvider>(
       builder: (_, data, __) {
-        String? imageUrl = data.currentChat!.profilePicUrl;
-        bool extraPadding = (data.currentChat!.oppIndex != null &&
-            data.currentChat!.uidUser1 != data.currentChat!.uidUser2);
+        final imageUrl = data.currentChat!.profilePicUrl;
+
+        final extraPadding = ((data.currentChat!.oppIndex != null &&
+                data.currentChat!.uidUser1 != data.currentChat!.uidUser2)) &&
+            !data.currentChat!.isBlocked;
+
         return Dialog(
           clipBehavior: Clip.hardEdge,
           child: Container(
@@ -152,29 +154,6 @@ class ProfileDialog extends StatelessWidget {
                       ),
                     ),
                   ],
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      right: 12,
-                      top: extraPadding ? 80 : 118,
-                    ),
-                    child: SizedBox.square(
-                      dimension: 46,
-                      child: FloatingActionButton(
-                        elevation: 2,
-                        backgroundColor: Colors.white,
-                        onPressed: () => context.router.pop(),
-                        shape: const CircleBorder(),
-                        child: const Icon(
-                          IconlyLight.chat,
-                          size: 25,
-                          color: AppColors.primaryShadeColor,
-                        ),
-                      ),
-                    ),
-                  ),
                 ),
               ],
             ),

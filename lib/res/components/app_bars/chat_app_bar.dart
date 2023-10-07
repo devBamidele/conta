@@ -48,6 +48,12 @@ class _ChatAppBarState extends State<ChatAppBar> {
     }
   }
 
+  Future<bool> confirmBlock({
+    required String name,
+  }) async {
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<MessagesProvider>(
@@ -88,6 +94,19 @@ class _ChatAppBarState extends State<ChatAppBar> {
                       ],
                     ),
                   ),
+                  /*
+                   actions: [
+                    PopupMenuButton(
+                      enableFeedback: true,
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          onTap: () {},
+                          child: const Text('Block user'),
+                        ),
+                      ],
+                    ),
+                  ],
+                   */
                 )
               : AppBar(
                   key: const Key('longPressed'),

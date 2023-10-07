@@ -22,6 +22,7 @@ import '../../view/home/profile_view/blocked_contacts_screen.dart';
 import '../../view/home/profile_view/edit_profile_info/change_password/update_password.dart';
 import '../../view/home/profile_view/edit_profile_info/change_password/verify_password.dart';
 import '../../view/home/profile_view/edit_profile_info/edit_bio_screen.dart';
+import '../../view/home/tab_views/message_view/user_pic_view.dart';
 import '../../view/onboard/splash_screen.dart';
 
 @AdaptiveAutoRouter(
@@ -49,6 +50,8 @@ import '../../view/onboard/splash_screen.dart';
     AutoRoute(page: ChatScreen),
 
     AutoRoute(page: ContactsView),
+
+    AutoRoute(page: UserPicView),
 
     CustomRoute(
       page: BlockedContactsScreen,

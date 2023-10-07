@@ -72,7 +72,6 @@ class NotificationService {
             priority: androidPriority,
             channelDescription: _androidChannel.description,
             icon: icon,
-            // groupKey:
           ),
         ),
 

@@ -10,13 +10,16 @@ class CustomFAB extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FloatingActionButton(
-      onPressed: onPressed,
-      backgroundColor: AppColors.primaryShadeColor,
-      child: const Icon(
-        IconlyLight.edit,
-        color: AppColors.backGroundColor,
-        size: 28,
+    return SizedBox.square(
+      dimension: 52,
+      child: FloatingActionButton(
+        onPressed: onPressed,
+        backgroundColor: AppColors.primaryShadeColor,
+        child: const Icon(
+          IconlyLight.edit,
+          color: AppColors.backGroundColor,
+          size: 26,
+        ),
       ),
     );
   }

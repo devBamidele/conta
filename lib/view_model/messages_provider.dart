@@ -214,6 +214,7 @@ class MessagesProvider extends ChangeNotifier {
     String? bio,
     int? oppIndex,
     bool? isDeleted,
+    bool? isBlocked,
   }) {
     final chatId = generateChatId(uidUser1, uidUser2);
 
@@ -227,6 +228,7 @@ class MessagesProvider extends ChangeNotifier {
       notifications: notifications,
       oppIndex: oppIndex,
       isDeleted: isDeleted,
+      isBlocked: isBlocked ?? false,
     );
 
     oppUserId = uidUser2;

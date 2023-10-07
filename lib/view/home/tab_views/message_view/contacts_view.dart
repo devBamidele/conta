@@ -60,7 +60,7 @@ class _ContactsViewState extends State<ContactsView> {
                   if (snapshot.hasData) {
                     final personList = snapshot.data!;
 
-                    show(personList.length < 3);
+                    show(personList.length < 4);
 
                     if (personList.isEmpty) {
                       return const Center(

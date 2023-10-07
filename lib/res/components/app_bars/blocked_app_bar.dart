@@ -142,17 +142,15 @@ class _BlockedAccountsAppBarState extends State<BlockedAccountsAppBar> {
                       size: 24,
                       padding: EdgeInsets.only(left: 20),
                     ),
-                    title: const Column(
-                      children: [
-                        Text(
-                          'Blocked chats',
-                          style: TextStyle(
-                            color: AppColors.blackColor,
-                            letterSpacing: 1,
-                            fontSize: 20,
-                          ),
+                    title: const Padding(
+                      padding: EdgeInsets.only(bottom: 2),
+                      child: Text(
+                        'Blocked chats',
+                        style: TextStyle(
+                          color: AppColors.blackColor,
+                          fontSize: 20,
                         ),
-                      ],
+                      ),
                     ),
                     actions: [
                       Padding(

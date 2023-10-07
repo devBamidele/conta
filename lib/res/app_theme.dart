@@ -14,6 +14,16 @@ class AppTheme {
       // Enable the use of Material3, the latest Material Design system.
       useMaterial3: true,
 
+      popupMenuTheme: const PopupMenuThemeData(
+        surfaceTintColor: Colors.white,
+        color: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(8),
+          ),
+        ),
+      ),
+
       // Configure the dialog theme.
       dialogTheme: const DialogTheme(
         // Set the style for the title of the dialog.

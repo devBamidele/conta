@@ -61,7 +61,9 @@ class ImageTile extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(8.0),
                                 child: BackdropFilter(
                                   filter: ImageFilter.blur(
-                                      sigmaX: 0.5, sigmaY: 0.5),
+                                    sigmaX: 0.5,
+                                    sigmaY: 0.5,
+                                  ),
                                   child: Container(
                                     color: Colors.black54.withOpacity(0.7),
                                     child: Center(

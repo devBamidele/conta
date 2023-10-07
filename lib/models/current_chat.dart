@@ -15,6 +15,7 @@ class CurrentChat {
   final String? bio;
   final int? oppIndex;
   final bool? isDeleted;
+  final bool isBlocked;
 
   /// Constructs a [CurrentChat] object.
   ///
@@ -32,6 +33,7 @@ class CurrentChat {
     this.chatId,
     this.bio,
     this.oppIndex,
+    this.isBlocked = false,
     this.isDeleted = false,
   });
 
@@ -47,6 +49,7 @@ class CurrentChat {
     String? phone,
     int? oppIndex,
     bool? isDeleted,
+    bool? isBlocked,
   }) {
     return CurrentChat(
       username: username ?? this.username,
@@ -58,6 +61,7 @@ class CurrentChat {
       bio: bio ?? this.bio,
       oppIndex: oppIndex ?? this.oppIndex,
       isDeleted: isDeleted ?? this.isDeleted,
+      isBlocked: isBlocked ?? this.isBlocked,
     );
   }
 }

@@ -51,7 +51,7 @@ class _ChatScreenState extends State<ChatScreen>
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 100),
+      duration: const Duration(milliseconds: 200),
     );
 
     chatProvider = Provider.of<MessagesProvider>(context, listen: false);
@@ -258,7 +258,8 @@ class _ChatScreenState extends State<ChatScreen>
                                   // Record audio / Send message button
                                   CircleAvatar(
                                     radius: 24,
-                                    backgroundColor: AppColors.primaryColor,
+                                    backgroundColor:
+                                        AppColors.primaryShadeColor,
                                     child: typing
                                         ? GestureDetector(
                                             onTap: () => sendMessage(
