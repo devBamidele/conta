@@ -1,4 +1,4 @@
-# conta
+# Duo Talk
 
 An Instant Messaging App
 
