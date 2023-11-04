@@ -20,10 +20,10 @@ Duo Talk is a real-time chat application built using the Flutter framework for t
    - Stay engaged with the app through managed push notifications, powered by the Firebase Cloud Messaging (FCM) API V1.
 
 5. **Backend Deployment (Google Cloud)**:
-   - Our Node.js server-side code is deployed via Google Cloud Functions, enhancing backend functionality and app performance.
+   - The Node.js server-side code is deployed via Google Cloud Functions, enhancing backend functionality.
 
 6. **Effortless Distribution (Firebase App Distribution)**:
-   - We use Firebase App Distribution for beta testing and app updates, making it easier to manage and distribute the app to users and testers.
+   - I used Firebase App Distribution for beta testing and app updates, making it easier to manage and distribute the app to users and testers.
 
 7. **Performance Insights (Analytics and Monitoring)**:
    - To ensure optimal performance, Duo Talk leverages Firebase's Analytics, Crashlytics, and Performance Monitoring SDKs, helping us identify and address potential issues.
@@ -32,7 +32,7 @@ Duo Talk is a real-time chat application built using the Flutter framework for t
    - Optimize user data management with Firebase extensions, improving the efficiency and functionality of the app.
 
 9. **Efficient Search Functionality (Algolia)**:
-   - Enhance the user experience with efficient and powerful search capabilities, thanks to Algolia integration.
+   - Enhanced user experience with efficient and powerful search capabilities, thanks to Algolia integration.
 
 ### Skills
 - **Front End Development**
